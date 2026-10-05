@@ -1,7 +1,6 @@
-import type { ReactNode } from 'react'
+import { useId } from 'react'
 import { Icon } from '@/components/Icon'
 import type { IconName } from '@/components/Icon'
-import { KeyHint } from './KeyHint'
 import { Tooltip } from './Tooltip'
 
 type NavItemProps = {
@@ -9,12 +8,11 @@ type NavItemProps = {
   icon: IconName
   collapsed: boolean
   current?: boolean
-  /** Not built yet. Stays focusable (aria-disabled) so its tooltip can say "Later". */
+  /** Not built yet. Dimmed, aria-disabled and still focusable, so its tooltip can say "Later". */
   later?: boolean
   onClick?: () => void
+  /** Announced to assistive tech only. The shortcut itself is registered in AppShell. */
   shortcutKey?: string
-  /** Shown at the right edge when expanded. */
-  badge?: ReactNode
 }
 
 export function NavItem({
@@ -25,55 +23,52 @@ export function NavItem({
   later = false,
   onClick,
   shortcutKey,
-  badge,
 }: NavItemProps) {
-  const tooltip = later
-    ? `${label} (Later)`
-    : shortcutKey
-      ? `${label} (${shortcutKey.toUpperCase()})`
-      : label
+  const laterId = useId()
+  // Items that are not built yet explain themselves in both nav states, since
+  // there is no visible "Later" text. Working items only need a tooltip when
+  // the label is hidden.
+  const tooltip = later ? `${label} (Later)` : collapsed ? label : null
 
   return (
     <li>
-      <Tooltip text={collapsed ? tooltip : null}>
-        {(trigger) => (
+      <Tooltip text={tooltip}>
+        {({ 'aria-describedby': tooltipId, ...handlers }) => (
           <button
             type="button"
-            {...trigger}
+            {...handlers}
             aria-label={collapsed ? label : undefined}
             aria-current={current ? 'page' : undefined}
             aria-disabled={later || undefined}
+            // The tooltip exists only while open, so the description is a
+            // permanent hidden element, with the tooltip added while it shows.
+            aria-describedby={
+              [later ? laterId : undefined, tooltipId]
+                .filter(Boolean)
+                .join(' ') || undefined
+            }
             aria-keyshortcuts={shortcutKey}
             onClick={later ? undefined : onClick}
             className={`focus-ring flex h-row w-full items-center gap-2 overflow-hidden rounded-md px-2 whitespace-nowrap ${
               collapsed ? 'justify-center' : ''
             } ${
               later
-                ? 'cursor-not-allowed text-slate-500'
+                ? 'cursor-not-allowed text-disabled'
                 : current
                   ? 'bg-accent-soft font-medium text-slate-900'
                   : 'text-slate-900 hover:bg-slate-100'
             }`}
           >
             <Icon name={icon} size="lg" weight={current ? 'fill' : 'regular'} />
-            {!collapsed && (
-              <>
-                <span className="flex-1 text-left">{label}</span>
-                {later ? (
-                  <span className="text-xs text-slate-600">Later</span>
-                ) : (
-                  <>
-                    {shortcutKey && (
-                      <KeyHint>{shortcutKey.toUpperCase()}</KeyHint>
-                    )}
-                    {badge}
-                  </>
-                )}
-              </>
-            )}
+            {!collapsed && <span className="flex-1 text-left">{label}</span>}
           </button>
         )}
       </Tooltip>
+      {later && (
+        <span id={laterId} hidden>
+          Later
+        </span>
+      )}
     </li>
   )
 }
