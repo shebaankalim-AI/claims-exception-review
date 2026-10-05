@@ -12,9 +12,6 @@ type SideNavProps = {
   onGoToQueue: () => void
 }
 
-// A fictional user, for the placeholder row.
-const USER = { name: 'Casey Lindqvist', initials: 'CL', role: 'Examiner' }
-
 function NavSection({
   label,
   collapsed,
@@ -31,7 +28,7 @@ function NavSection({
       className={collapsed ? 'mt-2 border-t border-slate-200 pt-2' : 'mt-4'}
     >
       {!collapsed && (
-        <h2 className="px-2 pb-1 text-xs whitespace-nowrap font-medium tracking-wide text-slate-600 uppercase">
+        <h2 className="px-2 pb-1 text-xs font-medium tracking-wide whitespace-nowrap text-slate-600 uppercase">
           {label}
         </h2>
       )}
@@ -49,7 +46,17 @@ function CollapseButton({
 }) {
   const label = collapsed ? 'Expand navigation' : 'Collapse navigation'
   return (
-    <Tooltip text={`${label} (${SHORTCUTS.toggleNav.key})`}>
+    <Tooltip
+      text={`${label} (${SHORTCUTS.toggleNav.key})`}
+      // Collapsed, the top row is only as tall as the header, so the button
+      // hangs just below it. It is the same element in both states, so keyboard
+      // focus survives a toggle.
+      className={
+        collapsed
+          ? 'absolute top-full left-1/2 mt-1 flex -translate-x-1/2'
+          : 'relative flex'
+      }
+    >
       {(trigger) => (
         <button
           type="button"
@@ -67,36 +74,6 @@ function CollapseButton({
   )
 }
 
-function UserRow({ collapsed }: { collapsed: boolean }) {
-  const description = `${USER.name}, ${USER.role}`
-  return (
-    <Tooltip text={collapsed ? description : null}>
-      {() => (
-        <div
-          className={`flex w-full items-center gap-2 px-2 py-1 ${
-            collapsed ? 'justify-center' : ''
-          }`}
-        >
-          <span
-            role="img"
-            aria-label={collapsed ? description : undefined}
-            aria-hidden={collapsed ? undefined : true}
-            className="flex size-8 shrink-0 items-center justify-center rounded-full bg-slate-200 text-xs font-medium text-slate-700"
-          >
-            {USER.initials}
-          </span>
-          {!collapsed && (
-            <span className="flex min-w-0 flex-col">
-              <span className="truncate font-medium">{USER.name}</span>
-              <span className="text-xs text-slate-600">{USER.role}</span>
-            </span>
-          )}
-        </div>
-      )}
-    </Tooltip>
-  )
-}
-
 export function SideNav({
   collapsed,
   onToggleCollapsed,
@@ -105,16 +82,15 @@ export function SideNav({
   return (
     <nav
       aria-label="Main"
-      className={`flex flex-col border-r border-slate-200 bg-surface p-2 transition-[width] duration-(--duration-nav) motion-reduce:transition-none ${
+      className={`col-start-1 row-span-2 row-start-1 flex flex-col border-r border-slate-200 bg-surface transition-[width] duration-(--duration-nav) motion-reduce:transition-none ${
         collapsed ? 'w-nav-collapsed' : 'w-nav'
       }`}
     >
+      {/* Same height as the header, so the two bottom borders line up. */}
       <div
-        className={
-          collapsed
-            ? 'flex flex-col items-center gap-1'
-            : 'flex items-center justify-between gap-2'
-        }
+        className={`relative flex h-header shrink-0 items-center border-b border-slate-200 px-2 ${
+          collapsed ? 'justify-center' : 'justify-between gap-2'
+        }`}
       >
         {/* overflow-hidden clips the wordmark, rather than letting it spill
             over the page, while the width animates. */}
@@ -124,46 +100,37 @@ export function SideNav({
         <CollapseButton collapsed={collapsed} onToggle={onToggleCollapsed} />
       </div>
 
-      <NavSection label="Work" collapsed={collapsed}>
-        <NavItem
-          label="Exceptions"
-          icon="exceptions"
-          collapsed={collapsed}
-          current
-          onClick={onGoToQueue}
-          shortcutKey={SHORTCUTS.goToQueue.key}
-          badge={
-            <>
-              <span
-                aria-hidden="true"
-                className="min-w-6 rounded-sm bg-surface px-1 text-center text-xs tabular-nums"
-              >
-                –
-              </span>
-              <span className="sr-only">count not available yet</span>
-            </>
-          }
-        />
-        <NavItem
-          label="All claims"
-          icon="allClaims"
-          collapsed={collapsed}
-          later
-        />
-        <NavItem
-          label="Agent activity"
-          icon="agentActivity"
-          collapsed={collapsed}
-          later
-        />
-      </NavSection>
+      <div
+        className={`flex flex-1 flex-col px-2 pb-2 ${collapsed ? 'pt-11' : 'pt-0'}`}
+      >
+        <NavSection label="Work" collapsed={collapsed}>
+          <NavItem
+            label="Exceptions"
+            icon="exceptions"
+            collapsed={collapsed}
+            current
+            onClick={onGoToQueue}
+            shortcutKey={SHORTCUTS.goToQueue.key}
+          />
+          <NavItem
+            label="All claims"
+            icon="allClaims"
+            collapsed={collapsed}
+            later
+          />
+          <NavItem
+            label="Agent activity"
+            icon="agentActivity"
+            collapsed={collapsed}
+            later
+          />
+        </NavSection>
 
-      <NavSection label="Insights" collapsed={collapsed}>
-        <NavItem label="Reports" icon="reports" collapsed={collapsed} later />
-      </NavSection>
+        <NavSection label="Insights" collapsed={collapsed}>
+          <NavItem label="Reports" icon="reports" collapsed={collapsed} later />
+        </NavSection>
 
-      <div className="mt-auto flex flex-col gap-1 pt-2">
-        <ul>
+        <ul className="mt-auto pt-2">
           <NavItem
             label="Help and shortcuts"
             icon="help"
@@ -171,7 +138,6 @@ export function SideNav({
             later
           />
         </ul>
-        <UserRow collapsed={collapsed} />
       </div>
     </nav>
   )

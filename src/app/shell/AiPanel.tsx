@@ -12,7 +12,7 @@ export function AiPanel({ open, onToggle }: AiPanelProps) {
   return (
     <aside
       aria-label="AI panel"
-      className={`flex flex-col border-l border-slate-200 bg-surface ${
+      className={`col-start-3 row-start-2 flex flex-col border-l border-slate-200 bg-surface ${
         open ? 'w-panel' : 'w-panel-collapsed'
       }`}
     >

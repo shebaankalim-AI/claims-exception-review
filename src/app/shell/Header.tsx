@@ -1,24 +1,20 @@
 import { useRef } from 'react'
+import { Icon } from '@/components/Icon'
 import { useShortcut } from '@/lib/shortcutContext'
-import type { Screen } from '../screen'
-import { Breadcrumb } from './Breadcrumb'
 import { KeyHint } from './KeyHint'
 import { SHORTCUTS } from './shortcutDefinitions'
+import { Tooltip } from './Tooltip'
 
-type HeaderProps = {
-  screen: Screen
-  onGoToQueue: () => void
-}
+// A fictional user, for the placeholder avatar.
+const USER = { name: 'Casey Lindqvist', initials: 'CL', role: 'Examiner' }
 
-export function Header({ screen, onGoToQueue }: HeaderProps) {
+export function Header() {
   const searchRef = useRef<HTMLInputElement>(null)
   useShortcut(SHORTCUTS.focusSearch, () => searchRef.current?.focus())
 
   return (
-    <header className="col-span-3 flex h-header items-center gap-4 border-b border-slate-200 bg-surface px-4">
-      <Breadcrumb screen={screen} onGoToQueue={onGoToQueue} />
-
-      <div role="search" className="relative ml-auto w-80">
+    <header className="col-span-2 col-start-2 row-start-1 flex h-header items-center gap-4 border-b border-slate-200 bg-surface px-4">
+      <div role="search" className="relative w-80">
         <input
           ref={searchRef}
           type="search"
@@ -32,20 +28,37 @@ export function Header({ screen, onGoToQueue }: HeaderProps) {
         </span>
       </div>
 
-      <p className="text-slate-600">
-        <span aria-hidden="true" className="mr-1 text-verified">
-          ●
-        </span>
-        Agent online, 0 claims running
-      </p>
+      <div className="ml-auto flex items-center gap-2">
+        <Tooltip text="Settings (later)" placement="bottom-end">
+          {({ 'aria-describedby': describedBy, ...handlers }) => (
+            <button
+              type="button"
+              {...handlers}
+              aria-label="Settings"
+              aria-describedby={describedBy}
+              aria-disabled="true"
+              className="focus-ring flex size-8 cursor-not-allowed items-center justify-center rounded-md text-disabled"
+            >
+              <Icon name="settings" size="lg" />
+            </button>
+          )}
+        </Tooltip>
 
-      <button
-        type="button"
-        disabled
-        className="focus-ring h-row cursor-not-allowed rounded-md border border-slate-200 px-3 text-slate-500"
-      >
-        User menu (later)
-      </button>
+        <Tooltip text={`${USER.name}, ${USER.role}`} placement="bottom-end">
+          {/* The tooltip repeats the accessible name, so it is not also a description. */}
+          {(trigger) => (
+            <button
+              type="button"
+              onFocus={trigger.onFocus}
+              onBlur={trigger.onBlur}
+              aria-label={`${USER.name}, ${USER.role}`}
+              className="focus-ring flex size-8 items-center justify-center rounded-full bg-slate-200 text-xs font-medium text-slate-700 hover:bg-slate-300"
+            >
+              <span aria-hidden="true">{USER.initials}</span>
+            </button>
+          )}
+        </Tooltip>
+      </div>
     </header>
   )
 }

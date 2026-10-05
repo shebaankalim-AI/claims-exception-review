@@ -16,7 +16,7 @@ function Workspace() {
   const goToQueue = () => setScreen(QUEUE)
 
   return (
-    <AppShell screen={screen} onGoToQueue={goToQueue}>
+    <AppShell onGoToQueue={goToQueue}>
       {screen.name === 'queue' ? (
         <QueueScreen
           onOpenSampleClaim={() =>
@@ -24,7 +24,7 @@ function Workspace() {
           }
         />
       ) : (
-        <ReviewScreen claimId={screen.claimId} />
+        <ReviewScreen claimId={screen.claimId} onBack={goToQueue} />
       )}
     </AppShell>
   )
