@@ -2,6 +2,7 @@ import { useState } from 'react'
 import type { ReactNode } from 'react'
 import { createMockClaimsRepository } from '@/data/mock'
 import { ClaimsRepositoryContext } from '@/lib/claimsRepository'
+import { ShortcutProvider } from '@/lib/ShortcutProvider'
 
 // The one place that decides the repository is the mock. Swapping in a real
 // API client means changing this line, not any screen.
@@ -14,7 +15,7 @@ export function AppProviders({ children }: { children: ReactNode }) {
   )
   return (
     <ClaimsRepositoryContext.Provider value={repository}>
-      {children}
+      <ShortcutProvider>{children}</ShortcutProvider>
     </ClaimsRepositoryContext.Provider>
   )
 }
