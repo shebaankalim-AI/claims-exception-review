@@ -1,0 +1,297 @@
+import { toClaimId } from '@/domain'
+import type {
+  Claim,
+  ClaimDocument,
+  ExceptionReason,
+  Field,
+  FieldStatus,
+} from '@/domain'
+
+// Lighter fixtures: one document each, built so every source excerpt is a real
+// line of that document. All names and numbers are invented.
+
+type FieldSpec = {
+  key: string
+  label: string
+  value: string | null
+  status: FieldStatus
+  reason?: string
+}
+
+type LightClaimSpec = {
+  id: string
+  employer: string
+  exceptionReasons: ExceptionReason[]
+  receivedAt: string
+  assignee: string
+  language?: string
+  fields: FieldSpec[]
+}
+
+function buildClaim(spec: LightClaimSpec): Claim {
+  const documentId = `${spec.id}-froi`
+  const lines = spec.fields
+    .filter((f) => f.value !== null)
+    .map((f) => `${f.label}: ${f.value}`)
+  const document: ClaimDocument = {
+    id: documentId,
+    kind: 'froi',
+    title: 'First report of injury',
+    language: spec.language ?? 'en',
+    pages: [
+      ['FIRST REPORT OF INJURY', `Employer: ${spec.employer}`, ...lines].join(
+        '\n',
+      ),
+    ],
+  }
+
+  const fields: Field[] = spec.fields.map((f) => ({
+    key: f.key,
+    label: f.label,
+    value: f.value,
+    status: f.status,
+    ...(f.reason ? { reason: f.reason } : {}),
+    resolvedBy: 'agent',
+    sources:
+      f.value === null
+        ? []
+        : [{ documentId, page: 1, excerpt: `${f.label}: ${f.value}` }],
+  }))
+
+  const flagged = spec.fields.filter((f) => f.status !== 'verified')
+  return {
+    id: toClaimId(spec.id),
+    employer: spec.employer,
+    exceptionReasons: spec.exceptionReasons,
+    receivedAt: spec.receivedAt,
+    assignee: spec.assignee,
+    state: 'needs_review',
+    documents: [document],
+    fields,
+    activity: [
+      { at: spec.receivedAt, actor: 'agent', action: 'Read 1 document' },
+      {
+        at: spec.receivedAt,
+        actor: 'agent',
+        action: `Extracted ${fields.length} fields`,
+      },
+      ...flagged.map((f) => ({
+        at: spec.receivedAt,
+        actor: 'agent' as const,
+        action: `Flagged ${f.label}`,
+        detail: f.reason,
+      })),
+    ],
+  }
+}
+
+const claimant = (value: string): FieldSpec => ({
+  key: 'claimant_name',
+  label: 'Employee',
+  value,
+  status: 'verified',
+})
+const injuryDate = (value: string): FieldSpec => ({
+  key: 'date_of_injury',
+  label: 'Date of injury',
+  value,
+  status: 'verified',
+})
+const description = (value: string): FieldSpec => ({
+  key: 'injury_description',
+  label: 'Description',
+  value,
+  status: 'verified',
+})
+
+export const lightClaims: Claim[] = [
+  buildClaim({
+    id: 'CLM-24-0388',
+    employer: 'Quillfeather Bakery Co.',
+    exceptionReasons: ['document_missing'],
+    receivedAt: '2025-01-14T09:05:00.000Z',
+    assignee: 'Tomas Ekwueme',
+    fields: [
+      claimant('Rosalind Okonkwo-Bell'),
+      injuryDate('2025-01-13'),
+      description('Burn to left hand from a hot tray'),
+      {
+        key: 'treating_physician',
+        label: 'Treating physician',
+        value: null,
+        status: 'missing',
+        reason: 'No medical report received yet',
+      },
+    ],
+  }),
+  buildClaim({
+    id: 'CLM-24-0402',
+    employer: 'Northgate Timber Works',
+    exceptionReasons: ['class_code_unclear'],
+    receivedAt: '2025-02-06T13:30:00.000Z',
+    assignee: 'Priya Natarajan',
+    fields: [
+      claimant('Bertrand Oyelaran'),
+      injuryDate('2025-02-05'),
+      description('Splinter injury to right palm at the sawmill'),
+      {
+        key: 'class_code',
+        label: 'Class code',
+        value: 'C-217 (sawmill)',
+        status: 'needs_review',
+        reason: 'Job title also fits C-220 (log yard)',
+      },
+    ],
+  }),
+  buildClaim({
+    id: 'CLM-24-0409',
+    employer: 'Ashbourne Dental Group',
+    exceptionReasons: ['policy_tier_ambiguous'],
+    receivedAt: '2025-02-10T08:50:00.000Z',
+    assignee: 'Dana Whitcombe',
+    fields: [
+      claimant('Philippa Strand'),
+      injuryDate('2025-02-09'),
+      description('Needle-stick injury while cleaning an instrument tray'),
+      {
+        key: 'policy_tier',
+        label: 'Policy tier',
+        value: 'Plus',
+        status: 'needs_review',
+        reason:
+          'Two policies on file for this employer, one Standard and one Plus',
+      },
+    ],
+  }),
+  buildClaim({
+    id: 'CLM-24-0413',
+    employer: 'Tidewater Metal Fabrication',
+    exceptionReasons: ['possible_duplicate', 'class_code_unclear'],
+    receivedAt: '2025-02-12T11:15:00.000Z',
+    assignee: 'Priya Natarajan',
+    fields: [
+      claimant('Lazlo Mbeki-Ferreira'),
+      injuryDate('2025-02-11'),
+      description('Metal shard in left eye, flushed on site'),
+      {
+        key: 'class_code',
+        label: 'Class code',
+        value: 'C-301 (fabrication)',
+        status: 'needs_review',
+        reason: 'Employee is listed under both fabrication and shipping',
+      },
+      {
+        key: 'related_claim',
+        label: 'Possible duplicate of',
+        value: 'CLM-24-0391',
+        status: 'needs_review',
+        reason: 'Same claimant and date, filed by a different contact',
+      },
+    ],
+  }),
+  buildClaim({
+    id: 'CLM-24-0425',
+    employer: 'Brightwell Staffing Partners',
+    exceptionReasons: ['document_missing', 'policy_tier_ambiguous'],
+    receivedAt: '2025-02-25T15:40:00.000Z',
+    assignee: 'Tomas Ekwueme',
+    fields: [
+      claimant('Ottilie Vandermeer'),
+      injuryDate('2025-02-24'),
+      description('Back strain lifting boxes at a client site'),
+      {
+        key: 'policy_tier',
+        label: 'Policy tier',
+        value: 'Standard',
+        status: 'needs_review',
+        reason: 'The client site may be covered by a separate policy',
+      },
+      {
+        key: 'witness_statement',
+        label: 'Witness statement',
+        value: null,
+        status: 'missing',
+        reason: 'The client has not sent a statement',
+      },
+    ],
+  }),
+  buildClaim({
+    id: 'CLM-24-0428',
+    employer: 'Copperleaf Hospitality',
+    exceptionReasons: ['non_english_form'],
+    receivedAt: '2025-02-26T09:25:00.000Z',
+    assignee: 'Dana Whitcombe',
+    language: 'fr',
+    fields: [
+      claimant('Mathilde Ouedraogo'),
+      injuryDate('2025-02-25'),
+      {
+        key: 'injury_description',
+        label: 'Description',
+        value:
+          'Brûlure à la main droite en cuisine (burn to right hand in the kitchen)',
+        status: 'needs_review',
+        reason:
+          'Form is in French; the English reading was prepared by the agent',
+      },
+    ],
+  }),
+  buildClaim({
+    id: 'CLM-24-0436',
+    employer: 'Juniper Ridge Construction',
+    exceptionReasons: ['class_code_unclear'],
+    receivedAt: '2025-03-03T07:55:00.000Z',
+    assignee: 'Priya Natarajan',
+    fields: [
+      claimant('Cormac Idowu-Lindqvist'),
+      injuryDate('2025-03-02'),
+      description('Fell from a low scaffold while measuring'),
+      {
+        key: 'class_code',
+        label: 'Class code',
+        value: 'D-410 (site supervisor)',
+        status: 'needs_review',
+        reason: 'Works as supervisor but was doing hands-on carpentry',
+      },
+    ],
+  }),
+  buildClaim({
+    id: 'CLM-24-0440',
+    employer: 'Oldmill Textile Works',
+    exceptionReasons: ['possible_duplicate'],
+    receivedAt: '2025-03-04T10:10:00.000Z',
+    assignee: 'Tomas Ekwueme',
+    fields: [
+      claimant('Winifred Achebe-Rask'),
+      injuryDate('2025-03-03'),
+      description('Finger caught in loom'),
+      {
+        key: 'related_claim',
+        label: 'Possible duplicate of',
+        value: 'CLM-24-0433',
+        status: 'needs_review',
+        reason:
+          'Same employer, same machine, same day, different employee name spelling',
+      },
+    ],
+  }),
+  buildClaim({
+    id: 'CLM-24-0444',
+    employer: 'Saltmarsh Marine Services',
+    exceptionReasons: ['document_missing'],
+    receivedAt: '2025-03-05T14:00:00.000Z',
+    assignee: 'Dana Whitcombe',
+    fields: [
+      claimant('Evander Pretorius-Nkemelu'),
+      injuryDate('2025-03-04'),
+      description('Rope burn to both palms while mooring a vessel'),
+      {
+        key: 'incident_report',
+        label: 'Incident report',
+        value: null,
+        status: 'missing',
+        reason: 'The harbour office report was referenced but not attached',
+      },
+    ],
+  }),
+]
