@@ -1,0 +1,143 @@
+# Architecture
+
+How this prototype is structured, and why. Every section is tagged **Implemented** or **Planned**, because a document that describes a system that doesn't exist is worse than no document. The [status table](#status) at the bottom is updated in every phase.
+
+## 1. What this is, and what it isn't
+
+An independent concept prototype of the screens a claims examiner works in when AI agents do the claims work and a person reviews the exceptions. It is built from public information only. It has **no backend**: every claim, document and agent action is mock data.
+
+It is not a product, and it does not try to model a real claims system. The goal is to show how the interface should behave when an agent does real work: what it did, why, what it read, where it was unsure, and how a person agrees or steps in. The architecture exists to keep that interaction model testable and to make the mocks replaceable.
+
+## 2. Layout
+
+```
+src/
+  app/          routes and providers; the one place that wires things together
+  domain/       types, state machines, repository interfaces; pure TypeScript
+  data/         repository implementations; mock/ holds the fixtures
+  features/     one folder per feature (queue, review, ...): screens, hooks, local components
+  components/   shared UI primitives (the design system)
+  lib/          small utilities: keyboard shortcuts, formatting, analytics seam
+  styles/       design tokens and global CSS
+  test/         test setup and helpers
+```
+
+The split inside `src/` is by **feature first**, then by layer. A change request almost always names a screen ("the field list on review"), not a layer in isolation, so everything one piece of work touches lives in one folder.
+
+**Status:** Planned for `app/` and `domain/`. The scaffold currently has `components/`, `data/`, `features/`, `lib/`, `styles/` and `test/`. The first four are empty, `styles/` holds `index.css`, and `test/` holds the test setup. `app/` and `domain/` are added in Phase 1.
+
+## 3. Dependency rules
+
+```
+app  ──▶  features  ──▶  components, lib, domain
+ │
+ └──────▶  data  ──▶  domain
+```
+
+- `domain` imports nothing else from `src/` and never imports React.
+- `data` imports `domain` only.
+- `components` imports nothing from `features` or `data`.
+- `features` import `domain`, `components` and `lib`. They **never import `data`**. They receive a repository through React context.
+- `app` is the only layer allowed to import `data`. It decides which repository is real.
+
+**Why:** these rules are what make "swap the mock for a real API without touching a screen" true in practice, not only on a diagram. They also keep `domain` testable with plain function calls, with no DOM and no mocked network.
+
+**Enforcement:** Planned. Phase 1 adds ESLint `no-restricted-imports` zones so a violation fails `npm run lint` and CI. Until it lands, code review is the only guard, and this document says so on purpose.
+
+## 4. The claim state model
+
+The central idea of the design is that a claim, and each field on it, is always in an explicit, visible state.
+
+**Claim:** `needs_review` → `approved` → `filed`, with side exits `sent_back` and `escalated`. Claims the agent handles cleanly are filed without a person and never appear in the queue. The queue contains exceptions only.
+
+**Field:** `verified`, `needs_review`, `missing` or `edited`, plus who resolved it (`agent` or `examiner`).
+
+**Rules, enforced in `domain/`:**
+- A claim cannot be approved while any field is `needs_review` or `missing`. The examiner must confirm or edit each one.
+- `filed` is the only state that means the system of record changed. The UI always shows the difference between "approved" and "filed".
+- Every transition appends an entry to the claim's activity log.
+
+The transitions live in a pure reducer, so the rules can be tested exhaustively without rendering anything.
+
+**Status:** Planned (Phase 1).
+
+## 5. State management
+
+- **Domain state** (the claim and its fields) changes through the pure reducer from §4, held with `useReducer` inside the review feature.
+- **Server-shaped state** (the queue, a claim's documents) is read through the repository interface from §6.
+- **UI state** (selected row, focused field, open panels) stays local to the component that owns it.
+
+No global state library. The app has no cross-screen state that justifies one. If it grows one, that is a decision note, not a quiet `npm install`.
+
+**Status:** Planned.
+
+## 6. Data boundary
+
+```ts
+// domain/repositories.ts (shape, not final)
+interface ClaimsRepository {
+  listExceptions(filter?: ExceptionFilter): Promise<ClaimSummary[]>
+  getClaim(id: ClaimId): Promise<Claim>
+  applyAction(id: ClaimId, action: ReviewAction): Promise<Claim>
+}
+```
+
+`data/mock/` implements it with in-memory fixtures and a small artificial delay, so loading and error states are designed and not skipped. `app/` provides it through context.
+
+**Why an interface and not "just import the JSON":** the screens would otherwise couple to the shape of the fixtures. A real agent platform has latency, partial failures and races, and the interface keeps that design problem visible from day one.
+
+**Status:** Planned.
+
+## 7. Design tokens and components
+
+Visual decisions are tokens in the `@theme` block of `src/styles/index.css` (Tailwind 4). Components use tokens only. No raw hex values, pixel sizes or font stacks in components. The direction is a dense operator tool; see [decision 0003](docs/decisions/0003-dense-operator-interface.md).
+
+Shared primitives go in `components/` once they are used by two features, not before.
+
+**Status:** Tokens: the `@theme` block exists with a font stack only. Components: Planned.
+
+## 8. Keyboard and accessibility
+
+Examiners work in this screen for hours, so frequent actions need to be fast without a mouse. Shortcuts go through a single registry in `lib/` so they are listed in one help overlay and can't collide. State is never colour alone: every state has an icon and a text label.
+
+**Status:** Planned.
+
+## 9. Testing
+
+- `domain/`: exhaustive unit tests, since it holds the rules.
+- Features: React Testing Library for the interactions that matter (approve, edit a field, jump to a source), written the way a user would act.
+- No snapshot tests.
+- CI runs lint, typecheck, test and build on every pull request.
+
+**Status:** Test runner and CI are Implemented. Tests beyond one smoke test are Planned.
+
+## 10. Planned seam: analytics
+
+A `track(event, props)` function in `lib/` with a no-op implementation behind it. Screens call it for meaningful actions (field edited, claim approved, shortcut used). No vendor is chosen. The point is that measuring friction needs a place to hook in, and adding one later means touching every screen.
+
+**Status:** Planned.
+
+## 11. What would change in production
+
+- A real API behind the same repository interface, with caching, retries and optimistic updates, which is where a data-fetching library earns its place.
+- Authentication and role-based access, enforced on the server. The client only reflects it.
+- The activity log written on the server, as an audit trail the client can't alter.
+- Live updates while an agent is working on a claim (streaming or sockets).
+- A virtualized table for queues of thousands of rows.
+- Redaction of personal and health data in logs and analytics.
+- A port to Next.js if the host product uses it. The layering above doesn't depend on Vite.
+
+## Status
+
+| Area                                   | Status      |
+| -------------------------------------- | ----------- |
+| Vite, React, TypeScript, Tailwind      | Implemented |
+| Lint, format, typecheck, test, build   | Implemented |
+| CI on pull requests                    | Implemented |
+| `app/` and `domain/` folders           | Planned     |
+| Dependency rules enforced by ESLint    | Planned     |
+| Claim state machine                    | Planned     |
+| Repository interface and mock data     | Planned     |
+| Design tokens and components           | Planned     |
+| Keyboard registry and accessibility    | Planned     |
+| Analytics seam                         | Planned     |
