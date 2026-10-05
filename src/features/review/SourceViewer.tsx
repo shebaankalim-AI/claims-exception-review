@@ -15,11 +15,11 @@ function Frame({
   return (
     <section
       aria-labelledby="source-heading"
-      className="flex flex-col gap-2 rounded-md border border-slate-200 bg-surface p-4"
+      className="flex flex-col gap-2 rounded-md border border-border bg-surface p-4"
     >
       <h2
         id="source-heading"
-        className="text-xs font-medium tracking-wide text-slate-600 uppercase"
+        className="text-xs font-medium tracking-wide text-ink-muted uppercase"
       >
         {title}
       </h2>
@@ -41,7 +41,7 @@ export function SourceViewer({ claim, field }: SourceViewerProps) {
   if (!field) {
     return (
       <Frame title="Source">
-        <p className="text-slate-600">
+        <p className="text-ink-muted">
           Select a field to see where it came from.
         </p>
       </Frame>
@@ -53,7 +53,7 @@ export function SourceViewer({ claim, field }: SourceViewerProps) {
     return (
       <Frame title="Source">
         <p className="font-medium">Missing: {field.label}</p>
-        <p className="text-slate-600">
+        <p className="text-ink-muted">
           Nothing on file yet.{' '}
           {field.expectedIn
             ? `This would normally be in ${field.expectedIn}.`
@@ -69,7 +69,7 @@ export function SourceViewer({ claim, field }: SourceViewerProps) {
   if (!source || !document || rawPage === undefined) {
     return (
       <Frame title="Source">
-        <p className="text-slate-600">No source is recorded for this value.</p>
+        <p className="text-ink-muted">No source is recorded for this value.</p>
       </Frame>
     )
   }
@@ -78,7 +78,7 @@ export function SourceViewer({ claim, field }: SourceViewerProps) {
   const at = page.indexOf(source.excerpt)
   return (
     <Frame title={document.title}>
-      <p className="text-xs text-slate-600">
+      <p className="text-xs text-ink-muted">
         Page {source.page ?? 1} of {document.pages.length}
         {field.sources.length > 1 &&
           `. ${field.sources.length - 1} more source${field.sources.length > 2 ? 's' : ''} for this field.`}
@@ -90,7 +90,7 @@ export function SourceViewer({ claim, field }: SourceViewerProps) {
           <>
             {page.slice(0, at)}
             {/* A background and a left bar, so the passage is not marked by colour alone. */}
-            <mark className="border-l-4 border-needs-review bg-needs-review-soft px-1 text-slate-900">
+            <mark className="border-l-4 border-needs-review bg-needs-review-soft px-1 text-ink">
               {source.excerpt}
             </mark>
             {page.slice(at + source.excerpt.length)}

@@ -17,7 +17,7 @@ type QueueDigestProps = {
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
     <section className="flex flex-col gap-1">
-      <h3 className="text-xs font-medium tracking-wide text-slate-600 uppercase">
+      <h3 className="text-xs font-medium tracking-wide text-ink-muted uppercase">
         {title}
       </h3>
       {children}
@@ -68,11 +68,11 @@ export function QueueDigest({ queue, onOpenClaim }: QueueDigestProps) {
   const { state } = queue
 
   if (state.status === 'loading') {
-    return <p className="text-slate-600">Reading the queue…</p>
+    return <p className="text-ink-muted">Reading the queue…</p>
   }
   if (state.status === 'error') {
     return (
-      <p className="text-slate-600">
+      <p className="text-ink-muted">
         The digest is unavailable because the queue could not load.
       </p>
     )
@@ -96,7 +96,7 @@ export function QueueDigest({ queue, onOpenClaim }: QueueDigestProps) {
   const needYou = claims.length
 
   return (
-    <div className="flex flex-col gap-4 text-slate-900">
+    <div className="flex flex-col gap-4 text-ink">
       {justFlagged && (
         <Section title="Just flagged">
           <p>

@@ -36,7 +36,7 @@ export function Dialog({
       ref={ref}
       aria-labelledby={titleId}
       onClose={onClose}
-      className="m-auto w-full max-w-lg rounded-md border border-slate-200 bg-surface p-0 text-slate-900 backdrop:bg-slate-900/40"
+      className="m-auto w-full max-w-lg rounded-md border border-border bg-surface p-0 text-ink backdrop:bg-backdrop"
     >
       {/* Rendered only while open, so a form never keeps a stale draft. */}
       {open && (
@@ -45,7 +45,7 @@ export function Dialog({
             <h2 id={titleId} className="text-lg font-semibold">
               {title}
             </h2>
-            {subtitle && <p className="text-slate-600">{subtitle}</p>}
+            {subtitle && <p className="text-ink-muted">{subtitle}</p>}
           </div>
           {children}
         </div>

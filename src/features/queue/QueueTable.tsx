@@ -4,7 +4,7 @@ import { formatAge } from '@/lib/formatAge'
 import { LINE_LABELS, REASON_LABELS } from './labels'
 
 const headerClass =
-  'px-3 py-2 text-left text-xs font-medium tracking-wide whitespace-nowrap text-slate-600 uppercase'
+  'px-3 py-2 text-left text-xs font-medium tracking-wide whitespace-nowrap text-ink-muted uppercase'
 const cellClass = 'px-3 py-2 align-top'
 
 function WhatsNeeded({ claim }: { claim: ClaimSummary }) {
@@ -51,9 +51,9 @@ type QueueTableProps = {
 
 export function QueueTable({ claims, now, onOpenClaim }: QueueTableProps) {
   return (
-    <table className="w-full table-fixed border-collapse rounded-md border border-slate-200 bg-surface">
+    <table className="w-full table-fixed border-collapse rounded-md border border-border bg-surface">
       <caption className="sr-only">Exceptions, oldest first</caption>
-      <thead className="border-b border-slate-200 bg-slate-50">
+      <thead className="border-b border-border bg-surface-muted">
         <tr>
           <th scope="col" className={`${headerClass} w-col-claim`}>
             Claim
@@ -72,14 +72,14 @@ export function QueueTable({ claims, now, onOpenClaim }: QueueTableProps) {
           </th>
         </tr>
       </thead>
-      <tbody className="divide-y divide-slate-200">
+      <tbody className="divide-y divide-border">
         {claims.map((claim) => (
           // The whole row opens the claim for the mouse. The ID button is the
           // keyboard and screen reader path, and stops the click so it only fires once.
           <tr
             key={claim.id}
             onClick={() => onOpenClaim(claim.id)}
-            className="cursor-pointer hover:bg-slate-50"
+            className="cursor-pointer hover:bg-surface-muted"
           >
             <td className={cellClass}>
               <button
@@ -98,7 +98,7 @@ export function QueueTable({ claims, now, onOpenClaim }: QueueTableProps) {
               <div className="font-medium">
                 {REASON_LABELS[claim.exceptionReasons[0]]}
               </div>
-              <div className="text-slate-600">{claim.agentNote}</div>
+              <div className="text-ink-muted">{claim.agentNote}</div>
             </td>
             <td className={cellClass}>
               <WhatsNeeded claim={claim} />
@@ -117,14 +117,14 @@ export function QueueTableSkeleton() {
   return (
     <table
       aria-hidden="true"
-      className="w-full border-collapse rounded-md border border-slate-200 bg-surface"
+      className="w-full border-collapse rounded-md border border-border bg-surface"
     >
-      <tbody className="divide-y divide-slate-200">
+      <tbody className="divide-y divide-border">
         {[0, 1, 2, 3, 4].map((i) => (
           <tr key={i}>
             {['w-24', 'w-32', 'w-64', 'w-32', 'w-16'].map((width, j) => (
               <td key={j} className={cellClass}>
-                <div className={`h-4 rounded-sm bg-slate-200 ${width}`} />
+                <div className={`h-4 rounded-sm bg-border ${width}`} />
               </td>
             ))}
           </tr>

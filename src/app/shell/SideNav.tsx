@@ -25,10 +25,10 @@ function NavSection({
     <div
       role="group"
       aria-label={label}
-      className={collapsed ? 'mt-2 border-t border-slate-200 pt-2' : 'mt-4'}
+      className={collapsed ? 'mt-2 border-t border-border pt-2' : 'mt-4'}
     >
       {!collapsed && (
-        <h2 className="px-2 pb-1 text-xs font-medium tracking-wide whitespace-nowrap text-slate-600 uppercase">
+        <h2 className="px-2 pb-1 text-xs font-medium tracking-wide whitespace-nowrap text-ink-muted uppercase">
           {label}
         </h2>
       )}
@@ -65,7 +65,7 @@ function CollapseButton({
           aria-label={label}
           aria-expanded={!collapsed}
           aria-keyshortcuts={SHORTCUTS.toggleNav.key}
-          className="focus-ring flex h-row w-8 items-center justify-center rounded-md text-slate-700 hover:bg-slate-100"
+          className="focus-ring flex h-control w-8 items-center justify-center rounded-md text-ink hover:bg-surface-muted"
         >
           <Icon name="menu" size="lg" />
         </button>
@@ -82,19 +82,19 @@ export function SideNav({
   return (
     <nav
       aria-label="Main"
-      className={`col-start-1 row-span-2 row-start-1 flex flex-col border-r border-slate-200 bg-surface transition-[width] duration-(--duration-nav) motion-reduce:transition-none ${
+      className={`col-start-1 row-span-2 row-start-1 flex flex-col border-r border-border bg-surface transition-[width] duration-(--duration-nav) motion-reduce:transition-none ${
         collapsed ? 'w-nav-collapsed' : 'w-nav'
       }`}
     >
       {/* Same height as the header, so the two bottom borders line up. */}
       <div
-        className={`relative flex h-header shrink-0 items-center border-b border-slate-200 px-2 ${
+        className={`relative flex h-header shrink-0 items-center border-b border-border px-2 ${
           collapsed ? 'justify-center' : 'justify-between gap-2'
         }`}
       >
         {/* overflow-hidden clips the wordmark, rather than letting it spill
             over the page, while the width animates. */}
-        <div className="min-w-0 overflow-hidden px-2 text-slate-900">
+        <div className="min-w-0 overflow-hidden px-2 text-ink">
           {collapsed ? <LogoMark label="Assay" /> : <Logo />}
         </div>
         <CollapseButton collapsed={collapsed} onToggle={onToggleCollapsed} />

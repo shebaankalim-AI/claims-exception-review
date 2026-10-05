@@ -31,9 +31,9 @@ type ActionBarProps = {
 }
 
 const secondary =
-  'focus-ring h-row rounded-md border border-slate-300 bg-surface px-3 hover:bg-slate-100'
+  'focus-ring h-control rounded-md border border-border-strong bg-surface px-3 hover:bg-surface-muted'
 const primary =
-  'focus-ring h-row rounded-md bg-accent px-3 text-on-accent hover:opacity-90'
+  'focus-ring h-control rounded-md bg-accent px-3 text-on-accent hover:opacity-90'
 
 function Message({
   id,
@@ -192,7 +192,7 @@ export function ActionBar({
   return (
     <section
       aria-label="Claim actions"
-      className="flex shrink-0 items-center gap-4 border-t border-slate-200 bg-surface px-6 py-3"
+      className="flex shrink-0 items-center gap-4 border-t border-border bg-surface px-6 py-3"
     >
       <div className="flex flex-col">
         <span className="font-medium tabular-nums">{claim.id}</span>

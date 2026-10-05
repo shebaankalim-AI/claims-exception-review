@@ -49,14 +49,14 @@ export function NavItem({
             }
             aria-keyshortcuts={shortcutKey}
             onClick={later ? undefined : onClick}
-            className={`focus-ring flex h-row w-full items-center gap-2 overflow-hidden rounded-md px-2 whitespace-nowrap ${
+            className={`focus-ring flex h-control w-full items-center gap-2 overflow-hidden rounded-md px-2 whitespace-nowrap ${
               collapsed ? 'justify-center' : ''
             } ${
               later
                 ? 'cursor-not-allowed text-disabled'
                 : current
-                  ? 'bg-accent-soft font-medium text-slate-900'
-                  : 'text-slate-900 hover:bg-slate-100'
+                  ? 'bg-accent-soft font-medium text-ink'
+                  : 'text-ink hover:bg-surface-muted'
             }`}
           >
             <Icon name={icon} size="lg" weight={current ? 'fill' : 'regular'} />

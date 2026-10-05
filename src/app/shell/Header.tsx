@@ -13,7 +13,7 @@ export function Header() {
   useShortcut(SHORTCUTS.focusSearch, () => searchRef.current?.focus())
 
   return (
-    <header className="col-span-2 col-start-2 row-start-1 flex h-header items-center gap-4 border-b border-slate-200 bg-surface px-4">
+    <header className="col-span-2 col-start-2 row-start-1 flex h-header items-center gap-4 border-b border-border bg-surface px-4">
       <div role="search" className="relative w-80">
         <input
           ref={searchRef}
@@ -21,7 +21,7 @@ export function Header() {
           aria-label="Search claims"
           aria-keyshortcuts={SHORTCUTS.focusSearch.key}
           placeholder="Search claims"
-          className="focus-ring h-row w-full rounded-md border border-slate-300 bg-surface pr-8 pl-2 placeholder:text-slate-500"
+          className="focus-ring h-control w-full rounded-md border border-border-strong bg-surface pr-8 pl-2 placeholder:text-ink-subtle"
         />
         <span className="pointer-events-none absolute top-1/2 right-2 -translate-y-1/2">
           <KeyHint>{SHORTCUTS.focusSearch.key}</KeyHint>
@@ -52,7 +52,7 @@ export function Header() {
               onFocus={trigger.onFocus}
               onBlur={trigger.onBlur}
               aria-label={`${USER.name}, ${USER.role}`}
-              className="focus-ring flex size-8 items-center justify-center rounded-full bg-slate-200 text-xs font-medium text-slate-700 hover:bg-slate-300"
+              className="focus-ring flex size-8 items-center justify-center rounded-full bg-border text-xs font-medium text-ink hover:bg-accent-border"
             >
               <span aria-hidden="true">{USER.initials}</span>
             </button>

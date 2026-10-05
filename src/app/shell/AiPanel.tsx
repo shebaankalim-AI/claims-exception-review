@@ -14,12 +14,12 @@ export function AiPanel({ open, onToggle, children }: AiPanelProps) {
   return (
     <aside
       aria-label="AI panel"
-      className={`col-start-3 row-start-2 flex flex-col border-l border-slate-200 bg-surface ${
+      className={`col-start-3 row-start-2 flex flex-col border-l border-border bg-surface ${
         open ? 'w-panel' : 'w-panel-collapsed'
       }`}
     >
       <div
-        className={`flex h-row items-center gap-2 border-b border-slate-200 px-2 ${
+        className={`flex h-control items-center gap-2 border-b border-border px-2 ${
           open ? 'justify-between' : 'justify-center'
         }`}
       >
@@ -31,7 +31,7 @@ export function AiPanel({ open, onToggle, children }: AiPanelProps) {
           aria-expanded={open}
           aria-controls="ai-panel-body"
           aria-keyshortcuts={SHORTCUTS.toggleAiPanel.key}
-          className="focus-ring flex h-6 items-center gap-1 rounded-sm px-1 hover:bg-slate-100"
+          className="focus-ring flex h-6 items-center gap-1 rounded-sm px-1 hover:bg-surface-muted"
         >
           <span aria-hidden="true">{open ? '›' : '‹'}</span>
           {open && <KeyHint>{SHORTCUTS.toggleAiPanel.key}</KeyHint>}
@@ -43,7 +43,7 @@ export function AiPanel({ open, onToggle, children }: AiPanelProps) {
         className="min-h-0 flex-1 overflow-auto p-3"
       >
         {children ?? (
-          <p className="text-slate-600">
+          <p className="text-ink-muted">
             Placeholder for the AI panel. What the agent did, why, and what it
             read will appear here.
           </p>

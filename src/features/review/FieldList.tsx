@@ -18,9 +18,9 @@ type FieldListProps = {
 }
 
 const buttonClass =
-  'focus-ring h-row rounded-md border border-slate-300 bg-surface px-3 hover:bg-slate-100'
+  'focus-ring h-control rounded-md border border-border-strong bg-surface px-3 hover:bg-surface-muted'
 const primaryButtonClass =
-  'focus-ring h-row rounded-md bg-accent px-3 text-on-accent hover:opacity-90'
+  'focus-ring h-control rounded-md bg-accent px-3 text-on-accent hover:opacity-90'
 
 function sourceTitle(claim: Claim, field: Field): string {
   const documentId = field.sources[0]?.documentId
@@ -29,11 +29,11 @@ function sourceTitle(claim: Claim, field: Field): string {
 
 function Value({ field }: { field: Field }) {
   if (field.status === 'missing')
-    return <span className="text-slate-600">–</span>
+    return <span className="text-ink-muted">–</span>
   if (field.status === 'edited') {
     return (
       <span>
-        <s className="mr-2 text-slate-600">{field.previousValue ?? 'empty'}</s>
+        <s className="mr-2 text-ink-muted">{field.previousValue ?? 'empty'}</s>
         {field.value}
       </span>
     )
@@ -50,13 +50,13 @@ function Provenance({
 }) {
   if (field.status === 'verified') {
     return (
-      <span className="text-slate-600">
+      <span className="text-ink-muted">
         by {field.resolvedBy === 'agent' ? 'agent' : 'you'}
       </span>
     )
   }
   if (field.status === 'edited') {
-    return <span className="text-slate-600">by {examinerName}</span>
+    return <span className="text-ink-muted">by {examinerName}</span>
   }
   return null
 }
@@ -78,7 +78,7 @@ export function FieldList({
   const [requested, setRequested] = useState<ReadonlySet<string>>(new Set())
 
   return (
-    <ul className="flex flex-col divide-y divide-slate-200 rounded-md border border-slate-200 bg-surface">
+    <ul className="flex flex-col divide-y divide-border rounded-md border border-border bg-surface">
       {fields.map((field) => {
         const selected = field.key === selectedKey
         const isEditing = editing?.key === field.key
@@ -105,7 +105,7 @@ export function FieldList({
                 />
                 <Provenance field={field} examinerName={examinerName} />
               </span>
-              <span className="block min-w-0 truncate text-slate-600">
+              <span className="block min-w-0 truncate text-ink-muted">
                 {field.status === 'missing'
                   ? 'Not received'
                   : sourceTitle(claim, field)}
@@ -113,7 +113,7 @@ export function FieldList({
               {(field.status === 'needs_review' ||
                 field.status === 'missing') &&
                 field.reason && (
-                  <span className="col-span-4 text-slate-600">
+                  <span className="col-span-4 text-ink-muted">
                     {field.reason}
                   </span>
                 )}
@@ -131,7 +131,7 @@ export function FieldList({
                       setEditing(null)
                     }}
                   >
-                    <label className="flex flex-col gap-1 text-slate-600">
+                    <label className="flex flex-col gap-1 text-ink-muted">
                       New value for {field.label}
                       <input
                         type="text"
@@ -140,7 +140,7 @@ export function FieldList({
                         onChange={(e) =>
                           setEditing({ key: field.key, draft: e.target.value })
                         }
-                        className="focus-ring h-row rounded-md border border-slate-300 bg-surface px-2 text-slate-900"
+                        className="focus-ring h-control rounded-md border border-border-strong bg-surface px-2 text-ink"
                       />
                     </label>
                     <button
@@ -187,7 +187,7 @@ export function FieldList({
                       Add value
                     </button>
                     {requested.has(field.key) ? (
-                      <span className="flex items-center gap-1 text-slate-600">
+                      <span className="flex items-center gap-1 text-ink-muted">
                         <Icon name="info" />
                         Document requested. Nothing is sent in this prototype.
                       </span>

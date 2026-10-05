@@ -2,70 +2,93 @@
 @import '@fontsource-variable/inter';
 
 /*
- * Design tokens. This block is the only place raw colours, pixel sizes and
- * font stacks are allowed; components use the utilities these generate.
- * Resetting the default colour, text and radius namespaces means a stray
- * `bg-red-500` or `text-2xl` simply doesn't exist, so it can't slip in.
+ * Design tokens. This block is the only place raw colours, pixel sizes, shadows
+ * and font stacks are allowed; components use the utilities these generate.
+ * Resetting the default colour, text, radius and shadow namespaces means a
+ * stray `bg-red-500` or `text-3xl` simply doesn't exist, so it can't slip in.
  * Light mode only for now. The direction is in docs/decisions/0003.
  */
 @theme {
   --color-*: initial;
   --text-*: initial;
   --radius-*: initial;
+  --shadow-*: initial;
 
-  /* Type */
+  /* Type: 12 / 13 / 14 (base) / 16 / 20 / 24, weights 400, 500 and 600. */
   --font-sans:
     'Inter Variable', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   --text-xs: 12px;
-  --text-xs--line-height: 1.35;
-  --text-base: 13px;
-  --text-base--line-height: 1.4;
-  --text-lg: 15px;
-  --text-lg--line-height: 1.4;
-  --text-xl: 18px;
-  --text-xl--line-height: 1.3;
+  --text-xs--line-height: 1.4;
+  --text-sm: 13px;
+  --text-sm--line-height: 1.45;
+  --text-base: 14px;
+  --text-base--line-height: 1.5;
+  --text-lg: 16px;
+  --text-lg--line-height: 1.45;
+  --text-xl: 20px;
+  --text-xl--line-height: 1.35;
+  --text-2xl: 24px;
+  --text-2xl--line-height: 1.3;
   --tracking-logo: -0.02em;
+  --leading-relaxed: 1.6;
 
-  /* Neutral ramp */
-  --color-slate-50: #f8fafc;
-  --color-slate-100: #f1f5f9;
-  --color-slate-200: #e2e8f0;
-  --color-slate-300: #cbd5e1;
-  --color-slate-400: #94a3b8;
-  --color-slate-500: #64748b;
-  --color-slate-600: #475569;
-  --color-slate-700: #334155;
-  --color-slate-800: #1e293b;
-  --color-slate-900: #0f172a;
+  /* Warm neutrals */
+  --color-page: #f7f6f3;
+  --color-sidebar: #f1efea;
+  --color-sidebar-hover: #e9e6df;
   --color-surface: #ffffff;
-  --color-disabled: var(--color-slate-500);
+  --color-surface-muted: #faf9f7;
+  --color-border: #e6e3dc;
+  --color-border-strong: #d6d2c9;
+  --color-ink: #1f1e1b;
+  --color-ink-muted: #6b675e;
+  /* Below 4.5:1 on white: only for hints, placeholders and disabled text. */
+  --color-ink-subtle: #8c877d;
+  --color-disabled: var(--color-ink-subtle);
+  --color-backdrop: rgb(31 30 27 / 0.35);
 
-  /* Accent */
-  --color-accent: #2563eb;
-  --color-accent-soft: #dbeafe;
+  /* Accent: buttons, links, selected items and focus. */
+  --color-accent: #3442b8;
+  --color-accent-hover: #2a369a;
+  --color-accent-soft: #eef0fb;
+  --color-accent-border: #d3d8f4;
   --color-on-accent: #ffffff;
   --color-focus-ring: var(--color-accent);
 
-  /* Review states: colour is never the only signal, each also gets an icon and a label. */
-  --color-verified: #15803d;
-  --color-verified-soft: #dcfce7;
-  --color-needs-review: #b45309;
-  --color-needs-review-soft: #fef3c7;
-  --color-missing: #b91c1c;
-  --color-missing-soft: #fee2e2;
-  --color-edited: #3d5a80;
-  --color-edited-soft: #e6ecf4;
+  /*
+   * Review states: text, soft background and border. Colour is never the only
+   * signal; each state also gets an icon and a word. Every text colour is at
+   * least 4.8:1 on its soft background and on white (verified was darkened
+   * from #1e7a3c to reach it).
+   */
+  --color-verified: #1e793b;
+  --color-verified-soft: #e9f4ec;
+  --color-verified-border: #c6e3cf;
+  --color-needs-review: #8a5300;
+  --color-needs-review-soft: #fcf1dd;
+  --color-needs-review-border: #f0d9ae;
+  --color-missing: #b42318;
+  --color-missing-soft: #fdecea;
+  --color-missing-border: #f5c6c1;
+  --color-edited: #57534e;
+  --color-edited-soft: #f1efea;
+  --color-edited-border: #ddd9d1;
 
-  /* Radii */
-  --radius-sm: 4px;
-  --radius-md: 6px;
+  /* Radii: badges and inputs, buttons, cards and dialogs. */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
 
-  /* 4px grid: p-2 is 8px, gap-3 is 12px, and so on. */
+  /* Shadows */
+  --shadow-card: 0 1px 2px rgb(31 30 27 / 0.04);
+  --shadow-raised: 0 4px 16px rgb(31 30 27 / 0.08);
+
+  /* 4px grid: p-2 is 8px, p-5 is 20px, p-8 is 32px, and so on. */
   --spacing: 4px;
 
-  /* Layout sizes (usable as w-nav, h-row, and so on) */
-  --spacing-row: 32px;
-  --spacing-header: 48px;
+  /* Layout sizes (usable as w-nav, h-control, and so on) */
+  --spacing-control: 36px;
+  --spacing-header: 56px;
   --spacing-nav: 240px;
   --spacing-nav-collapsed: 56px;
   --spacing-panel: 360px;
@@ -74,11 +97,11 @@
   /* Fixed columns, so tables and lists line up row to row. */
   --spacing-col-claim: 128px;
   --spacing-col-line: 176px;
-  --spacing-col-needed: 160px;
+  --spacing-col-needed: 176px;
   --spacing-col-age: 96px;
   --spacing-col-label: 160px;
-  --spacing-col-state: 136px;
-  --spacing-col-source: 152px;
+  --spacing-col-state: 144px;
+  --spacing-col-source: 160px;
   --spacing-icon: 16px;
   --spacing-icon-lg: 20px;
   --spacing-logo: 24px;
@@ -87,9 +110,9 @@
   /* Motion: brief, and switched off for prefers-reduced-motion in components. */
   --duration-nav: 150ms;
 
-  /* Focus ring */
+  /* Focus ring: 2px accent, 2px away from the element. */
   --focus-ring-width: 2px;
-  --focus-ring-offset: 1px;
+  --focus-ring-offset: 2px;
 }
 
 /* Every interactive element gets this; see "Keyboard and accessibility" in ARCHITECTURE.md. */
@@ -106,9 +129,10 @@ html {
 
 body {
   margin: 0;
-  background-color: var(--color-slate-50);
-  color: var(--color-slate-900);
+  background-color: var(--color-page);
+  color: var(--color-ink);
   font-family: var(--font-sans);
   font-size: var(--text-base);
   line-height: var(--text-base--line-height);
+  -webkit-font-smoothing: antialiased;
 }

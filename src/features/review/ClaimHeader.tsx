@@ -16,7 +16,7 @@ export function ClaimHeader({ claim, now }: { claim: Claim; now: Date }) {
         label={CLAIM_STATE_LABELS[claim.state]}
       />
       <span>{LINE_LABELS[claim.lineOfBusiness]}</span>
-      <span className="text-slate-600">
+      <span className="text-ink-muted">
         Flagged {formatAge(claim.flaggedAt, now)} ago
       </span>
     </header>

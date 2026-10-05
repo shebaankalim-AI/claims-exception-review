@@ -16,7 +16,7 @@ const OUTCOMES: Record<
 > = {
   completed: {
     icon: 'resultCompleted',
-    tone: 'text-slate-600',
+    tone: 'text-ink-muted',
     label: 'Completed',
   },
   verified: { icon: 'stateVerified', tone: 'text-verified', label: 'Verified' },
@@ -36,7 +36,7 @@ const outcomeOf = (entry: ActivityEntry): ActivityOutcome =>
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
     <section className="flex flex-col gap-2">
-      <h3 className="text-xs font-medium tracking-wide text-slate-600 uppercase">
+      <h3 className="text-xs font-medium tracking-wide text-ink-muted uppercase">
         {title}
       </h3>
       {children}
@@ -56,7 +56,7 @@ function Feed({ claim }: { claim: Claim }) {
               <span className="flex items-baseline gap-2">
                 <time
                   dateTime={entry.at}
-                  className="text-xs text-slate-600 tabular-nums"
+                  className="text-xs text-ink-muted tabular-nums"
                 >
                   {formatClock(entry.at)}
                 </time>
@@ -90,7 +90,7 @@ function AboutField({
 
   if (!field) {
     body = (
-      <p className="text-slate-600">
+      <p className="text-ink-muted">
         Select a field to see what the agent made of it.
       </p>
     )
@@ -168,7 +168,7 @@ function Ask({ claim }: { claim: Claim }) {
 
   return (
     <Section title="Ask about this claim">
-      <p className="flex items-center gap-1 text-xs text-slate-600">
+      <p className="flex items-center gap-1 text-xs text-ink-muted">
         <Icon name="info" />
         Demo replies, not a live AI
       </p>
@@ -193,20 +193,20 @@ function Ask({ claim }: { claim: Claim }) {
           setQuestion('')
         }}
       >
-        <label className="flex flex-col gap-1 text-slate-600">
+        <label className="flex flex-col gap-1 text-ink-muted">
           Your question
           <input
             type="text"
             value={question}
             onChange={(e) => setQuestion(e.target.value)}
             placeholder="For example: why was this flagged?"
-            className="focus-ring h-row rounded-md border border-slate-300 bg-surface px-2 text-slate-900 placeholder:text-slate-500"
+            className="focus-ring h-control rounded-md border border-border-strong bg-surface px-2 text-ink placeholder:text-ink-subtle"
           />
         </label>
         <button
           type="submit"
           disabled={question.trim() === ''}
-          className="focus-ring h-row self-start rounded-md border border-slate-300 bg-surface px-3 hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50"
+          className="focus-ring h-control self-start rounded-md border border-border-strong bg-surface px-3 hover:bg-surface-muted disabled:cursor-not-allowed disabled:opacity-50"
         >
           Ask
         </button>
@@ -218,7 +218,7 @@ function Ask({ claim }: { claim: Claim }) {
 /** The AI panel while a claim is open: what the agent did, about the selected field, and a demo Q and A. */
 export function ReviewAssistant({ review }: { review: Review }) {
   if (review.load.status !== 'ready') {
-    return <p className="text-slate-600">Reading the claim…</p>
+    return <p className="text-ink-muted">Reading the claim…</p>
   }
   const { claim } = review.load
   const selected = claim.fields.find((f) => f.key === review.selectedKey)
@@ -228,7 +228,7 @@ export function ReviewAssistant({ review }: { review: Review }) {
       <Feed claim={claim} />
       <AboutField claim={claim} field={selected} />
       {/* Pushed to the bottom of the panel. */}
-      <div className="mt-auto border-t border-slate-200 pt-3">
+      <div className="mt-auto border-t border-border pt-3">
         <Ask claim={claim} />
       </div>
     </div>

@@ -13,7 +13,7 @@ type StageTabsProps = {
 export function StageTabs({ claim, active, onSelect }: StageTabsProps) {
   return (
     <nav aria-label="Stages">
-      <ul className="flex flex-wrap gap-1 border-b border-slate-200">
+      <ul className="flex flex-wrap gap-1 border-b border-border">
         {STAGES.map((stage) => {
           const { toConfirm, missing } = stageSummary(claim, stage)
           const isActive = stage === active
@@ -25,8 +25,8 @@ export function StageTabs({ claim, active, onSelect }: StageTabsProps) {
                 onClick={() => onSelect(stage)}
                 className={`focus-ring flex items-center gap-2 border-b-4 px-3 py-2 ${
                   isActive
-                    ? 'border-accent font-medium text-slate-900'
-                    : 'border-transparent text-slate-600 hover:bg-slate-100'
+                    ? 'border-accent font-medium text-ink'
+                    : 'border-transparent text-ink-muted hover:bg-surface-muted'
                 }`}
               >
                 {STAGE_LABELS[stage]}

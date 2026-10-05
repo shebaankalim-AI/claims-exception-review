@@ -24,14 +24,14 @@ type QueueScreenProps = {
 
 function Card({ children }: { children: ReactNode }) {
   return (
-    <div className="flex flex-col items-start gap-2 rounded-md border border-slate-200 bg-surface p-6">
+    <div className="flex flex-col items-start gap-2 rounded-md border border-border bg-surface p-6">
       {children}
     </div>
   )
 }
 
 const buttonClass =
-  'focus-ring h-row rounded-md border border-slate-300 bg-surface px-3 hover:bg-slate-100'
+  'focus-ring h-control rounded-md border border-border-strong bg-surface px-3 hover:bg-surface-muted'
 
 function ErrorCard({
   message,
@@ -48,7 +48,7 @@ function ErrorCard({
         </span>
         Couldn&apos;t load the queue
       </p>
-      <p className="text-slate-600">{message}</p>
+      <p className="text-ink-muted">{message}</p>
       <button type="button" onClick={onRetry} className={buttonClass}>
         Retry
       </button>
@@ -71,11 +71,11 @@ function AllClearCard({
         </span>
         All clear
       </p>
-      <p className="text-slate-600">
+      <p className="text-ink-muted">
         Nothing needs you right now. The agent is working on{' '}
         {pipeline.agentWorking}.
       </p>
-      <p className="text-slate-600">Last checked {formatClock(checkedAt)}</p>
+      <p className="text-ink-muted">Last checked {formatClock(checkedAt)}</p>
     </Card>
   )
 }
@@ -169,7 +169,7 @@ export function QueueScreen({
         <h1 id="queue-heading" className="text-xl font-semibold">
           Exceptions
         </h1>
-        <p className="text-slate-600">
+        <p className="text-ink-muted">
           {subtitle}
           {needYou !== null &&
             ` ${needYou} need${needYou === 1 ? 's' : ''} you.`}
@@ -178,7 +178,7 @@ export function QueueScreen({
       {notice && (
         <p
           role="status"
-          className="flex items-center gap-2 rounded-md border border-slate-200 bg-verified-soft p-2"
+          className="flex items-center gap-2 rounded-md border border-border bg-verified-soft p-2"
         >
           <span className="text-verified">
             <Icon name="success" />

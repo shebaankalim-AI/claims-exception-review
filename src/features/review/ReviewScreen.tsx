@@ -62,7 +62,7 @@ export function ReviewScreen({
           {claimId}
         </h1>
         {load.status === 'loading' ? (
-          <p role="status" className="text-slate-600">
+          <p role="status" className="text-ink-muted">
             Loading the claim…
           </p>
         ) : (
@@ -71,7 +71,7 @@ export function ReviewScreen({
             <button
               type="button"
               onClick={review.retry}
-              className="focus-ring h-row rounded-md border border-slate-300 bg-surface px-3 hover:bg-slate-100"
+              className="focus-ring h-control rounded-md border border-border-strong bg-surface px-3 hover:bg-surface-muted"
             >
               Retry
             </button>

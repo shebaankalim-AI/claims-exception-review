@@ -10,7 +10,7 @@ import type { AgeOptionId } from './labels'
 import type { FilterState } from './filterState'
 
 const selectClass =
-  'focus-ring h-row rounded-md border border-slate-300 bg-surface px-2'
+  'focus-ring h-control rounded-md border border-border-strong bg-surface px-2'
 
 type QueueFiltersProps = {
   filters: FilterState
@@ -28,7 +28,7 @@ export function QueueFilters({
 }: QueueFiltersProps) {
   return (
     <div className="flex flex-wrap items-end gap-4">
-      <label className="flex flex-col gap-1 text-slate-600">
+      <label className="flex flex-col gap-1 text-ink-muted">
         Reason
         <select
           className={selectClass}
@@ -49,7 +49,7 @@ export function QueueFilters({
         </select>
       </label>
 
-      <label className="flex flex-col gap-1 text-slate-600">
+      <label className="flex flex-col gap-1 text-ink-muted">
         Line
         <select
           className={selectClass}
@@ -70,7 +70,7 @@ export function QueueFilters({
         </select>
       </label>
 
-      <label className="flex flex-col gap-1 text-slate-600">
+      <label className="flex flex-col gap-1 text-ink-muted">
         Age
         <select
           className={selectClass}
@@ -91,13 +91,13 @@ export function QueueFilters({
         <button
           type="button"
           onClick={onClear}
-          className="focus-ring h-row rounded-md px-2 text-accent hover:underline"
+          className="focus-ring h-control rounded-md px-2 text-accent hover:underline"
         >
           Clear filters
         </button>
       )}
 
-      <p className="ml-auto flex h-row items-center gap-1 text-slate-600">
+      <p className="ml-auto flex h-control items-center gap-1 text-ink-muted">
         <Icon name="sort" />
         Sorted: Oldest first
       </p>

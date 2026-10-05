@@ -3,11 +3,11 @@ import { Dialog } from '@/components/Dialog'
 import type { ClaimId } from '@/domain'
 
 const primary =
-  'focus-ring h-row rounded-md bg-accent px-3 text-on-accent hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50'
+  'focus-ring h-control rounded-md bg-accent px-3 text-on-accent hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50'
 const secondary =
-  'focus-ring h-row rounded-md border border-slate-300 bg-surface px-3 hover:bg-slate-100'
+  'focus-ring h-control rounded-md border border-border-strong bg-surface px-3 hover:bg-surface-muted'
 const field =
-  'focus-ring rounded-md border border-slate-300 bg-surface px-2 py-1 text-slate-900'
+  'focus-ring rounded-md border border-border-strong bg-surface px-2 py-1 text-ink'
 
 const SEND_BACK_REASONS = [
   'Ask the claimant for a document',
@@ -126,7 +126,7 @@ function EscalateForm({
         <select
           value={person}
           onChange={(e) => setPerson(e.target.value)}
-          className={`${field} h-row`}
+          className={`${field} h-control`}
         >
           {PEOPLE.map((option) => (
             <option key={option} value={option}>

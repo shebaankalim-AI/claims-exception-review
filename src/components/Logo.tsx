@@ -12,7 +12,7 @@ export function Logo() {
     <span
       role="img"
       aria-label={PRODUCT_NAME}
-      className="inline-flex items-center gap-2 whitespace-nowrap text-slate-900"
+      className="inline-flex items-center gap-2 whitespace-nowrap text-ink"
     >
       <LogoMark />
       <span aria-hidden="true" className="text-xl font-semibold tracking-logo">
