@@ -24,7 +24,7 @@ src/
 
 The split inside `src/` is by **feature first**, then by layer. A change request almost always names a screen ("the field list on review"), not a layer in isolation, so everything one piece of work touches lives in one folder.
 
-**Status:** Implemented. All eight folders exist. `app/` holds the providers, the screen switching and the app shell in `app/shell/` (a full-height collapsible side nav; a header with the search box, a settings button and an avatar, spanning the main area and the AI panel; and the AI panel below the header). `domain/` holds the types, the review reducer and the repository interface, and `data/mock/` holds the mock repository and fixtures. `lib/` holds the repository hook and the shortcut registry. `features/` has `queue/` and `review/`, each a labelled placeholder screen. `components/` holds the `Icon` wrapper and the logo (`Logo`, `LogoMark`), `styles/` holds the design tokens in `index.css`, and `test/` holds the test setup.
+**Status:** Implemented. All eight folders exist. `app/` holds the providers, the screen switching and the app shell in `app/shell/` (a full-height collapsible side nav; a header with the search box, a settings button and an avatar, spanning the main area and the AI panel; and the AI panel below the header). `domain/` holds the types, the review reducer and the repository interface, and `data/mock/` holds the mock repository and fixtures. `lib/` holds the repository hook and the shortcut registry. `features/` has `queue/`, the exceptions queue with its agent digest, and `review/`, still a labelled placeholder. `components/` holds the `Icon` wrapper and the logo (`Logo`, `LogoMark`), `styles/` holds the design tokens in `index.css`, and `test/` holds the test setup.
 
 ## 3. Dependency rules
 
@@ -79,6 +79,7 @@ No global state library. The app has no cross-screen state that justifies one. I
 // domain/repositories.ts (shape, not final)
 interface ClaimsRepository {
   listExceptions(filter?: ExceptionFilter): Promise<ClaimSummary[]>
+  getPipelineSummary(): Promise<PipelineSummary>
   getClaim(id: ClaimId): Promise<Claim>
   applyAction(id: ClaimId, action: ReviewAction): Promise<Claim>
 }
@@ -88,7 +89,7 @@ interface ClaimsRepository {
 
 **Why an interface and not "just import the JSON":** the screens would otherwise couple to the shape of the fixtures. A real agent platform has latency, partial failures and races, and the interface keeps that design problem visible from day one.
 
-**Status:** Implemented: the interface in `domain/repositories.ts`, the mock in `data/mock/` (12 fictional claims, configurable delay), the context and `useClaimsRepository` hook in `lib/claimsRepository.ts`, and the provider in `app/`. No screen uses it yet.
+**Status:** Implemented: the interface in `domain/repositories.ts`, the mock in `data/mock/` (12 fictional claims, configurable delay), the context and `useClaimsRepository` hook in `lib/claimsRepository.ts`, and the provider in `app/`. The queue uses `listExceptions` and `getPipelineSummary`; the review screen doesn't use the repository yet. `getPipelineSummary` returns received, working and filed-automatically counts only: the needs-review number comes from the queue itself, so it can't disagree with the table. A claim summary holds the line of business, the agent's note and counts derived from the claim's fields, and never a claimant name. Filters (reason, line, minimum age) are implemented in the mock and share one definition, `matchesExceptionFilter`, with the queue screen, which currently filters the list it holds (decision 0006). Time is injectable: the mock repository takes a clock and the UI reads one from `lib/clock.ts`.
 
 ## 7. Design tokens and components
 
@@ -111,7 +112,7 @@ Examiners work in this screen for hours, so frequent actions need to be fast wit
 - No snapshot tests.
 - CI runs lint, typecheck, test and build on every pull request.
 
-**Status:** Test runner and CI are Implemented. Unit tests for `domain/`, the mock repository, the hook and the provider are Implemented. Interaction tests for the shell (navigation, header, screen switching, the AI panel, shortcuts) and unit tests for the shortcut registry are Implemented. Interaction tests for the queue and review features are Planned.
+**Status:** Test runner and CI are Implemented. Unit tests for `domain/`, the mock repository, the hook and the provider are Implemented. Interaction tests for the shell (navigation, header, screen switching, the AI panel, shortcuts) and unit tests for the shortcut registry are Implemented. Interaction tests for the queue (loading, ordering, filters, errors, empty states, the digest and opening a claim) are Implemented. Interaction tests for the review feature are Planned.
 
 ## 10. Planned seam: analytics
 
@@ -146,5 +147,6 @@ A `track(event, props)` function in `lib/` with a no-op implementation behind it
 | Shared components (`components/`)    | Partial     |
 | Shortcut help overlay                | Planned     |
 | Accessibility audit                  | Planned     |
-| Queue and review screens             | Planned     |
+| Exceptions queue screen              | Implemented |
+| Review screen                        | Planned     |
 | Analytics seam                       | Planned     |
