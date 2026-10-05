@@ -1,12 +1,19 @@
-import { useEffect, useState } from 'react'
+import { useContext, useEffect, useRef, useState } from 'react'
 import { ClaimsRepositoryError } from '@/domain'
 import type { ClaimSummary, PipelineSummary } from '@/domain'
 import { useClaimsRepository } from '@/lib/claimsRepository'
+import { ClockContext } from '@/lib/clock'
 
 export type QueueState =
   | { status: 'loading' }
   | { status: 'error'; message: string }
-  | { status: 'ready'; claims: ClaimSummary[]; pipeline: PipelineSummary }
+  | {
+      status: 'ready'
+      claims: ClaimSummary[]
+      pipeline: PipelineSummary
+      /** When the list was last loaded, as an ISO time. */
+      checkedAt: string
+    }
 
 export type Queue = {
   state: QueueState
@@ -25,6 +32,9 @@ type Outcome = Exclude<QueueState, { status: 'loading' }>
  */
 export function useQueue(active: boolean): Queue {
   const repository = useClaimsRepository()
+  // Read through a ref, so a provider that passes a new function each render
+  // can't make the queue load again.
+  const clock = useRef(useContext(ClockContext))
   const [outcome, setOutcome] = useState<Outcome | null>(null)
   const [attempt, setAttempt] = useState(0)
 
@@ -45,7 +55,13 @@ export function useQueue(active: boolean): Queue {
       repository.getPipelineSummary(),
     ]).then(
       ([claims, pipeline]) => {
-        if (!cancelled) setOutcome({ status: 'ready', claims, pipeline })
+        if (!cancelled)
+          setOutcome({
+            status: 'ready',
+            claims,
+            pipeline,
+            checkedAt: clock.current().toISOString(),
+          })
       },
       (error: unknown) => {
         if (cancelled) return

@@ -4,6 +4,7 @@ import { Icon } from '@/components/Icon'
 import { matchesExceptionFilter } from '@/domain'
 import type { ClaimId, PipelineSummary } from '@/domain'
 import { useNow } from '@/lib/clock'
+import { formatClock } from '@/lib/formatClock'
 import { AGE_OPTIONS } from './labels'
 import { PipelineStrip, PipelineStripSkeleton } from './PipelineStrip'
 import { hasActiveFilters, NO_FILTERS } from './filterState'
@@ -16,6 +17,9 @@ import type { Queue } from './useQueue'
 type QueueScreenProps = {
   queue: Queue
   onOpenClaim: (id: ClaimId) => void
+  /** A line about what just happened, such as a claim being sent back. */
+  notice?: string | null
+  onDismissNotice?: () => void
 }
 
 function Card({ children }: { children: ReactNode }) {
@@ -52,7 +56,13 @@ function ErrorCard({
   )
 }
 
-function AllClearCard({ pipeline }: { pipeline: PipelineSummary }) {
+function AllClearCard({
+  pipeline,
+  checkedAt,
+}: {
+  pipeline: PipelineSummary
+  checkedAt: string
+}) {
   return (
     <Card>
       <p className="flex items-center gap-2 text-lg font-semibold">
@@ -65,11 +75,17 @@ function AllClearCard({ pipeline }: { pipeline: PipelineSummary }) {
         Nothing needs you right now. The agent is working on{' '}
         {pipeline.agentWorking}.
       </p>
+      <p className="text-slate-600">Last checked {formatClock(checkedAt)}</p>
     </Card>
   )
 }
 
-export function QueueScreen({ queue, onOpenClaim }: QueueScreenProps) {
+export function QueueScreen({
+  queue,
+  onOpenClaim,
+  notice,
+  onDismissNotice,
+}: QueueScreenProps) {
   const now = useNow()
   const [filters, setFilters] = useState<FilterState>(NO_FILTERS)
   const { state } = queue
@@ -91,7 +107,13 @@ export function QueueScreen({ queue, onOpenClaim }: QueueScreenProps) {
   } else if (state.status === 'error') {
     body = <ErrorCard message={state.message} onRetry={queue.retry} />
   } else if (state.claims.length === 0) {
-    body = <AllClearCard pipeline={state.pipeline} />
+    // The day's numbers stay, with the queue at zero.
+    body = (
+      <>
+        <PipelineStrip pipeline={state.pipeline} needsReview={0} />
+        <AllClearCard pipeline={state.pipeline} checkedAt={state.checkedAt} />
+      </>
+    )
   } else {
     // The same definition of a filter the repository uses, applied to the list we hold.
     const ageMinutes = AGE_OPTIONS.find((o) => o.id === filters.age)?.minutes
@@ -153,6 +175,26 @@ export function QueueScreen({ queue, onOpenClaim }: QueueScreenProps) {
             ` ${needYou} need${needYou === 1 ? 's' : ''} you.`}
         </p>
       </div>
+      {notice && (
+        <p
+          role="status"
+          className="flex items-center gap-2 rounded-md border border-slate-200 bg-verified-soft p-2"
+        >
+          <span className="text-verified">
+            <Icon name="success" />
+          </span>
+          {notice}
+          {onDismissNotice && (
+            <button
+              type="button"
+              onClick={onDismissNotice}
+              className="focus-ring ml-auto rounded-sm px-2 hover:underline"
+            >
+              Dismiss
+            </button>
+          )}
+        </p>
+      )}
       {body}
     </section>
   )
