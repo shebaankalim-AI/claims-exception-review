@@ -4,7 +4,7 @@ An independent concept prototype for an exception-review screen in a claims-auto
 
 ## Getting started
 
-Requires Node.js 20 or newer.
+Requires Node.js 22.22 or newer (24 recommended; see `.nvmrc`).
 
 ```bash
 npm install
