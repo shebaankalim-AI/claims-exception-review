@@ -1,6 +1,7 @@
 import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import App from './App'
+import { openOldestClaim } from '@/test/helpers'
 
 function renderApp() {
   render(<App />)
@@ -9,7 +10,7 @@ function renderApp() {
 
 const queueHeading = () => screen.getByRole('heading', { name: 'Exceptions' })
 const reviewHeading = () =>
-  screen.getByRole('heading', { name: /Review CLM-24-0417/ })
+  screen.getByRole('heading', { name: /Review CLM-24-0388/ })
 
 describe('app shell landmarks', () => {
   it('has a header, navigation, main area and AI panel, plus a skip link', () => {
@@ -49,7 +50,7 @@ describe('switching screens', () => {
     const user = renderApp()
     expect(queueHeading()).toBeInTheDocument()
 
-    await user.click(screen.getByRole('button', { name: 'Open sample claim' }))
+    await openOldestClaim(user)
     expect(reviewHeading()).toBeInTheDocument()
 
     await user.click(
@@ -65,7 +66,7 @@ describe('switching screens', () => {
     expect(
       screen.queryByRole('navigation', { name: 'Breadcrumb' }),
     ).not.toBeInTheDocument()
-    await user.click(screen.getByRole('button', { name: 'Open sample claim' }))
+    await openOldestClaim(user)
     expect(
       screen.queryByRole('navigation', { name: 'Breadcrumb' }),
     ).not.toBeInTheDocument()
@@ -73,7 +74,7 @@ describe('switching screens', () => {
 
   it('goes back to the queue with the shortcut', async () => {
     const user = renderApp()
-    await user.click(screen.getByRole('button', { name: 'Open sample claim' }))
+    await openOldestClaim(user)
     expect(reviewHeading()).toBeInTheDocument()
 
     await user.keyboard('q')
@@ -82,37 +83,58 @@ describe('switching screens', () => {
 })
 
 describe('AI panel', () => {
-  const placeholder = () => screen.getByText(/Placeholder for the AI panel/)
+  // The digest loads with the queue, so wait for it before judging visibility.
+  const digest = () => screen.findByText('Today so far', {}, { timeout: 3000 })
 
   it('collapses and expands from the button', async () => {
     const user = renderApp()
-    expect(placeholder()).toBeVisible()
+    expect(await digest()).toBeVisible()
 
     await user.click(screen.getByRole('button', { name: 'Collapse AI panel' }))
-    expect(placeholder()).not.toBeVisible()
+    expect(screen.getByText('Today so far')).not.toBeVisible()
 
     // The thin strip keeps the toggle.
     await user.click(screen.getByRole('button', { name: 'Expand AI panel' }))
-    expect(placeholder()).toBeVisible()
+    expect(screen.getByText('Today so far')).toBeVisible()
   })
 
   it('collapses and expands from its shortcut', async () => {
     const user = renderApp()
+    await digest()
     await user.keyboard(']')
-    expect(placeholder()).not.toBeVisible()
+    expect(screen.getByText('Today so far')).not.toBeVisible()
     expect(
       screen.getByRole('button', { name: 'Expand AI panel' }),
     ).toHaveAttribute('aria-expanded', 'false')
 
     await user.keyboard(']')
-    expect(placeholder()).toBeVisible()
+    expect(screen.getByText('Today so far')).toBeVisible()
+  })
+
+  it('shows the digest on the queue and the placeholder while a claim is open', async () => {
+    const user = renderApp()
+    await digest()
+    expect(
+      screen.queryByText(/Placeholder for the AI panel/),
+    ).not.toBeInTheDocument()
+
+    await openOldestClaim(user)
+    expect(screen.getByText(/Placeholder for the AI panel/)).toBeVisible()
+    expect(screen.queryByText('Today so far')).not.toBeInTheDocument()
+
+    await user.click(
+      within(screen.getByRole('main')).getByRole('button', {
+        name: 'Exceptions',
+      }),
+    )
+    expect(await digest()).toBeVisible()
   })
 })
 
 describe('shortcuts and the search box', () => {
   it('does not fire shortcuts while typing in the search box', async () => {
     const user = renderApp()
-    await user.click(screen.getByRole('button', { name: 'Open sample claim' }))
+    await openOldestClaim(user)
 
     const search = screen.getByRole('searchbox', { name: 'Search claims' })
     await user.click(search)

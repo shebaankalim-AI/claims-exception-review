@@ -1,6 +1,7 @@
 import { act, render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import App from '../App'
+import { openOldestClaim } from '@/test/helpers'
 
 function renderApp() {
   render(<App />)
@@ -35,7 +36,7 @@ describe('header', () => {
       expect(screen.queryByText(/User menu/)).not.toBeInTheDocument()
     }
     absent()
-    await user.click(screen.getByRole('button', { name: 'Open sample claim' }))
+    await openOldestClaim(user)
     absent()
   })
 

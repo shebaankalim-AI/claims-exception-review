@@ -1,6 +1,7 @@
 import { act, render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import App from '../App'
+import { openOldestClaim } from '@/test/helpers'
 
 function renderApp() {
   render(<App />)
@@ -173,11 +174,11 @@ describe('collapsing the side navigation', () => {
 
   it('does not activate a disabled item when collapsed', async () => {
     const user = renderApp()
-    await user.click(screen.getByRole('button', { name: 'Open sample claim' }))
+    await openOldestClaim(user)
     await user.click(collapseButton())
     await user.click(within(nav()).getByRole('button', { name: 'Reports' }))
     expect(
-      screen.getByRole('heading', { name: /Review CLM-24-0417/ }),
+      screen.getByRole('heading', { name: /Review CLM-24-0388/ }),
     ).toBeInTheDocument()
   })
 })
@@ -257,13 +258,13 @@ describe('items that are not built yet', () => {
 
   it.each(later)('cannot activate %s', async (name) => {
     const user = renderApp()
-    await user.click(screen.getByRole('button', { name: 'Open sample claim' }))
+    await openOldestClaim(user)
     const item = within(nav()).getByRole('button', { name })
     await user.click(item)
     act(() => item.focus())
     await user.keyboard('{Enter}')
     expect(
-      screen.getByRole('heading', { name: /Review CLM-24-0417/ }),
+      screen.getByRole('heading', { name: /Review CLM-24-0388/ }),
     ).toBeInTheDocument()
   })
 })
@@ -279,7 +280,7 @@ describe('the Exceptions item', () => {
 
   it('still goes to the queue with the q shortcut', async () => {
     const user = renderApp()
-    await user.click(screen.getByRole('button', { name: 'Open sample claim' }))
+    await openOldestClaim(user)
     await user.keyboard('q')
     expect(
       screen.getByRole('heading', { name: 'Exceptions' }),
