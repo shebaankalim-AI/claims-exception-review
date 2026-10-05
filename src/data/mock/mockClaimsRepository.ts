@@ -18,20 +18,22 @@ import { MOCK_REFERENCE_TIME } from './referenceTime'
 
 export const mockClaims: readonly Claim[] = [...detailedClaims, ...lightClaims]
 
-// Counts the mock agent reports. They don't have to add up to the queue length:
-// the queue also holds claims from earlier days.
-const MOCK_PIPELINE: PipelineSummary = {
-  receivedToday: 142,
+// What the mock agent reports. "Received today" is not stored: it is worked out
+// from these and the queue (see getPipelineSummary), so the strip always adds up.
+const MOCK_AGENT_COUNTS: AgentCounts = {
   agentWorking: 6,
   filedAutomatically: 127,
 }
+
+type AgentCounts = Pick<PipelineSummary, 'agentWorking' | 'filedAutomatically'>
 
 export type MockRepositoryOptions = {
   /** Artificial latency per call, so loading states have something to show. Zero in tests. */
   delayMs?: number
   /** Defaults to the shared fixtures. Tests may pass their own. */
   claims?: readonly Claim[]
-  pipeline?: PipelineSummary
+  /** The two counts the mock agent reports. Received today is derived from them and the queue. */
+  pipeline?: AgentCounts
   /** The repository's clock. Ages are measured against it. */
   now?: () => Date
 }
@@ -77,7 +79,7 @@ export function createMockClaimsRepository(
   const {
     delayMs = 0,
     claims = mockClaims,
-    pipeline = MOCK_PIPELINE,
+    pipeline = MOCK_AGENT_COUNTS,
     now = () => new Date(),
   } = options
 
@@ -112,7 +114,17 @@ export function createMockClaimsRepository(
 
     async getPipelineSummary() {
       await wait()
-      return { ...pipeline }
+      // Everything that came in today is still with the agent, filed by it, or
+      // waiting for an examiner, so the three add up to the total.
+      const needsReview = [...store.values()].filter(
+        (c) => c.state === 'needs_review',
+      ).length
+      return {
+        receivedToday:
+          pipeline.agentWorking + pipeline.filedAutomatically + needsReview,
+        agentWorking: pipeline.agentWorking,
+        filedAutomatically: pipeline.filedAutomatically,
+      }
     },
 
     async getClaim(id: ClaimId) {

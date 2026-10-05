@@ -10,8 +10,8 @@ const classCodeClaim: Claim = {
   lineOfBusiness: 'workers_comp',
   exceptionReasons: ['class_code_unclear', 'document_missing'],
   agentNote: 'Two class codes plausible; no medical report yet',
-  receivedAt: '2025-02-19T08:12:00.000Z',
-  flaggedAt: '2025-02-19T08:15:00.000Z',
+  receivedAt: '2025-02-27T05:12:00.000Z',
+  flaggedAt: '2025-02-27T05:15:00.000Z',
   assignee: 'Priya Natarajan',
   state: 'needs_review',
   documents: [
@@ -25,7 +25,7 @@ const classCodeClaim: Claim = {
           'FIRST REPORT OF INJURY',
           'Employer: Harbor & Pine Logistics',
           'Employee: Devon Achterberg',
-          'Date of injury: 2025-02-18',
+          'Date of injury: 2025-02-26',
           'Job title: Dispatch clerk / yard assistant',
           'Description: Employee slipped on wet loading dock steps while carrying paperwork to a truck driver and twisted left ankle.',
           'Policy: POL-77-30412',
@@ -62,7 +62,7 @@ const classCodeClaim: Claim = {
           'From: Imogen Fairweather',
           "Subject: RE: RE: Devon's ankle injury",
           '',
-          'He was seen at an urgent care on Feb 18 but we do not have the paperwork yet.',
+          'He was seen at an urgent care on Feb 26 but we do not have the paperwork yet.',
         ].join('\n'),
       ],
     },
@@ -85,14 +85,14 @@ const classCodeClaim: Claim = {
     {
       key: 'date_of_injury',
       label: 'Date of injury',
-      value: '2025-02-18',
+      value: '2025-02-26',
       status: 'verified',
       resolvedBy: 'agent',
       sources: [
         {
           documentId: 'CLM-24-0417-froi',
           page: 1,
-          excerpt: 'Date of injury: 2025-02-18',
+          excerpt: 'Date of injury: 2025-02-26',
         },
       ],
     },
@@ -150,23 +150,23 @@ const classCodeClaim: Claim = {
   ],
   activity: [
     {
-      at: '2025-02-19T08:14:00.000Z',
+      at: '2025-02-27T05:14:00.000Z',
       actor: 'agent',
       action: 'Read 2 documents',
     },
     {
-      at: '2025-02-19T08:15:00.000Z',
+      at: '2025-02-27T05:15:00.000Z',
       actor: 'agent',
       action: 'Extracted 5 fields',
     },
     {
-      at: '2025-02-19T08:15:00.000Z',
+      at: '2025-02-27T05:15:00.000Z',
       actor: 'agent',
       action: 'Flagged Class code',
       detail: 'Two class codes plausible: A-102 (office) and B-340 (warehouse)',
     },
     {
-      at: '2025-02-19T08:15:00.000Z',
+      at: '2025-02-27T05:15:00.000Z',
       actor: 'agent',
       action: 'Flagged Treating physician',
       detail: 'No medical report received yet',
@@ -180,8 +180,8 @@ const duplicateClaim: Claim = {
   lineOfBusiness: 'workers_comp',
   exceptionReasons: ['policy_tier_ambiguous', 'possible_duplicate'],
   agentNote: 'Two tiers fit; may duplicate an earlier claim',
-  receivedAt: '2025-02-24T07:20:00.000Z',
-  flaggedAt: '2025-02-24T07:23:00.000Z',
+  receivedAt: '2025-02-27T07:20:00.000Z',
+  flaggedAt: '2025-02-27T07:23:00.000Z',
   assignee: 'Tomas Ekwueme',
   state: 'needs_review',
   documents: [
@@ -192,7 +192,7 @@ const duplicateClaim: Claim = {
       language: 'en',
       pages: [
         [
-          '*** FAX RECEIVED 2025-02-24 07:12 ***',
+          '*** FAX RECEIVED 2025-02-27 07:12 ***',
           'FROM: Quillfeather Bakery Co. front office',
           'INJURY NOTICE',
           'Name: Rosalind Okonkwo-Bell',
@@ -244,7 +244,7 @@ const duplicateClaim: Claim = {
       value: '2025-02-03',
       status: 'needs_review',
       reason:
-        'Written 02/03/2025, which reads as 3 Feb or 2 Mar; the fax is dated 24 Feb',
+        'Written 02/03/2025, which reads as 3 Feb or 2 Mar; the fax is dated 27 Feb',
       resolvedBy: 'agent',
       sources: [
         {
@@ -309,25 +309,25 @@ const duplicateClaim: Claim = {
   ],
   activity: [
     {
-      at: '2025-02-24T07:22:00.000Z',
+      at: '2025-02-27T07:22:00.000Z',
       actor: 'agent',
       action: 'Read 2 documents',
       detail: 'Page 2 of the fax is faint; read with lower certainty',
     },
     {
-      at: '2025-02-24T07:23:00.000Z',
+      at: '2025-02-27T07:23:00.000Z',
       actor: 'agent',
       action: 'Extracted 5 fields',
     },
     {
-      at: '2025-02-24T07:23:00.000Z',
+      at: '2025-02-27T07:23:00.000Z',
       actor: 'agent',
       action: 'Flagged Policy tier',
       detail:
         'Payroll fits Standard, headcount fits Plus, and the tier box is not ticked',
     },
     {
-      at: '2025-02-24T07:23:00.000Z',
+      at: '2025-02-27T07:23:00.000Z',
       actor: 'agent',
       action: 'Flagged Possible duplicate of',
       detail: 'Same claimant, a similar injury a few weeks earlier',

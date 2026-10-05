@@ -188,6 +188,25 @@ describe('queue summaries', () => {
     }
   })
 
+  it('flags every claim within the last 24 hours, spread over one working day', () => {
+    const hoursAgo = mockClaims.map(
+      (c) =>
+        (MOCK_REFERENCE_TIME.getTime() - new Date(c.flaggedAt).getTime()) /
+        3_600_000,
+    )
+    expect(Math.max(...hoursAgo)).toBeLessThan(24)
+    expect(Math.max(...hoursAgo)).toBeGreaterThan(18)
+    expect(Math.min(...hoursAgo)).toBeLessThan(0.25)
+  })
+
+  it('keeps a claim waiting on a missing document as the oldest', async () => {
+    const [oldest] = [...mockClaims].sort((a, b) =>
+      a.flaggedAt.localeCompare(b.flaggedAt),
+    )
+    expect(oldest.exceptionReasons[0]).toBe('document_missing')
+    expect(oldest.fields.some((f) => f.status === 'missing')).toBe(true)
+  })
+
   it('flags exactly one claim within the last ten minutes', async () => {
     const recent = (await atReference().listExceptions()).filter(
       (c) =>
@@ -241,12 +260,13 @@ describe('new filters', () => {
     ).toEqual(['CLM-24-0413'])
   })
 
+  // Ages at the reference time, in minutes: 1205, 1050, 860, 710, 585, 457,
+  // 370, 252, 166, 95, 40 and 4 (see detailedClaims.ts and lightClaims.ts).
   it.each([
-    [60, 11],
-    [4 * 60, 10],
-    [24 * 60, 8],
-    [30 * 24 * 60, 1],
-    [90 * 24 * 60, 0],
+    [60, 10],
+    [4 * 60, 8],
+    [10 * 60, 4],
+    [24 * 60, 0],
   ])(
     'keeps claims at least %i minutes old: %i of 12',
     async (minAgeMinutes, count) => {
@@ -255,32 +275,50 @@ describe('new filters', () => {
   )
 
   it('combines filters', async () => {
+    // Primary class-code claims are 0402 (17 h 30), 0417 (9 h 45) and 0436 (1 h 35).
     expect(
       (
-        await ids({ reason: 'class_code_unclear', minAgeMinutes: 24 * 60 })
+        await ids({ reason: 'class_code_unclear', minAgeMinutes: 10 * 60 })
       ).sort(),
-    ).toEqual(['CLM-24-0402', 'CLM-24-0417'])
+    ).toEqual(['CLM-24-0402'])
   })
 })
 
 describe('getPipelineSummary', () => {
-  it('returns the mock counts, without a needs-review number', async () => {
+  it('returns the mock counts, with received today derived and no needs-review number', async () => {
     expect(await repo().getPipelineSummary()).toEqual({
-      receivedToday: 142,
+      receivedToday: 145, // 6 working + 127 filed + 12 waiting for an examiner
       agentWorking: 6,
       filedAutomatically: 127,
     })
   })
 
-  it('accepts other counts for a test', async () => {
-    const pipeline = {
-      receivedToday: 1,
+  it('always adds up: received = working + filed + the queue', async () => {
+    const r = repo()
+    const sum = async () => {
+      const p = await r.getPipelineSummary()
+      const queue = await r.listExceptions({ state: 'needs_review' })
+      expect(p.receivedToday).toBe(
+        p.agentWorking + p.filedAutomatically + queue.length,
+      )
+      return queue.length
+    }
+    expect(await sum()).toBe(12)
+
+    await r.applyAction(DETAILED, { type: 'escalate' })
+    expect(await sum()).toBe(11)
+    expect((await r.getPipelineSummary()).receivedToday).toBe(144)
+  })
+
+  it('accepts other agent counts for a test', async () => {
+    const r = createMockClaimsRepository({
+      pipeline: { agentWorking: 2, filedAutomatically: 3 },
+    })
+    expect(await r.getPipelineSummary()).toEqual({
+      receivedToday: 17, // 2 + 3 + 12
       agentWorking: 2,
       filedAutomatically: 3,
-    }
-    expect(
-      await createMockClaimsRepository({ pipeline }).getPipelineSummary(),
-    ).toEqual(pipeline)
+    })
   })
 })
 
