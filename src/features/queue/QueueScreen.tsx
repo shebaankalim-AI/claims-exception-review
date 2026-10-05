@@ -2,7 +2,7 @@ import { useState } from 'react'
 import type { ReactNode } from 'react'
 import { Icon } from '@/components/Icon'
 import { matchesExceptionFilter } from '@/domain'
-import type { ClaimId, ClaimSummary, PipelineSummary } from '@/domain'
+import type { ClaimId, PipelineSummary } from '@/domain'
 import { useNow } from '@/lib/clock'
 import { AGE_OPTIONS } from './labels'
 import { PipelineStrip, PipelineStripSkeleton } from './PipelineStrip'
@@ -10,17 +10,12 @@ import { hasActiveFilters, NO_FILTERS } from './filterState'
 import type { FilterState } from './filterState'
 import { QueueFilters } from './QueueFilters'
 import { QueueTable, QueueTableSkeleton } from './QueueTable'
+import { oldestFirst } from './sortClaims'
 import type { Queue } from './useQueue'
 
 type QueueScreenProps = {
   queue: Queue
   onOpenClaim: (id: ClaimId) => void
-}
-
-function oldestFirst(claims: ClaimSummary[]): ClaimSummary[] {
-  return [...claims].sort(
-    (a, b) => new Date(a.flaggedAt).getTime() - new Date(b.flaggedAt).getTime(),
-  )
 }
 
 function Card({ children }: { children: ReactNode }) {
