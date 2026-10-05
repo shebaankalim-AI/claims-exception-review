@@ -28,6 +28,15 @@ function Frame({
   )
 }
 
+// The title is already shown above the text, so a first line that only repeats it
+// ("FIRST REPORT FORM") is dropped rather than shown twice.
+function withoutTitleLine(page: string, title: string): string {
+  const [first, ...rest] = page.split('\n')
+  return first.trim().toLowerCase() === title.trim().toLowerCase()
+    ? rest.join('\n')
+    : page
+}
+
 export function SourceViewer({ claim, field }: SourceViewerProps) {
   if (!field) {
     return (
@@ -56,8 +65,8 @@ export function SourceViewer({ claim, field }: SourceViewerProps) {
 
   const source = field.sources[0]
   const document = claim.documents.find((d) => d.id === source?.documentId)
-  const page = document?.pages[(source?.page ?? 1) - 1]
-  if (!source || !document || page === undefined) {
+  const rawPage = document?.pages[(source?.page ?? 1) - 1]
+  if (!source || !document || rawPage === undefined) {
     return (
       <Frame title="Source">
         <p className="text-slate-600">No source is recorded for this value.</p>
@@ -65,6 +74,7 @@ export function SourceViewer({ claim, field }: SourceViewerProps) {
     )
   }
 
+  const page = withoutTitleLine(rawPage, document.title)
   const at = page.indexOf(source.excerpt)
   return (
     <Frame title={document.title}>

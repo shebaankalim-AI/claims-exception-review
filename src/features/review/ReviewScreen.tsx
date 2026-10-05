@@ -114,7 +114,7 @@ export function ReviewScreen({
           active={review.stage}
           onSelect={review.selectStage}
         />
-        <div className="grid grid-cols-5 items-start gap-4">
+        <div className="grid grid-cols-5 gap-4">
           <div className="col-span-3">
             <FieldList
               claim={claim}
@@ -132,7 +132,10 @@ export function ReviewScreen({
             />
           </div>
           <div className="col-span-2">
-            <SourceViewer claim={claim} field={selected} />
+            {/* Sticks to the top of the scrolling area while the field list moves. */}
+            <div className="sticky top-0">
+              <SourceViewer claim={claim} field={selected} />
+            </div>
           </div>
         </div>
       </section>

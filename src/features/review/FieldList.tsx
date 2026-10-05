@@ -93,11 +93,11 @@ export function FieldList({
               type="button"
               aria-pressed={selected}
               onClick={() => onSelect(field.key)}
-              className="focus-ring grid w-full grid-cols-4 gap-3 px-3 py-2 text-left"
+              className="focus-ring grid w-full grid-cols-[var(--spacing-col-label)_minmax(0,1fr)_var(--spacing-col-state)_var(--spacing-col-source)] gap-3 px-3 py-2 text-left"
             >
-              <span className="font-medium">{field.label}</span>
+              <span className="font-medium break-words">{field.label}</span>
               <Value field={field} />
-              <span className="flex flex-col">
+              <span className="flex flex-col whitespace-nowrap">
                 <StateLabel
                   icon={FIELD_STATUS_ICON[field.status]}
                   tone={FIELD_STATUS_TONE[field.status]}
@@ -105,7 +105,7 @@ export function FieldList({
                 />
                 <Provenance field={field} examinerName={examinerName} />
               </span>
-              <span className="text-slate-600">
+              <span className="block min-w-0 truncate text-slate-600">
                 {field.status === 'missing'
                   ? 'Not received'
                   : sourceTitle(claim, field)}
