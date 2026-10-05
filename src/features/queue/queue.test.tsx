@@ -75,8 +75,9 @@ const CLAIMS: ClaimSummary[] = [
   }),
 ]
 
+// 6 working + 127 filed + the 4 claims above waiting for an examiner.
 const PIPELINE: PipelineSummary = {
-  receivedToday: 142,
+  receivedToday: 137,
   agentWorking: 6,
   filedAutomatically: 127,
 }
@@ -286,7 +287,11 @@ describe('the pipeline strip and the count', () => {
     await within(main()).findByRole('table')
 
     const strip = within(main()).getAllByRole('definition')
-    expect(strip.map((d) => d.textContent)).toEqual(['142', '6', '127', '4'])
+    expect(strip.map((d) => d.textContent)).toEqual(['137', '6', '127', '4'])
+    const [received, working, filed, needsReview] = strip.map((d) =>
+      Number(d.textContent),
+    )
+    expect(received).toBe(working + filed + needsReview)
     expect(within(main()).getByText('Needs review')).toBeInTheDocument()
     expect(within(main()).getByText('Received today')).toBeInTheDocument()
     expect(within(main()).getByText('Agent working')).toBeInTheDocument()
@@ -317,7 +322,7 @@ describe('the pipeline strip and the count', () => {
       within(main())
         .getAllByRole('definition')
         .map((d) => d.textContent),
-    ).toEqual(['142', '6', '127', '4'])
+    ).toEqual(['137', '6', '127', '4'])
   })
 })
 
@@ -503,7 +508,7 @@ describe('the agent digest', () => {
     await within(main()).findByRole('table')
     expect(
       within(digest()).getByText(
-        /142 claims received\. The agent filed 127 on its own and is working on 6\. 4 need you\./,
+        /137 claims received\. The agent filed 127 on its own and is working on 6\. 4 need you\./,
       ),
     ).toBeInTheDocument()
   })
