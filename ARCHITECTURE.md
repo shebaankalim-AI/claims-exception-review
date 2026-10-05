@@ -24,7 +24,7 @@ src/
 
 The split inside `src/` is by **feature first**, then by layer. A change request almost always names a screen ("the field list on review"), not a layer in isolation, so everything one piece of work touches lives in one folder.
 
-**Status:** Implemented. All eight folders exist. `app/` holds the providers, the screen switching and the app shell in `app/shell/` (collapsible side nav, header, AI panel). `domain/` holds the types, the review reducer and the repository interface, and `data/mock/` holds the mock repository and fixtures. `lib/` holds the repository hook and the shortcut registry. `features/` has `queue/` and `review/`, each a labelled placeholder screen. `components/` holds the `Icon` wrapper and the logo (`Logo`, `LogoMark`), `styles/` holds the design tokens in `index.css`, and `test/` holds the test setup.
+**Status:** Implemented. All eight folders exist. `app/` holds the providers, the screen switching and the app shell in `app/shell/` (a full-height collapsible side nav; a header with the search box, a settings button and an avatar, spanning the main area and the AI panel; and the AI panel below the header). `domain/` holds the types, the review reducer and the repository interface, and `data/mock/` holds the mock repository and fixtures. `lib/` holds the repository hook and the shortcut registry. `features/` has `queue/` and `review/`, each a labelled placeholder screen. `components/` holds the `Icon` wrapper and the logo (`Logo`, `LogoMark`), `styles/` holds the design tokens in `index.css`, and `test/` holds the test setup.
 
 ## 3. Dependency rules
 
@@ -102,7 +102,7 @@ Shared primitives go in `components/` once they are used by two features, not be
 
 Examiners work in this screen for hours, so frequent actions need to be fast without a mouse. Shortcuts go through a single registry in `lib/` so they are listed in one help overlay and can't collide. State is never colour alone: every state has an icon and a text label.
 
-**Status:** The shortcut registry is Implemented in `lib/shortcuts.ts`, with one document-level listener in `ShortcutProvider`. It ignores keys typed into text fields, modified keys and key repeat, and rejects two shortcuts on one key. Four shortcuts are registered (collapse the side nav, toggle the AI panel, go to the queue, focus search). The shell has landmarks, a skip link and visible focus rings. The help overlay that lists shortcuts, and the accessibility audit (contrast, screen reader pass), are Planned.
+**Status:** The shortcut registry is Implemented in `lib/shortcuts.ts`, with one document-level listener in `ShortcutProvider`. It ignores keys typed into text fields, modified keys and key repeat, and rejects two shortcuts on one key. Four shortcuts are registered (collapse the side nav, toggle the AI panel, go to the queue, focus search). The shell has landmarks, a skip link and visible focus rings. Features that are not built yet are dimmed and `aria-disabled`, stay focusable, and say "Later" in a tooltip and an accessible description instead of visible text. The help overlay that lists shortcuts, and the accessibility audit (contrast, screen reader pass), are Planned.
 
 ## 9. Testing
 
@@ -111,7 +111,7 @@ Examiners work in this screen for hours, so frequent actions need to be fast wit
 - No snapshot tests.
 - CI runs lint, typecheck, test and build on every pull request.
 
-**Status:** Test runner and CI are Implemented. Unit tests for `domain/`, the mock repository, the hook and the provider are Implemented. Interaction tests for the shell (navigation, screen switching, the AI panel, shortcuts) and unit tests for the shortcut registry are Implemented. Interaction tests for the queue and review features are Planned.
+**Status:** Test runner and CI are Implemented. Unit tests for `domain/`, the mock repository, the hook and the provider are Implemented. Interaction tests for the shell (navigation, header, screen switching, the AI panel, shortcuts) and unit tests for the shortcut registry are Implemented. Interaction tests for the queue and review features are Planned.
 
 ## 10. Planned seam: analytics
 
