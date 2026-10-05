@@ -24,7 +24,7 @@ src/
 
 The split inside `src/` is by **feature first**, then by layer. A change request almost always names a screen ("the field list on review"), not a layer in isolation, so everything one piece of work touches lives in one folder.
 
-**Status:** Planned for `app/` and `domain/`. The scaffold currently has `components/`, `data/`, `features/`, `lib/`, `styles/` and `test/`. The first four are empty, `styles/` holds `index.css`, and `test/` holds the test setup. `app/` and `domain/` are added in Phase 1.
+**Status:** Implemented. All eight folders exist. `app/` holds the app shell and the provider, `domain/` holds the types, the review reducer and the repository interface, `data/mock/` holds the mock repository and fixtures, and `lib/` holds the repository hook. `features/` and `components/` are still empty, `styles/` holds `index.css`, and `test/` holds the test setup.
 
 ## 3. Dependency rules
 
@@ -37,12 +37,13 @@ app  ──▶  features  ──▶  components, lib, domain
 - `domain` imports nothing else from `src/` and never imports React.
 - `data` imports `domain` only.
 - `components` imports nothing from `features` or `data`.
+- `lib` imports `domain` types only (`import type`), never `data`, `features` or `components`.
 - `features` import `domain`, `components` and `lib`. They **never import `data`**. They receive a repository through React context.
 - `app` is the only layer allowed to import `data`. It decides which repository is real.
 
 **Why:** these rules are what make "swap the mock for a real API without touching a screen" true in practice, not only on a diagram. They also keep `domain` testable with plain function calls, with no DOM and no mocked network.
 
-**Enforcement:** Planned. Phase 1 adds ESLint `no-restricted-imports` zones so a violation fails `npm run lint` and CI. Until it lands, code review is the only guard, and this document says so on purpose.
+**Enforcement:** Implemented. ESLint `no-restricted-imports` zones in `eslint.config.js` make a violation fail `npm run lint` and CI. Cross-folder imports use the `@/` alias (for example `@/domain`) so the zones can match them. Relative paths that pass through a forbidden folder are caught too.
 
 ## 4. The claim state model
 
@@ -59,7 +60,7 @@ The central idea of the design is that a claim, and each field on it, is always 
 
 The transitions live in a pure reducer, so the rules can be tested exhaustively without rendering anything.
 
-**Status:** Planned (Phase 1).
+**Status:** Implemented in `domain/review.ts` with table-driven tests. Holding it with `useReducer` in the review feature is Planned (see §5).
 
 ## 5. State management
 
@@ -86,7 +87,7 @@ interface ClaimsRepository {
 
 **Why an interface and not "just import the JSON":** the screens would otherwise couple to the shape of the fixtures. A real agent platform has latency, partial failures and races, and the interface keeps that design problem visible from day one.
 
-**Status:** Planned.
+**Status:** Implemented: the interface in `domain/repositories.ts`, the mock in `data/mock/` (12 fictional claims, configurable delay), the context and `useClaimsRepository` hook in `lib/claimsRepository.ts`, and the provider in `app/`. No screen uses it yet.
 
 ## 7. Design tokens and components
 
@@ -109,7 +110,7 @@ Examiners work in this screen for hours, so frequent actions need to be fast wit
 - No snapshot tests.
 - CI runs lint, typecheck, test and build on every pull request.
 
-**Status:** Test runner and CI are Implemented. Tests beyond one smoke test are Planned.
+**Status:** Test runner and CI are Implemented. Unit tests for `domain/`, the mock repository, the hook and the provider are Implemented. Feature interaction tests are Planned.
 
 ## 10. Planned seam: analytics
 
@@ -134,10 +135,10 @@ A `track(event, props)` function in `lib/` with a no-op implementation behind it
 | Vite, React, TypeScript, Tailwind      | Implemented |
 | Lint, format, typecheck, test, build   | Implemented |
 | CI on pull requests                    | Implemented |
-| `app/` and `domain/` folders           | Planned     |
-| Dependency rules enforced by ESLint    | Planned     |
-| Claim state machine                    | Planned     |
-| Repository interface and mock data     | Planned     |
+| `app/` and `domain/` folders           | Implemented |
+| Dependency rules enforced by ESLint    | Implemented |
+| Claim state machine                    | Implemented |
+| Repository interface and mock data     | Implemented |
 | Design tokens and components           | Planned     |
 | Keyboard registry and accessibility    | Planned     |
 | Analytics seam                         | Planned     |
