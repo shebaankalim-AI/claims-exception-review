@@ -1,0 +1,58 @@
+import { STAGES } from '@/domain'
+import type { Claim, Stage } from '@/domain'
+import { stageSummary } from './claimRules'
+import { FIELD_STATUS_ICON, FIELD_STATUS_TONE, STAGE_LABELS } from './labels'
+import { StateLabel } from './StateLabel'
+
+type StageTabsProps = {
+  claim: Claim
+  active: Stage
+  onSelect: (stage: Stage) => void
+}
+
+export function StageTabs({ claim, active, onSelect }: StageTabsProps) {
+  return (
+    <nav aria-label="Stages">
+      <ul className="flex flex-wrap gap-1 border-b border-slate-200">
+        {STAGES.map((stage) => {
+          const { toConfirm, missing } = stageSummary(claim, stage)
+          const isActive = stage === active
+          return (
+            <li key={stage}>
+              <button
+                type="button"
+                aria-pressed={isActive}
+                onClick={() => onSelect(stage)}
+                className={`focus-ring flex items-center gap-2 border-b-4 px-3 py-2 ${
+                  isActive
+                    ? 'border-accent font-medium text-slate-900'
+                    : 'border-transparent text-slate-600 hover:bg-slate-100'
+                }`}
+              >
+                {STAGE_LABELS[stage]}
+                {toConfirm > 0 && (
+                  <span className="text-xs">
+                    <StateLabel
+                      icon={FIELD_STATUS_ICON.needs_review}
+                      tone={FIELD_STATUS_TONE.needs_review}
+                      label={`${toConfirm} to confirm`}
+                    />
+                  </span>
+                )}
+                {missing > 0 && (
+                  <span className="text-xs">
+                    <StateLabel
+                      icon={FIELD_STATUS_ICON.missing}
+                      tone={FIELD_STATUS_TONE.missing}
+                      label={`${missing} missing`}
+                    />
+                  </span>
+                )}
+              </button>
+            </li>
+          )
+        })}
+      </ul>
+    </nav>
+  )
+}
