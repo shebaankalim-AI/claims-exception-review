@@ -1,3 +1,5 @@
+import { buttonPrimary, buttonSecondary } from '@/components/controls'
+import { Badge } from '@/components/Badge'
 import { useId } from 'react'
 import type { ReactNode } from 'react'
 import { Icon } from '@/components/Icon'
@@ -12,7 +14,6 @@ import {
   isUnresolved,
 } from './claimRules'
 import { CLAIM_STATE_ICON, CLAIM_STATE_TONE } from './labels'
-import { StateLabel } from './StateLabel'
 
 type ActionBarProps = {
   claim: Claim
@@ -30,10 +31,27 @@ type ActionBarProps = {
   onOpenClaim: (id: ClaimId) => void
 }
 
-const secondary =
-  'focus-ring h-control rounded-md border border-border-strong bg-surface px-3 hover:bg-surface-muted'
-const primary =
-  'focus-ring h-control rounded-md bg-accent px-3 text-on-accent hover:opacity-90'
+const secondary = buttonSecondary
+const primary = buttonPrimary
+
+type MessageTone = 'info' | 'success' | 'error' | 'needs-review'
+
+// A soft banner per kind of message. The icon and the words carry the meaning.
+const MESSAGE_CLASS: Record<MessageTone, { banner: string; icon: string }> = {
+  info: { banner: 'border-accent-border bg-accent-soft', icon: 'text-accent' },
+  success: {
+    banner: 'border-verified-border bg-verified-soft',
+    icon: 'text-verified',
+  },
+  error: {
+    banner: 'border-missing-border bg-missing-soft',
+    icon: 'text-missing',
+  },
+  'needs-review': {
+    banner: 'border-needs-review-border bg-needs-review-soft',
+    icon: 'text-needs-review',
+  },
+}
 
 function Message({
   id,
@@ -44,13 +62,17 @@ function Message({
 }: {
   id: string
   icon: IconName
-  tone: string
+  tone: MessageTone
   role?: 'status' | 'alert'
   children: ReactNode
 }) {
   return (
-    <p id={id} role={role} className="flex flex-1 items-center gap-2">
-      <span className={tone}>
+    <p
+      id={id}
+      role={role}
+      className={`flex min-w-0 flex-1 items-center gap-2 rounded-md border px-3 py-2 text-sm text-ink ${MESSAGE_CLASS[tone].banner}`}
+    >
+      <span className={`shrink-0 ${MESSAGE_CLASS[tone].icon}`}>
         <Icon name={icon} size="lg" />
       </span>
       {children}
@@ -79,7 +101,7 @@ export function ActionBar({
 
   if (errorMessage) {
     message = (
-      <Message id={messageId} icon="error" tone="text-missing" role="alert">
+      <Message id={messageId} icon="error" tone="error" role="alert">
         {errorMessage}
       </Message>
     )
@@ -88,11 +110,11 @@ export function ActionBar({
   if (claim.state === 'needs_review') {
     const ready = unresolved === 0
     message ??= ready ? (
-      <Message id={messageId} icon="info" tone="text-edited">
+      <Message id={messageId} icon="info" tone="info">
         All flagged fields are resolved. Approve is now available.
       </Message>
     ) : (
-      <Message id={messageId} icon="stateNeedsReview" tone="text-needs-review">
+      <Message id={messageId} icon="stateNeedsReview" tone="needs-review">
         {unresolved}{' '}
         {unresolved === 1 ? 'field still needs' : 'fields still need'} you
       </Message>
@@ -105,7 +127,7 @@ export function ActionBar({
           aria-disabled={!ready || busy}
           aria-describedby={messageId}
           onClick={!ready || busy ? undefined : onApprove}
-          className={`${primary} ${!ready || busy ? 'cursor-not-allowed opacity-50' : ''}`}
+          className={primary}
         >
           Approve
         </button>
@@ -121,14 +143,14 @@ export function ActionBar({
     const time = approvedTime(claim)
     if (filingFailed) {
       message ??= (
-        <Message id={messageId} icon="error" tone="text-missing" role="alert">
+        <Message id={messageId} icon="error" tone="error" role="alert">
           Couldn&apos;t file. The system of record didn&apos;t respond. Nothing
           was changed, and your approval is saved.
         </Message>
       )
     } else {
       message ??= (
-        <Message id={messageId} icon="stateApproved" tone="text-verified">
+        <Message id={messageId} icon="stateApproved" tone="info">
           Approved by you at {time ? formatClock(time) : '–'}. Not filed yet:
           the system of record hasn&apos;t changed.
         </Message>
@@ -140,7 +162,7 @@ export function ActionBar({
           type="button"
           aria-disabled={busy}
           onClick={busy ? undefined : onFile}
-          className={`${primary} ${busy ? 'cursor-not-allowed opacity-50' : ''}`}
+          className={primary}
         >
           {filingFailed ? 'Try again' : 'File claim'}
         </button>
@@ -152,7 +174,7 @@ export function ActionBar({
   } else if (claim.state === 'filed') {
     const time = filedTime(claim)
     message ??= (
-      <Message id={messageId} icon="success" tone="text-verified">
+      <Message id={messageId} icon="success" tone="success">
         Filed in the system of record at {time ? formatClock(time, true) : '–'}.
         Reference {filingReference(claim)}.
       </Message>
@@ -174,11 +196,7 @@ export function ActionBar({
     )
   } else {
     message ??= (
-      <Message
-        id={messageId}
-        icon={CLAIM_STATE_ICON[claim.state]}
-        tone={CLAIM_STATE_TONE[claim.state]}
-      >
+      <Message id={messageId} icon={CLAIM_STATE_ICON[claim.state]} tone="info">
         This claim is {CLAIM_STATE_LABELS[claim.state].toLowerCase()}.
       </Message>
     )
@@ -192,18 +210,18 @@ export function ActionBar({
   return (
     <section
       aria-label="Claim actions"
-      className="flex shrink-0 items-center gap-4 border-t border-border bg-surface px-6 py-3"
+      className="relative flex shrink-0 items-center gap-4 border-t border-border bg-surface p-4 shadow-raised"
     >
-      <div className="flex flex-col">
-        <span className="font-medium tabular-nums">{claim.id}</span>
-        <StateLabel
+      <div className="flex shrink-0 flex-col items-start gap-1">
+        <span className="font-semibold tabular-nums">{claim.id}</span>
+        <Badge
           icon={CLAIM_STATE_ICON[claim.state]}
           tone={CLAIM_STATE_TONE[claim.state]}
           label={CLAIM_STATE_LABELS[claim.state]}
         />
       </div>
       {message}
-      <div className="flex items-center gap-2">{buttons}</div>
+      <div className="flex shrink-0 items-center gap-2">{buttons}</div>
     </section>
   )
 }

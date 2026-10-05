@@ -1,5 +1,8 @@
 import { useState } from 'react'
 import type { ReactNode } from 'react'
+import { Badge } from '@/components/Badge'
+import type { BadgeTone } from '@/components/Badge'
+import { buttonSecondary, input, sectionTitle } from '@/components/controls'
 import { Icon } from '@/components/Icon'
 import type { IconName } from '@/components/Icon'
 import type { ActivityEntry, ActivityOutcome, Claim, Field } from '@/domain'
@@ -7,25 +10,20 @@ import { formatClock } from '@/lib/formatClock'
 import { FIELD_STATUS_LABELS } from '@/lib/labels'
 import { cannedReply } from './cannedReplies'
 import { FIELD_STATUS_ICON, FIELD_STATUS_TONE } from './labels'
-import { StateLabel } from './StateLabel'
 import type { Review } from './useReview'
 
 const OUTCOMES: Record<
   ActivityOutcome,
-  { icon: IconName; tone: string; label: string }
+  { icon: IconName; tone: BadgeTone; label: string }
 > = {
-  completed: {
-    icon: 'resultCompleted',
-    tone: 'text-ink-muted',
-    label: 'Completed',
-  },
-  verified: { icon: 'stateVerified', tone: 'text-verified', label: 'Verified' },
+  completed: { icon: 'resultCompleted', tone: 'neutral', label: 'Completed' },
+  verified: { icon: 'stateVerified', tone: 'verified', label: 'Verified' },
   needs_review: {
     icon: 'stateNeedsReview',
-    tone: 'text-needs-review',
+    tone: 'needs-review',
     label: 'Needs review',
   },
-  waiting: { icon: 'resultWaiting', tone: 'text-edited', label: 'Waiting' },
+  waiting: { icon: 'resultWaiting', tone: 'edited', label: 'Waiting' },
 }
 
 // Entries written before outcomes existed read well enough from their wording.
@@ -35,10 +33,8 @@ const outcomeOf = (entry: ActivityEntry): ActivityOutcome =>
 
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
-    <section className="flex flex-col gap-2">
-      <h3 className="text-xs font-medium tracking-wide text-ink-muted uppercase">
-        {title}
-      </h3>
+    <section className="flex flex-col gap-3">
+      <h3 className={sectionTitle}>{title}</h3>
       {children}
     </section>
   )
@@ -48,27 +44,40 @@ function Feed({ claim }: { claim: Claim }) {
   const entries = claim.activity.filter((a) => a.actor === 'agent')
   return (
     <Section title="What the agent did">
-      <ol className="flex flex-col gap-2">
+      {/* A small timeline: a dot per step, joined by a line. */}
+      <ol className="flex flex-col">
         {entries.map((entry, index) => {
           const outcome = OUTCOMES[outcomeOf(entry)]
+          const last = index === entries.length - 1
           return (
-            <li key={index} className="flex flex-col">
-              <span className="flex items-baseline gap-2">
-                <time
-                  dateTime={entry.at}
-                  className="text-xs text-ink-muted tabular-nums"
-                >
-                  {formatClock(entry.at)}
-                </time>
-                <span>{entry.action}</span>
+            <li key={index} className="relative flex gap-3 pb-4 last:pb-0">
+              <span
+                aria-hidden="true"
+                className="relative flex w-3 justify-center"
+              >
+                <span className="mt-1.5 size-2 rounded-full bg-border-strong" />
+                {!last && (
+                  <span className="absolute top-4 bottom-0 w-px bg-border" />
+                )}
               </span>
-              <span className="text-xs">
-                <StateLabel
-                  icon={outcome.icon}
-                  tone={outcome.tone}
-                  label={outcome.label}
-                />
-              </span>
+              <div className="flex min-w-0 flex-1 flex-col gap-1">
+                <span className="flex items-baseline gap-2">
+                  <time
+                    dateTime={entry.at}
+                    className="text-xs text-ink-muted tabular-nums"
+                  >
+                    {formatClock(entry.at)}
+                  </time>
+                  <span className="text-sm">{entry.action}</span>
+                </span>
+                <span>
+                  <Badge
+                    icon={outcome.icon}
+                    tone={outcome.tone}
+                    label={outcome.label}
+                  />
+                </span>
+              </div>
             </li>
           )
         })}
@@ -110,11 +119,16 @@ function AboutField({
     body = (
       <>
         <p>The agent flagged this because: {field.reason}.</p>
-        <p>It compared:</p>
-        <ul className="flex flex-col gap-1">
+        <p className="text-ink-muted">It compared:</p>
+        <ul className="flex flex-col gap-2">
           {field.sources.map((source, i) => (
-            <li key={i}>
-              <span className="font-medium">{title(source.documentId)}:</span>{' '}
+            <li
+              key={i}
+              className="rounded-sm border border-border bg-surface-muted px-3 py-2 text-sm"
+            >
+              <span className="block text-xs font-medium text-ink-muted">
+                {title(source.documentId)}
+              </span>
               &ldquo;{source.excerpt}&rdquo;
             </li>
           ))}
@@ -146,16 +160,16 @@ function AboutField({
   return (
     <Section title="About this field">
       {field && (
-        <p className="flex flex-wrap items-center gap-2 font-medium">
+        <p className="flex flex-wrap items-center gap-2 font-semibold">
           {field.label}
-          <StateLabel
+          <Badge
             icon={FIELD_STATUS_ICON[field.status]}
             tone={FIELD_STATUS_TONE[field.status]}
             label={FIELD_STATUS_LABELS[field.status]}
           />
         </p>
       )}
-      <div className="flex flex-col gap-2">{body}</div>
+      <div className="flex flex-col gap-2 text-sm leading-relaxed">{body}</div>
     </Section>
   )
 }
@@ -172,16 +186,20 @@ function Ask({ claim }: { claim: Claim }) {
         <Icon name="info" />
         Demo replies, not a live AI
       </p>
-      <ul aria-live="polite" className="flex flex-col gap-2">
+      <ul aria-live="polite" className="flex flex-col gap-3">
         {thread.map((turn, i) => (
-          <li key={i} className="flex flex-col gap-1">
-            <span className="font-medium">You: {turn.question}</span>
-            <span>{turn.answer}</span>
+          <li key={i} className="flex flex-col gap-1 text-sm">
+            <span className="self-end rounded-md bg-accent-soft px-3 py-2 text-ink">
+              {turn.question}
+            </span>
+            <span className="rounded-md border border-border bg-surface-muted px-3 py-2">
+              {turn.answer}
+            </span>
           </li>
         ))}
       </ul>
       <form
-        className="flex flex-col gap-2"
+        className="flex items-end gap-2"
         onSubmit={(e) => {
           e.preventDefault()
           const asked = question.trim()
@@ -193,20 +211,20 @@ function Ask({ claim }: { claim: Claim }) {
           setQuestion('')
         }}
       >
-        <label className="flex flex-col gap-1 text-ink-muted">
+        <label className="flex min-w-0 flex-1 flex-col gap-1 text-xs font-medium text-ink-muted">
           Your question
           <input
             type="text"
             value={question}
             onChange={(e) => setQuestion(e.target.value)}
             placeholder="For example: why was this flagged?"
-            className="focus-ring h-control rounded-md border border-border-strong bg-surface px-2 text-ink placeholder:text-ink-subtle"
+            className={`${input} text-base font-normal`}
           />
         </label>
         <button
           type="submit"
           disabled={question.trim() === ''}
-          className="focus-ring h-control self-start rounded-md border border-border-strong bg-surface px-3 hover:bg-surface-muted disabled:cursor-not-allowed disabled:opacity-50"
+          className={buttonSecondary}
         >
           Ask
         </button>
@@ -224,11 +242,13 @@ export function ReviewAssistant({ review }: { review: Review }) {
   const selected = claim.fields.find((f) => f.key === review.selectedKey)
 
   return (
-    <div className="flex min-h-full flex-col gap-4">
+    <div className="flex min-h-full flex-col gap-6">
       <Feed claim={claim} />
-      <AboutField claim={claim} field={selected} />
+      <div className="border-t border-border pt-5">
+        <AboutField claim={claim} field={selected} />
+      </div>
       {/* Pushed to the bottom of the panel. */}
-      <div className="mt-auto border-t border-border pt-3">
+      <div className="mt-auto border-t border-border pt-5">
         <Ask claim={claim} />
       </div>
     </div>

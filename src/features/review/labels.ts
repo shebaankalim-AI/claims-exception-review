@@ -1,3 +1,4 @@
+import type { BadgeTone } from '@/components/Badge'
 import type { IconName } from '@/components/Icon'
 import type { ClaimState, FieldStatus, Stage } from '@/domain'
 
@@ -18,11 +19,11 @@ export const FIELD_STATUS_ICON: Record<FieldStatus, IconName> = {
   edited: 'stateEdited',
 }
 
-export const FIELD_STATUS_TONE: Record<FieldStatus, string> = {
-  verified: 'text-verified',
-  needs_review: 'text-needs-review',
-  missing: 'text-missing',
-  edited: 'text-edited',
+export const FIELD_STATUS_TONE: Record<FieldStatus, BadgeTone> = {
+  verified: 'verified',
+  needs_review: 'needs-review',
+  missing: 'missing',
+  edited: 'edited',
 }
 
 export const CLAIM_STATE_ICON: Record<ClaimState, IconName> = {
@@ -33,10 +34,11 @@ export const CLAIM_STATE_ICON: Record<ClaimState, IconName> = {
   escalated: 'stateEscalated',
 }
 
-export const CLAIM_STATE_TONE: Record<ClaimState, string> = {
-  needs_review: 'text-needs-review',
-  approved: 'text-verified',
-  filed: 'text-verified',
-  sent_back: 'text-edited',
-  escalated: 'text-missing',
+// Approved and filed look different on purpose: only filed changed the system of record.
+export const CLAIM_STATE_TONE: Record<ClaimState, BadgeTone> = {
+  needs_review: 'needs-review',
+  approved: 'accent',
+  filed: 'verified',
+  sent_back: 'edited',
+  escalated: 'missing',
 }

@@ -36,16 +36,16 @@ export function Dialog({
       ref={ref}
       aria-labelledby={titleId}
       onClose={onClose}
-      className="m-auto w-full max-w-lg rounded-md border border-border bg-surface p-0 text-ink backdrop:bg-backdrop"
+      className="m-auto w-full max-w-lg rounded-lg border border-border bg-surface p-0 text-ink shadow-raised backdrop:bg-backdrop"
     >
       {/* Rendered only while open, so a form never keeps a stale draft. */}
       {open && (
-        <div className="flex flex-col gap-4 p-6">
+        <div className="flex flex-col gap-5 p-6">
           <div>
-            <h2 id={titleId} className="text-lg font-semibold">
+            <h2 id={titleId} className="text-xl font-semibold tabular-nums">
               {title}
             </h2>
-            {subtitle && <p className="text-ink-muted">{subtitle}</p>}
+            {subtitle && <p className="mt-1 text-ink-muted">{subtitle}</p>}
           </div>
           {children}
         </div>

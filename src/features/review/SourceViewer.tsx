@@ -1,3 +1,4 @@
+import { card, sectionTitle } from '@/components/controls'
 import type { Claim, Field } from '@/domain'
 
 type SourceViewerProps = {
@@ -15,12 +16,9 @@ function Frame({
   return (
     <section
       aria-labelledby="source-heading"
-      className="flex flex-col gap-2 rounded-md border border-border bg-surface p-4"
+      className={`${card} flex flex-col gap-3 p-5`}
     >
-      <h2
-        id="source-heading"
-        className="text-xs font-medium tracking-wide text-ink-muted uppercase"
-      >
+      <h2 id="source-heading" className={sectionTitle}>
         {title}
       </h2>
       {children}
@@ -83,14 +81,14 @@ export function SourceViewer({ claim, field }: SourceViewerProps) {
         {field.sources.length > 1 &&
           `. ${field.sources.length - 1} more source${field.sources.length > 2 ? 's' : ''} for this field.`}
       </p>
-      <div className="whitespace-pre-wrap">
+      <div className="text-base leading-relaxed whitespace-pre-wrap">
         {at < 0 ? (
           page
         ) : (
           <>
             {page.slice(0, at)}
             {/* A background and a left bar, so the passage is not marked by colour alone. */}
-            <mark className="border-l-4 border-needs-review bg-needs-review-soft px-1 text-ink">
+            <mark className="rounded-r-sm border-l-3 border-needs-review bg-needs-review-soft px-1.5 py-0.5 text-ink [box-decoration-break:clone]">
               {source.excerpt}
             </mark>
             {page.slice(at + source.excerpt.length)}

@@ -1,3 +1,4 @@
+import { buttonSecondary, linkButton } from '@/components/controls'
 import { useState } from 'react'
 import type { ClaimId } from '@/domain'
 import { ActionBar } from './ActionBar'
@@ -30,7 +31,7 @@ function BackLink({ onBack }: { onBack: () => void }) {
     <button
       type="button"
       onClick={onBack}
-      className="focus-ring self-start rounded-sm text-accent hover:underline"
+      className={`${linkButton} self-start text-sm`}
     >
       <span aria-hidden="true">← </span>Exceptions
     </button>
@@ -55,10 +56,10 @@ export function ReviewScreen({
     return (
       <section
         aria-labelledby="review-heading"
-        className="flex flex-col gap-4 p-6"
+        className="flex flex-col gap-4 p-8"
       >
         <BackLink onBack={onBack} />
-        <h1 id="review-heading" className="text-xl font-semibold tabular-nums">
+        <h1 id="review-heading" className="text-2xl font-semibold tabular-nums">
           {claimId}
         </h1>
         {load.status === 'loading' ? (
@@ -71,7 +72,7 @@ export function ReviewScreen({
             <button
               type="button"
               onClick={review.retry}
-              className="focus-ring h-control rounded-md border border-border-strong bg-surface px-3 hover:bg-surface-muted"
+              className={buttonSecondary}
             >
               Retry
             </button>
@@ -105,7 +106,7 @@ export function ReviewScreen({
     <div className="flex h-full flex-col">
       <section
         aria-labelledby="review-heading"
-        className="flex flex-1 flex-col gap-4 overflow-auto p-6"
+        className="flex flex-1 flex-col gap-4 overflow-auto p-8"
       >
         <BackLink onBack={onBack} />
         <ClaimHeader claim={claim} now={now} />

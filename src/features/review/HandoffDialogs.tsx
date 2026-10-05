@@ -1,13 +1,16 @@
+import {
+  buttonPrimary,
+  buttonSecondary,
+  input,
+  textarea,
+} from '@/components/controls'
 import { useState } from 'react'
 import { Dialog } from '@/components/Dialog'
 import type { ClaimId } from '@/domain'
 
-const primary =
-  'focus-ring h-control rounded-md bg-accent px-3 text-on-accent hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50'
-const secondary =
-  'focus-ring h-control rounded-md border border-border-strong bg-surface px-3 hover:bg-surface-muted'
-const field =
-  'focus-ring rounded-md border border-border-strong bg-surface px-2 py-1 text-ink'
+const primary = buttonPrimary
+const secondary = buttonSecondary
+const field = textarea
 
 const SEND_BACK_REASONS = [
   'Ask the claimant for a document',
@@ -47,34 +50,51 @@ function SendBackForm({
       }}
     >
       <fieldset className="flex flex-col gap-2">
-        <legend className="mb-1 font-medium">Reason</legend>
+        <legend className="mb-2 text-sm font-medium text-ink-muted">
+          Reason
+        </legend>
         {SEND_BACK_REASONS.map((option) => (
-          <label key={option} className="flex items-center gap-2">
+          <label
+            key={option}
+            className="flex cursor-pointer items-center gap-3 rounded-sm border border-border px-3 py-2 hover:bg-surface-muted has-checked:border-accent has-checked:bg-accent-soft"
+          >
             <input
               type="radio"
               name="send-back-reason"
               value={option}
               checked={reason === option}
               onChange={() => setReason(option)}
+              className="focus-ring size-4 accent-accent"
             />
             {option}
           </label>
         ))}
       </fieldset>
-      <label className="flex flex-col gap-1">
+      <label className="flex flex-col gap-1 text-sm font-medium text-ink-muted">
         Note
         <textarea
           rows={3}
           value={note}
           onChange={(e) => setNote(e.target.value)}
-          className={field}
+          className={`${field} text-base font-normal`}
         />
       </label>
-      <div className="flex justify-end gap-2">
+      <div className="flex items-center justify-end gap-2 pt-2">
+        {/* A disabled button still says why. */}
+        {reason === null && (
+          <p id="send-back-hint" className="mr-auto text-sm text-ink-muted">
+            Choose a reason first.
+          </p>
+        )}
         <button type="button" onClick={onCancel} className={secondary}>
           Cancel
         </button>
-        <button type="submit" disabled={reason === null} className={primary}>
+        <button
+          type="submit"
+          disabled={reason === null}
+          aria-describedby={reason === null ? 'send-back-hint' : undefined}
+          className={primary}
+        >
           Send back
         </button>
       </div>
@@ -121,12 +141,12 @@ function EscalateForm({
         onConfirm(person, note.trim())
       }}
     >
-      <label className="flex flex-col gap-1">
+      <label className="flex flex-col gap-1 text-sm font-medium text-ink-muted">
         Escalate to
         <select
           value={person}
           onChange={(e) => setPerson(e.target.value)}
-          className={`${field} h-control`}
+          className={`${input} text-base font-normal`}
         >
           {PEOPLE.map((option) => (
             <option key={option} value={option}>
@@ -135,20 +155,30 @@ function EscalateForm({
           ))}
         </select>
       </label>
-      <label className="flex flex-col gap-1">
+      <label className="flex flex-col gap-1 text-sm font-medium text-ink-muted">
         Why are you escalating?
         <textarea
           rows={3}
           value={note}
           onChange={(e) => setNote(e.target.value)}
-          className={field}
+          className={`${field} text-base font-normal`}
         />
       </label>
-      <div className="flex justify-end gap-2">
+      <div className="flex items-center justify-end gap-2 pt-2">
+        {note.trim() === '' && (
+          <p id="escalate-hint" className="mr-auto text-sm text-ink-muted">
+            Add a note first.
+          </p>
+        )}
         <button type="button" onClick={onCancel} className={secondary}>
           Cancel
         </button>
-        <button type="submit" disabled={note.trim() === ''} className={primary}>
+        <button
+          type="submit"
+          disabled={note.trim() === ''}
+          aria-describedby={note.trim() === '' ? 'escalate-hint' : undefined}
+          className={primary}
+        >
           Escalate
         </button>
       </div>
