@@ -1,4 +1,5 @@
 @import 'tailwindcss';
+@import '@fontsource-variable/inter';
 
 /*
  * Design tokens. This block is the only place raw colours, pixel sizes and
@@ -13,7 +14,8 @@
   --radius-*: initial;
 
   /* Type */
-  --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-sans:
+    'Inter Variable', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   --text-xs: 12px;
   --text-xs--line-height: 1.35;
   --text-base: 13px;

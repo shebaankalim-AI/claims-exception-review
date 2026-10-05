@@ -12,3 +12,4 @@ Format: **Status**, **Context**, **Decision**, **Consequences**. Statuses are `P
 | [0004](0004-state-based-screen-switching.md)             | State-based screen switching, no router             | Accepted |
 | [0005](0005-icon-set.md)                                 | Phosphor as the icon set                            | Accepted |
 | [0006](0006-queue-loaded-by-the-app.md)                  | The app loads the queue once and shares it          | Accepted |
+| [0007](0007-inter-font.md)                               | Inter as the interface font                         | Accepted |
