@@ -10,3 +10,4 @@ Format: **Status**, **Context**, **Decision**, **Consequences**. Statuses are `P
 | [0002](0002-review-states-not-confidence-percentages.md) | Review states, not confidence percentages           | Accepted |
 | [0003](0003-dense-operator-interface.md)                 | Dense operator-tool interface                       | Proposed |
 | [0004](0004-state-based-screen-switching.md)             | State-based screen switching, no router             | Accepted |
+| [0005](0005-icon-set.md)                                 | Phosphor as the icon set                            | Accepted |

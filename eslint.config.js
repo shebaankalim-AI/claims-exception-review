@@ -15,13 +15,21 @@ const layerPaths = (layer) => [
   `**/${layer}/**`,
 ]
 
-const forbid = (layers, message, extra = []) => ({
+// The icon package is wrapped by components/Icon.tsx (decision 0005); nothing else imports it.
+const iconPackage = {
+  group: ['@phosphor-icons/react', '@phosphor-icons/react/**'],
+  message:
+    'Use <Icon /> from @/components/Icon instead of importing the icon package.',
+}
+
+const forbid = (layers, message, extra = [], { icons = true } = {}) => ({
   '@typescript-eslint/no-restricted-imports': [
     'error',
     {
       patterns: [
         ...layers.map((layer) => ({ group: layerPaths(layer), message })),
         ...extra,
+        ...(icons ? [iconPackage] : []),
       ],
     },
   ],
@@ -93,6 +101,8 @@ export default tseslint.config(
     rules: forbid(
       ['app', 'data', 'features'],
       'components imports nothing from features or data (ARCHITECTURE.md section 3).',
+      [],
+      { icons: false },
     ),
   },
   {
@@ -101,6 +111,10 @@ export default tseslint.config(
       ['app', 'data'],
       'features never import data or app. Get the repository with useClaimsRepository() from @/lib/claimsRepository.',
     ),
+  },
+  {
+    files: ['src/app/**/*.{ts,tsx}'],
+    rules: forbid([], ''),
   },
   prettier,
 )
