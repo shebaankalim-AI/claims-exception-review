@@ -83,17 +83,27 @@ function buildClaim(spec: LightClaimSpec): Claim {
     documents: [document],
     fields,
     activity: [
-      { at: spec.receivedAt, actor: 'agent', action: 'Read 1 document' },
+      {
+        at: spec.receivedAt,
+        actor: 'agent',
+        action: 'Read 1 document',
+        outcome: 'completed',
+      },
       {
         at: spec.receivedAt,
         actor: 'agent',
         action: `Extracted ${fields.length} fields`,
+        outcome: 'completed',
       },
       ...flagged.map((f) => ({
         at: flaggedAt,
         actor: 'agent' as const,
         action: `Flagged ${f.label}`,
         detail: f.reason,
+        outcome:
+          f.status === 'missing'
+            ? ('waiting' as const)
+            : ('needs_review' as const),
       })),
     ],
   }

@@ -76,12 +76,17 @@ export type ClaimDocument = {
   pages: string[]
 }
 
+/** How an agent step ended, for the feed. */
+export type ActivityOutcome =
+  'completed' | 'verified' | 'needs_review' | 'waiting'
+
 export type ActivityEntry = {
   /** ISO 8601 timestamp. */
   at: string
   actor: Actor
   action: string
   detail?: string
+  outcome?: ActivityOutcome
   sourceRefs?: SourceRef[]
 }
 

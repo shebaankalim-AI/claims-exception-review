@@ -312,32 +312,49 @@ export const classCodeClaim: Claim = {
   ],
   activity: [
     {
-      at: '2025-02-27T05:14:00.000Z',
+      at: '2025-02-27T05:12:00.000Z',
+      actor: 'agent',
+      action: 'Called the claimant: 4 min 12 s',
+      outcome: 'completed',
+    },
+    {
+      at: '2025-02-27T05:13:00.000Z',
       actor: 'agent',
       action: 'Read 4 documents',
+      outcome: 'completed',
+    },
+    {
+      at: '2025-02-27T05:14:00.000Z',
+      actor: 'agent',
+      action: 'Extracted 14 fields from the first report form',
+      outcome: 'completed',
+    },
+    {
+      at: '2025-02-27T05:14:00.000Z',
+      actor: 'agent',
+      action: 'Checked coverage: active on date of loss',
+      outcome: 'verified',
     },
     {
       at: '2025-02-27T05:15:00.000Z',
       actor: 'agent',
-      action: 'Extracted 14 fields',
-    },
-    {
-      at: '2025-02-27T05:15:00.000Z',
-      actor: 'agent',
-      action: 'Flagged Job class code',
+      action: 'Flagged: job class code differs between sources',
       detail: 'Form says A-102, transcript says B-340',
+      outcome: 'needs_review',
     },
     {
       at: '2025-02-27T05:15:00.000Z',
       actor: 'agent',
-      action: 'Flagged Average weekly wage',
+      action: 'Flagged: average weekly wage differs between sources',
       detail: 'Form says $780, pay stub says $812',
+      outcome: 'needs_review',
     },
     {
       at: '2025-02-27T05:15:00.000Z',
       actor: 'agent',
-      action: 'Flagged Medical report',
+      action: 'Asked the clinic for the medical report',
       detail: 'No medical report received yet',
+      outcome: 'waiting',
     },
   ],
 }
