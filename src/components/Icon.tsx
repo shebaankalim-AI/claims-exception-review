@@ -1,6 +1,7 @@
 import {
   ChartBar,
   Files,
+  GearSix,
   Lightning,
   List,
   Question,
@@ -17,6 +18,7 @@ const ICONS = {
   reports: ChartBar,
   help: Question,
   menu: List,
+  settings: GearSix,
 } as const satisfies Record<string, PhosphorIcon>
 
 export type IconName = keyof typeof ICONS

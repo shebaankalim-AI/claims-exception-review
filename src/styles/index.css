@@ -36,6 +36,7 @@
   --color-slate-800: #1e293b;
   --color-slate-900: #0f172a;
   --color-surface: #ffffff;
+  --color-disabled: var(--color-slate-500);
 
   /* Accent */
   --color-accent: #2563eb;
