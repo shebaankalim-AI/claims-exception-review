@@ -27,6 +27,7 @@ function field(
   return {
     key,
     label: `Label ${key}`,
+    stage: 'intake',
     value,
     status,
     sources: [{ documentId: 'doc-1', excerpt: 'an excerpt' }],

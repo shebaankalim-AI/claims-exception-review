@@ -20,6 +20,17 @@ export type LineOfBusiness =
 export type ClaimState =
   'needs_review' | 'approved' | 'filed' | 'sent_back' | 'escalated'
 
+/** The stages a claim moves through, in order. Every field belongs to one. */
+export const STAGES = [
+  'intake',
+  'coverage',
+  'liability',
+  'damages',
+  'recovery',
+] as const
+
+export type Stage = (typeof STAGES)[number]
+
 export type FieldStatus = 'verified' | 'needs_review' | 'missing' | 'edited'
 
 export type Actor = 'agent' | 'examiner'
@@ -33,15 +44,27 @@ export type SourceRef = {
 export type Field = {
   key: string
   label: string
+  stage: Stage
   value: string | null
+  /** What the agent had before the examiner edited the field. */
+  previousValue?: string | null
   status: FieldStatus
   /** Plain words for why the agent was unsure, e.g. "two class codes plausible". */
   reason?: string
+  /** For a missing field: which document would normally contain it. */
+  expectedIn?: string
   sources: SourceRef[]
   resolvedBy: Actor
 }
 
-export type DocumentKind = 'froi' | 'email' | 'fax' | 'medical_report' | 'form'
+export type DocumentKind =
+  | 'froi'
+  | 'email'
+  | 'fax'
+  | 'medical_report'
+  | 'form'
+  | 'transcript'
+  | 'pay_stub'
 
 export type ClaimDocument = {
   id: DocumentId

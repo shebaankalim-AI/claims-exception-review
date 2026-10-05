@@ -1,5 +1,11 @@
 import type { ActivityEntry, Claim, Field, ReviewAction } from './types'
 
+/** The wording of the activity entries the UI reads back (for the approved and filed times). */
+export const ACTIVITY_ACTIONS = {
+  approved: 'Approved',
+  filed: 'Filed to the system of record',
+} as const
+
 export type ReviewErrorCode =
   | 'invalid_state'
   | 'field_not_found'
@@ -97,6 +103,9 @@ export function reviewReducer(
           fields: replaceField(claim, {
             ...field,
             value,
+            // Keep the agent's original through repeated edits.
+            previousValue:
+              field.status === 'edited' ? field.previousValue : field.value,
             status: 'edited',
             resolvedBy: 'examiner',
           }),
@@ -128,7 +137,7 @@ export function reviewReducer(
       return succeed(
         claim,
         { state: 'approved' },
-        { at, actor: 'examiner', action: 'Approved' },
+        { at, actor: 'examiner', action: ACTIVITY_ACTIONS.approved },
       )
     }
 
@@ -144,7 +153,7 @@ export function reviewReducer(
       return succeed(
         claim,
         { state: 'filed' },
-        { at, actor: 'examiner', action: 'Filed to the system of record' },
+        { at, actor: 'examiner', action: ACTIVITY_ACTIONS.filed },
       )
     }
 

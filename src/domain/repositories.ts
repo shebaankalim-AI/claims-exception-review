@@ -20,7 +20,11 @@ export type ExceptionFilter = {
   assignee?: string
 }
 
-export type ClaimsRepositoryErrorCode = 'not_found' | ReviewError['code']
+export type ClaimsRepositoryErrorCode =
+  | 'not_found'
+  /** The system behind the repository didn't answer. Nothing was changed. */
+  | 'unavailable'
+  | ReviewError['code']
 
 /** What every repository rejects with, so screens handle one error shape. */
 export class ClaimsRepositoryError extends Error {
