@@ -8,6 +8,12 @@ import {
 
 const fakeRepository: ClaimsRepository = {
   listExceptions: () => Promise.resolve([]),
+  getPipelineSummary: () =>
+    Promise.resolve({
+      receivedToday: 0,
+      agentWorking: 0,
+      filedAutomatically: 0,
+    }),
   getClaim: () => Promise.reject(new Error('unused')),
   applyAction: () => Promise.reject(new Error('unused')),
 }

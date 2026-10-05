@@ -7,8 +7,11 @@ import type { Claim } from '@/domain'
 const classCodeClaim: Claim = {
   id: toClaimId('CLM-24-0417'),
   employer: 'Harbor & Pine Logistics',
+  lineOfBusiness: 'workers_comp',
   exceptionReasons: ['class_code_unclear', 'document_missing'],
+  agentNote: 'Two class codes plausible; no medical report yet',
   receivedAt: '2025-02-19T08:12:00.000Z',
+  flaggedAt: '2025-02-19T08:15:00.000Z',
   assignee: 'Priya Natarajan',
   state: 'needs_review',
   documents: [
@@ -174,8 +177,11 @@ const classCodeClaim: Claim = {
 const duplicateClaim: Claim = {
   id: toClaimId('CLM-24-0422'),
   employer: 'Quillfeather Bakery Co.',
+  lineOfBusiness: 'workers_comp',
   exceptionReasons: ['policy_tier_ambiguous', 'possible_duplicate'],
+  agentNote: 'Two tiers fit; may duplicate an earlier claim',
   receivedAt: '2025-02-24T07:20:00.000Z',
+  flaggedAt: '2025-02-24T07:23:00.000Z',
   assignee: 'Tomas Ekwueme',
   state: 'needs_review',
   documents: [
@@ -332,8 +338,11 @@ const duplicateClaim: Claim = {
 const nonEnglishClaim: Claim = {
   id: toClaimId('CLM-24-0431'),
   employer: 'Marlow Fields Farms',
+  lineOfBusiness: 'workers_comp',
   exceptionReasons: ['non_english_form'],
+  agentNote: 'Spanish form; one description needs a check',
   receivedAt: '2025-02-27T10:45:00.000Z',
+  flaggedAt: '2025-02-27T10:48:00.000Z',
   assignee: 'Dana Whitcombe',
   state: 'needs_review',
   documents: [

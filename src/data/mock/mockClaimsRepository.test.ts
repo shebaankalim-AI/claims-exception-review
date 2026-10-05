@@ -1,6 +1,10 @@
 import { ClaimsRepositoryError, toClaimId } from '@/domain'
 import type { ClaimId, ExceptionReason } from '@/domain'
-import { createMockClaimsRepository, mockClaims } from './index'
+import {
+  createMockClaimsRepository,
+  MOCK_REFERENCE_TIME,
+  mockClaims,
+} from './index'
 
 const DETAILED = toClaimId('CLM-24-0417')
 const NOW = new Date('2025-03-10T09:30:00.000Z')
@@ -92,12 +96,17 @@ describe('listExceptions', () => {
     const list = await repo().listExceptions()
     expect(list).toHaveLength(12)
     expect(Object.keys(list[0]).sort()).toEqual([
+      'agentNote',
       'assignee',
       'employer',
       'exceptionReasons',
+      'flaggedAt',
       'id',
+      'lineOfBusiness',
+      'missingCount',
       'receivedAt',
       'state',
+      'toConfirmCount',
     ])
   })
 
@@ -114,6 +123,164 @@ describe('listExceptions', () => {
     expect(byAssignee.every((c) => c.assignee === 'Priya Natarajan')).toBe(true)
 
     expect(await r.listExceptions({ state: 'filed' })).toEqual([])
+  })
+})
+
+describe('queue summaries', () => {
+  // Fixtures are as written when the repository's clock is the reference time.
+  const atReference = () =>
+    createMockClaimsRepository({ now: () => MOCK_REFERENCE_TIME })
+
+  it('counts fields to confirm and missing fields from the claim itself', async () => {
+    const r = atReference()
+    for (const summary of await r.listExceptions()) {
+      const claim = await r.getClaim(summary.id)
+      expect(summary.toConfirmCount).toBe(
+        claim.fields.filter((f) => f.status === 'needs_review').length,
+      )
+      expect(summary.missingCount).toBe(
+        claim.fields.filter((f) => f.status === 'missing').length,
+      )
+    }
+  })
+
+  it('shows 1 to confirm and 1 missing for the detailed class-code claim', async () => {
+    const summary = (await atReference().listExceptions()).find(
+      (c) => c.id === DETAILED,
+    )
+    expect(summary).toMatchObject({
+      toConfirmCount: 1,
+      missingCount: 1,
+      lineOfBusiness: 'workers_comp',
+      agentNote: 'Two class codes plausible; no medical report yet',
+    })
+  })
+
+  it('updates the counts when the examiner resolves a field', async () => {
+    const r = atReference()
+    await r.applyAction(DETAILED, {
+      type: 'confirmField',
+      fieldKey: 'class_code',
+    })
+    const summary = (await r.listExceptions()).find((c) => c.id === DETAILED)
+    expect(summary).toMatchObject({ toConfirmCount: 0, missingCount: 1 })
+  })
+
+  it('never puts a claimant name in a summary', async () => {
+    const names = mockClaims.flatMap((c) =>
+      c.fields
+        .filter((f) => f.key === 'claimant_name' || f.label === 'Employee')
+        .map((f) => f.value),
+    )
+    expect(names.length).toBeGreaterThan(0)
+    const json = JSON.stringify(await atReference().listExceptions())
+    for (const name of names) expect(json).not.toContain(name as string)
+  })
+
+  it('has every claim received before it was flagged, and both before the reference time', () => {
+    for (const c of mockClaims) {
+      expect(new Date(c.receivedAt).getTime()).toBeLessThanOrEqual(
+        new Date(c.flaggedAt).getTime(),
+      )
+      expect(new Date(c.flaggedAt).getTime()).toBeLessThan(
+        MOCK_REFERENCE_TIME.getTime(),
+      )
+    }
+  })
+
+  it('flags exactly one claim within the last ten minutes', async () => {
+    const recent = (await atReference().listExceptions()).filter(
+      (c) =>
+        MOCK_REFERENCE_TIME.getTime() - new Date(c.flaggedAt).getTime() <=
+        10 * 60_000,
+    )
+    expect(recent.map((c) => c.id)).toEqual(['CLM-24-0444'])
+  })
+
+  it('moves every timestamp forward with the repository clock, keeping the ages', async () => {
+    const later = new Date(MOCK_REFERENCE_TIME.getTime() + 3 * 24 * 60 * 60_000)
+    const [shifted] = await createMockClaimsRepository({
+      now: () => later,
+    }).listExceptions({
+      minAgeMinutes: 0,
+    })
+    const [original] = await atReference().listExceptions()
+    expect(new Date(shifted.flaggedAt).getTime() - later.getTime()).toBe(
+      new Date(original.flaggedAt).getTime() - MOCK_REFERENCE_TIME.getTime(),
+    )
+  })
+})
+
+describe('new filters', () => {
+  const atReference = () =>
+    createMockClaimsRepository({ now: () => MOCK_REFERENCE_TIME })
+  const ids = async (
+    filter: Parameters<ReturnType<typeof atReference>['listExceptions']>[0],
+  ) => (await atReference().listExceptions(filter)).map((c) => c.id)
+
+  it('matches the primary reason, so a secondary reason does not count', async () => {
+    // CLM-24-0417 lists document_missing second.
+    expect(await ids({ reason: 'document_missing' })).not.toContain(DETAILED)
+    expect(await ids({ reason: 'class_code_unclear' })).toContain(DETAILED)
+  })
+
+  it('filters by line of business', async () => {
+    const result = await atReference().listExceptions({
+      lineOfBusiness: 'occupational_accident',
+    })
+    expect(result.map((c) => c.id).sort()).toEqual([
+      'CLM-24-0425',
+      'CLM-24-0436',
+    ])
+    expect(
+      (
+        await atReference().listExceptions({
+          lineOfBusiness: 'employers_liability',
+        })
+      ).map((c) => c.id),
+    ).toEqual(['CLM-24-0413'])
+  })
+
+  it.each([
+    [60, 11],
+    [4 * 60, 10],
+    [24 * 60, 8],
+    [30 * 24 * 60, 1],
+    [90 * 24 * 60, 0],
+  ])(
+    'keeps claims at least %i minutes old: %i of 12',
+    async (minAgeMinutes, count) => {
+      expect(await ids({ minAgeMinutes })).toHaveLength(count)
+    },
+  )
+
+  it('combines filters', async () => {
+    expect(
+      (
+        await ids({ reason: 'class_code_unclear', minAgeMinutes: 24 * 60 })
+      ).sort(),
+    ).toEqual(['CLM-24-0402', 'CLM-24-0417'])
+  })
+})
+
+describe('getPipelineSummary', () => {
+  it('returns the mock counts, without a needs-review number', async () => {
+    expect(await repo().getPipelineSummary()).toEqual({
+      receivedToday: 142,
+      agentWorking: 6,
+      filedAutomatically: 127,
+    })
+  })
+
+  it('accepts other counts for a test', async () => {
+    const pipeline = {
+      receivedToday: 1,
+      agentWorking: 2,
+      filedAutomatically: 3,
+    }
+    expect(
+      await createMockClaimsRepository({ pipeline }).getPipelineSummary(),
+    ).toEqual(pipeline)
   })
 })
 
