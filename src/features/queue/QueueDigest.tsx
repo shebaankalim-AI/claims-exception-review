@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { linkButton, sectionTitle } from '@/components/controls'
 import { ageInMinutes } from '@/domain'
 import type { ClaimId, ClaimSummary, ExceptionReason } from '@/domain'
 import { useNow } from '@/lib/clock'
@@ -16,10 +17,8 @@ type QueueDigestProps = {
 
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
-    <section className="flex flex-col gap-1">
-      <h3 className="text-xs font-medium tracking-wide text-ink-muted uppercase">
-        {title}
-      </h3>
+    <section className="flex flex-col gap-2">
+      <h3 className={sectionTitle}>{title}</h3>
       {children}
     </section>
   )
@@ -36,7 +35,7 @@ function ClaimLink({
     <button
       type="button"
       onClick={() => onOpen(id)}
-      className="focus-ring rounded-sm font-medium text-accent tabular-nums hover:underline"
+      className={`${linkButton} tabular-nums`}
     >
       {id}
     </button>
@@ -96,7 +95,7 @@ export function QueueDigest({ queue, onOpenClaim }: QueueDigestProps) {
   const needYou = claims.length
 
   return (
-    <div className="flex flex-col gap-4 text-ink">
+    <div className="flex flex-col gap-6 text-ink">
       {justFlagged && (
         <Section title="Just flagged">
           <p>
@@ -122,9 +121,12 @@ export function QueueDigest({ queue, onOpenClaim }: QueueDigestProps) {
         <Section title="Why they stopped">
           <ul className="flex flex-col gap-1">
             {countByReason(claims).map(([reason, count]) => (
-              <li key={reason} className="flex justify-between gap-2">
+              <li
+                key={reason}
+                className="flex items-center justify-between gap-2 rounded-sm bg-surface-muted px-3 py-1.5"
+              >
                 <span>{REASON_LABELS[reason]}</span>
-                <span className="tabular-nums">{count}</span>
+                <span className="font-semibold tabular-nums">{count}</span>
               </li>
             ))}
           </ul>

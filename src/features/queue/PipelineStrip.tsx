@@ -1,5 +1,6 @@
-import type { ReactNode } from 'react'
+import { card } from '@/components/controls'
 import { Icon } from '@/components/Icon'
+import type { IconName } from '@/components/Icon'
 import type { PipelineSummary } from '@/domain'
 
 type PipelineStripProps = {
@@ -11,19 +12,27 @@ type PipelineStripProps = {
 function Cell({
   label,
   value,
-  children,
+  icon,
+  tint,
 }: {
   label: string
   value: number
-  children?: ReactNode
+  icon: IconName
+  /** Classes for the icon circle only. The card itself stays white. */
+  tint: string
 }) {
   return (
-    <div className="flex flex-col gap-1 px-4 py-3">
-      <dt className="flex items-center gap-1 text-ink-muted">
-        {children}
-        {label}
-      </dt>
-      <dd className="text-xl font-semibold tabular-nums">{value}</dd>
+    <div className={`${card} flex items-center gap-4 p-5`}>
+      <span
+        aria-hidden="true"
+        className={`flex size-10 shrink-0 items-center justify-center rounded-full ${tint}`}
+      >
+        <Icon name={icon} size="lg" />
+      </span>
+      <div className="flex flex-col">
+        <dt className="text-sm text-ink-muted">{label}</dt>
+        <dd className="text-2xl font-semibold tabular-nums">{value}</dd>
+      </div>
     </div>
   )
 }
@@ -34,29 +43,45 @@ export function PipelineStrip({ pipeline, needsReview }: PipelineStripProps) {
   const received =
     pipeline.filedAutomatically + pipeline.agentWorking + needsReview
   return (
-    <dl className="grid grid-cols-4 divide-x divide-border rounded-md border border-border bg-surface">
-      <Cell label="Received today" value={received} />
-      <Cell label="Agent working" value={pipeline.agentWorking} />
-      <Cell label="Filed automatically" value={pipeline.filedAutomatically} />
-      <Cell label="Needs review" value={needsReview}>
-        <span className="text-needs-review">
-          <Icon name="stateNeedsReview" />
-        </span>
-      </Cell>
+    <dl className="grid grid-cols-4 gap-4">
+      <Cell
+        label="Received today"
+        value={received}
+        icon="allClaims"
+        tint="bg-edited-soft text-ink-muted"
+      />
+      <Cell
+        label="Agent working"
+        value={pipeline.agentWorking}
+        icon="agentActivity"
+        tint="bg-accent-soft text-accent"
+      />
+      <Cell
+        label="Filed automatically"
+        value={pipeline.filedAutomatically}
+        icon="stateFiled"
+        tint="bg-verified-soft text-verified"
+      />
+      <Cell
+        label="Needs review"
+        value={needsReview}
+        icon="stateNeedsReview"
+        tint="bg-needs-review-soft text-needs-review"
+      />
     </dl>
   )
 }
 
 export function PipelineStripSkeleton() {
   return (
-    <div
-      aria-hidden="true"
-      className="grid grid-cols-4 divide-x divide-border rounded-md border border-border bg-surface"
-    >
+    <div aria-hidden="true" className="grid grid-cols-4 gap-4">
       {[0, 1, 2, 3].map((i) => (
-        <div key={i} className="flex flex-col gap-2 px-4 py-3">
-          <div className="h-4 w-24 rounded-sm bg-border" />
-          <div className="h-6 w-12 rounded-sm bg-border" />
+        <div key={i} className={`${card} flex items-center gap-4 p-5`}>
+          <div className="size-10 rounded-full bg-surface-muted" />
+          <div className="flex flex-col gap-2">
+            <div className="h-3 w-24 rounded-sm bg-border" />
+            <div className="h-5 w-12 rounded-sm bg-border" />
+          </div>
         </div>
       ))}
     </div>

@@ -1,3 +1,4 @@
+import { input, linkButton } from '@/components/controls'
 import { Icon } from '@/components/Icon'
 import {
   AGE_OPTIONS,
@@ -9,8 +10,7 @@ import {
 import type { AgeOptionId } from './labels'
 import type { FilterState } from './filterState'
 
-const selectClass =
-  'focus-ring h-control rounded-md border border-border-strong bg-surface px-2'
+const selectClass = `${input} min-w-44 pr-8`
 
 type QueueFiltersProps = {
   filters: FilterState
@@ -28,7 +28,7 @@ export function QueueFilters({
 }: QueueFiltersProps) {
   return (
     <div className="flex flex-wrap items-end gap-4">
-      <label className="flex flex-col gap-1 text-ink-muted">
+      <label className="flex flex-col gap-1 text-xs font-medium text-ink-muted">
         Reason
         <select
           className={selectClass}
@@ -49,7 +49,7 @@ export function QueueFilters({
         </select>
       </label>
 
-      <label className="flex flex-col gap-1 text-ink-muted">
+      <label className="flex flex-col gap-1 text-xs font-medium text-ink-muted">
         Line
         <select
           className={selectClass}
@@ -70,7 +70,7 @@ export function QueueFilters({
         </select>
       </label>
 
-      <label className="flex flex-col gap-1 text-ink-muted">
+      <label className="flex flex-col gap-1 text-xs font-medium text-ink-muted">
         Age
         <select
           className={selectClass}
@@ -91,13 +91,13 @@ export function QueueFilters({
         <button
           type="button"
           onClick={onClear}
-          className="focus-ring h-control rounded-md px-2 text-accent hover:underline"
+          className={`${linkButton} h-control px-2`}
         >
           Clear filters
         </button>
       )}
 
-      <p className="ml-auto flex h-control items-center gap-1 text-ink-muted">
+      <p className="ml-auto flex h-control items-center gap-1 text-sm text-ink-muted">
         <Icon name="sort" />
         Sorted: Oldest first
       </p>

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import type { ReactNode } from 'react'
+import { buttonSecondary, card } from '@/components/controls'
 import { Icon } from '@/components/Icon'
 import { matchesExceptionFilter } from '@/domain'
 import type { ClaimId, PipelineSummary } from '@/domain'
@@ -24,14 +25,13 @@ type QueueScreenProps = {
 
 function Card({ children }: { children: ReactNode }) {
   return (
-    <div className="flex flex-col items-start gap-2 rounded-md border border-border bg-surface p-6">
+    <div className={`${card} flex flex-col items-start gap-2 p-5`}>
       {children}
     </div>
   )
 }
 
-const buttonClass =
-  'focus-ring h-control rounded-md border border-border-strong bg-surface px-3 hover:bg-surface-muted'
+const buttonClass = `${buttonSecondary} mt-2`
 
 function ErrorCard({
   message,
@@ -42,9 +42,9 @@ function ErrorCard({
 }) {
   return (
     <Card>
-      <p role="alert" className="flex items-center gap-2 font-medium">
+      <p role="alert" className="flex items-center gap-2 text-lg font-semibold">
         <span className="text-missing">
-          <Icon name="exceptions" size="lg" />
+          <Icon name="error" size="lg" />
         </span>
         Couldn&apos;t load the queue
       </p>
@@ -75,7 +75,9 @@ function AllClearCard({
         Nothing needs you right now. The agent is working on{' '}
         {pipeline.agentWorking}.
       </p>
-      <p className="text-ink-muted">Last checked {formatClock(checkedAt)}</p>
+      <p className="text-sm text-ink-muted tabular-nums">
+        Last checked {formatClock(checkedAt)}
+      </p>
     </Card>
   )
 }
@@ -147,7 +149,9 @@ export function QueueScreen({
         />
         {visible.length === 0 ? (
           <Card>
-            <p className="font-medium">No claims match these filters</p>
+            <p className="text-lg font-semibold">
+              No claims match these filters
+            </p>
             <button type="button" onClick={clear} className={buttonClass}>
               Clear filters
             </button>
@@ -163,10 +167,10 @@ export function QueueScreen({
     <section
       aria-labelledby="queue-heading"
       aria-busy={state.status === 'loading'}
-      className="flex flex-col gap-4 p-6"
+      className="flex flex-col gap-4 p-8"
     >
-      <div>
-        <h1 id="queue-heading" className="text-xl font-semibold">
+      <div className="flex flex-col gap-1">
+        <h1 id="queue-heading" className="text-2xl font-semibold">
           Exceptions
         </h1>
         <p className="text-ink-muted">
@@ -178,7 +182,7 @@ export function QueueScreen({
       {notice && (
         <p
           role="status"
-          className="flex items-center gap-2 rounded-md border border-border bg-verified-soft p-2"
+          className="flex items-center gap-2 rounded-md border border-verified-border bg-verified-soft px-4 py-3"
         >
           <span className="text-verified">
             <Icon name="success" />
@@ -188,7 +192,7 @@ export function QueueScreen({
             <button
               type="button"
               onClick={onDismissNotice}
-              className="focus-ring ml-auto rounded-sm px-2 hover:underline"
+              className="focus-ring ml-auto rounded-sm px-2 font-medium text-ink-muted hover:text-ink hover:underline"
             >
               Dismiss
             </button>

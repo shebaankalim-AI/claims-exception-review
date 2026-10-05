@@ -1,44 +1,38 @@
-import { Icon } from '@/components/Icon'
+import { Badge } from '@/components/Badge'
+import { card } from '@/components/controls'
 import type { ClaimId, ClaimSummary } from '@/domain'
 import { formatAge } from '@/lib/formatAge'
 import { LINE_LABELS, REASON_LABELS } from './labels'
 
 const headerClass =
-  'px-3 py-2 text-left text-xs font-medium tracking-wide whitespace-nowrap text-ink-muted uppercase'
-const cellClass = 'px-3 py-2 align-top'
+  'h-10 px-4 text-left text-xs font-medium whitespace-nowrap text-ink-muted'
+const cellClass = 'px-4 py-2 align-middle'
 
 function WhatsNeeded({ claim }: { claim: ClaimSummary }) {
   const { toConfirmCount, missingCount } = claim
   // Nothing open but still in the queue means the examiner only has to approve.
   if (toConfirmCount === 0 && missingCount === 0) {
     return (
-      <span className="flex items-center gap-1 whitespace-nowrap">
-        <span className="text-verified">
-          <Icon name="stateVerified" />
-        </span>
-        Ready to approve
-      </span>
+      <Badge tone="verified" icon="stateVerified" label="Ready to approve" />
     )
   }
   return (
-    <ul className="flex flex-col gap-1 whitespace-nowrap">
+    <span className="flex flex-wrap gap-1">
       {toConfirmCount > 0 && (
-        <li className="flex items-center gap-1">
-          <span className="text-needs-review">
-            <Icon name="stateNeedsReview" />
-          </span>
-          {toConfirmCount} to confirm
-        </li>
+        <Badge
+          tone="needs-review"
+          icon="stateNeedsReview"
+          label={`${toConfirmCount} to confirm`}
+        />
       )}
       {missingCount > 0 && (
-        <li className="flex items-center gap-1">
-          <span className="text-missing">
-            <Icon name="stateMissing" />
-          </span>
-          {missingCount} missing
-        </li>
+        <Badge
+          tone="missing"
+          icon="stateMissing"
+          label={`${missingCount} missing`}
+        />
       )}
-    </ul>
+    </span>
   )
 }
 
@@ -51,85 +45,86 @@ type QueueTableProps = {
 
 export function QueueTable({ claims, now, onOpenClaim }: QueueTableProps) {
   return (
-    <table className="w-full table-fixed border-collapse rounded-md border border-border bg-surface">
-      <caption className="sr-only">Exceptions, oldest first</caption>
-      <thead className="border-b border-border bg-surface-muted">
-        <tr>
-          <th scope="col" className={`${headerClass} w-col-claim`}>
-            Claim
-          </th>
-          <th scope="col" className={`${headerClass} w-col-line`}>
-            Line
-          </th>
-          <th scope="col" className={headerClass}>
-            Why the agent stopped
-          </th>
-          <th scope="col" className={`${headerClass} w-col-needed`}>
-            What&apos;s needed
-          </th>
-          <th scope="col" className={`${headerClass} w-col-age`}>
-            Age
-          </th>
-        </tr>
-      </thead>
-      <tbody className="divide-y divide-border">
-        {claims.map((claim) => (
-          // The whole row opens the claim for the mouse. The ID button is the
-          // keyboard and screen reader path, and stops the click so it only fires once.
-          <tr
-            key={claim.id}
-            onClick={() => onOpenClaim(claim.id)}
-            className="cursor-pointer hover:bg-surface-muted"
-          >
-            <td className={cellClass}>
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation()
-                  onOpenClaim(claim.id)
-                }}
-                className="focus-ring rounded-sm font-medium whitespace-nowrap text-accent tabular-nums hover:underline"
-              >
-                {claim.id}
-              </button>
-            </td>
-            <td className={cellClass}>{LINE_LABELS[claim.lineOfBusiness]}</td>
-            <td className={cellClass}>
-              <div className="font-medium">
-                {REASON_LABELS[claim.exceptionReasons[0]]}
-              </div>
-              <div className="text-ink-muted">{claim.agentNote}</div>
-            </td>
-            <td className={cellClass}>
-              <WhatsNeeded claim={claim} />
-            </td>
-            <td className={`${cellClass} whitespace-nowrap tabular-nums`}>
-              {formatAge(claim.flaggedAt, now)}
-            </td>
+    <div className={`${card} overflow-hidden`}>
+      <table className="w-full table-fixed border-collapse">
+        <caption className="sr-only">Exceptions, oldest first</caption>
+        <thead className="border-b border-border bg-surface-muted">
+          <tr>
+            <th scope="col" className={`${headerClass} w-col-claim`}>
+              Claim
+            </th>
+            <th scope="col" className={`${headerClass} w-col-line`}>
+              Line
+            </th>
+            <th scope="col" className={headerClass}>
+              Why the agent stopped
+            </th>
+            <th scope="col" className={`${headerClass} w-col-needed`}>
+              What&apos;s needed
+            </th>
+            <th scope="col" className={`${headerClass} w-col-age`}>
+              Age
+            </th>
           </tr>
-        ))}
-      </tbody>
-    </table>
+        </thead>
+        <tbody className="divide-y divide-border">
+          {claims.map((claim) => (
+            // The whole row opens the claim for the mouse. The ID button is the
+            // keyboard and screen reader path, and stops the click so it only fires once.
+            <tr
+              key={claim.id}
+              onClick={() => onOpenClaim(claim.id)}
+              className="h-12 cursor-pointer hover:bg-surface-muted"
+            >
+              <td className={cellClass}>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    onOpenClaim(claim.id)
+                  }}
+                  className="focus-ring rounded-sm font-medium whitespace-nowrap text-accent tabular-nums hover:text-accent-hover hover:underline"
+                >
+                  {claim.id}
+                </button>
+              </td>
+              <td className={cellClass}>{LINE_LABELS[claim.lineOfBusiness]}</td>
+              <td className={cellClass}>
+                <div className="font-medium">
+                  {REASON_LABELS[claim.exceptionReasons[0]]}
+                </div>
+                <div className="text-sm text-ink-muted">{claim.agentNote}</div>
+              </td>
+              <td className={cellClass}>
+                <WhatsNeeded claim={claim} />
+              </td>
+              <td className={`${cellClass} whitespace-nowrap tabular-nums`}>
+                {formatAge(claim.flaggedAt, now)}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   )
 }
 
 export function QueueTableSkeleton() {
   return (
-    <table
-      aria-hidden="true"
-      className="w-full border-collapse rounded-md border border-border bg-surface"
-    >
-      <tbody className="divide-y divide-border">
-        {[0, 1, 2, 3, 4].map((i) => (
-          <tr key={i}>
-            {['w-24', 'w-32', 'w-64', 'w-32', 'w-16'].map((width, j) => (
-              <td key={j} className={cellClass}>
-                <div className={`h-4 rounded-sm bg-border ${width}`} />
-              </td>
-            ))}
-          </tr>
-        ))}
-      </tbody>
-    </table>
+    <div aria-hidden="true" className={`${card} overflow-hidden`}>
+      <table className="w-full border-collapse">
+        <tbody className="divide-y divide-border">
+          {[0, 1, 2, 3, 4].map((i) => (
+            <tr key={i} className="h-12">
+              {['w-24', 'w-32', 'w-64', 'w-32', 'w-16'].map((width, j) => (
+                <td key={j} className={cellClass}>
+                  <div className={`h-4 rounded-sm bg-border ${width}`} />
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   )
 }
