@@ -173,14 +173,16 @@ export function completeStages(claim: Claim): Claim {
     ...standard.filter((f) => !present.has(f.key)),
   ]
   // The feed counts what the agent read and extracted, so keep it in step.
+  const READ = /^Read \d+ documents?$/
+  const EXTRACTED = /^Extracted \d+ fields/
   const activity = claim.activity.map((entry) =>
-    /^Read d+ documents?$/.test(entry.action)
+    READ.test(entry.action)
       ? { ...entry, action: `Read ${documents.length} documents` }
-      : /^Extracted d+ fields/.test(entry.action)
+      : EXTRACTED.test(entry.action)
         ? {
             ...entry,
             action: entry.action.replace(
-              /^Extracted d+ fields/,
+              EXTRACTED,
               `Extracted ${fields.length} fields`,
             ),
           }
