@@ -37,7 +37,11 @@ export function AiPanel({ open, onToggle, children }: AiPanelProps) {
           {open && <KeyHint>{SHORTCUTS.toggleAiPanel.key}</KeyHint>}
         </button>
       </div>
-      <div id="ai-panel-body" hidden={!open} className="overflow-auto p-3">
+      <div
+        id="ai-panel-body"
+        hidden={!open}
+        className="min-h-0 flex-1 overflow-auto p-3"
+      >
         {children ?? (
           <p className="text-slate-600">
             Placeholder for the AI panel. What the agent did, why, and what it

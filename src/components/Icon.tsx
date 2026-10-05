@@ -3,11 +3,13 @@ import {
   ArrowsDownUp,
   ArrowUUpLeft,
   ChartBar,
+  Check,
   CheckCircle,
   CircleDashed,
   FileArrowUp,
   Files,
   GearSix,
+  HourglassMedium,
   Info,
   Lightning,
   List,
@@ -45,6 +47,9 @@ const ICONS = {
   info: Info,
   success: CheckCircle,
   error: WarningOctagon,
+  // How an agent step ended, in the feed.
+  resultCompleted: Check,
+  resultWaiting: HourglassMedium,
 } as const satisfies Record<string, PhosphorIcon>
 
 export type IconName = keyof typeof ICONS
