@@ -102,7 +102,7 @@ Shared primitives go in `components/` once they are used by two features, not be
 
 Examiners work in this screen for hours, so frequent actions need to be fast without a mouse. Shortcuts go through a single registry in `lib/` so they are listed in one help overlay and can't collide. State is never colour alone: every state has an icon and a text label.
 
-**Status:** The shortcut registry is Implemented in `lib/shortcuts.ts`, with one document-level listener in `ShortcutProvider`. It ignores keys typed into text fields, modified keys and key repeat, and rejects two shortcuts on one key. Four shortcuts are registered (collapse the side nav, toggle the AI panel, go to the queue, focus search). The shell has landmarks, a skip link and visible focus rings. Features that are not built yet are dimmed and `aria-disabled`, stay focusable, and say "Later" in a tooltip and an accessible description instead of visible text. The help overlay that lists shortcuts, and the accessibility audit (contrast, screen reader pass), are Planned.
+**Status:** Partial. The shortcut registry is Implemented in `lib/shortcuts.ts`, with one document-level listener in `ShortcutProvider`. It ignores keys typed into text fields, modified keys and key repeat, and rejects two shortcuts on one key. Four shortcuts are registered (collapse the side nav, toggle the AI panel, go to the queue, focus search). The shell has landmarks, a skip link and visible focus rings. Features that are not built yet are dimmed and `aria-disabled`, stay focusable, and say "Later" in a tooltip and an accessible description instead of visible text. Shortcuts for working in the queue (moving between rows, opening a claim) and for the review actions (confirm, edit, approve, send back) are Planned. Until they exist, every control is reachable with Tab and Enter. The help overlay that lists shortcuts, and the accessibility audit (contrast, screen reader pass), are Planned.
 
 ## 9. Testing
 
@@ -142,7 +142,7 @@ A `track(event, props)` function in `lib/` with a no-op implementation behind it
 | Repository interface and mock data   | Implemented |
 | Design tokens                        | Implemented |
 | App shell and screen switching       | Implemented |
-| Keyboard shortcut registry           | Implemented |
+| Keyboard shortcut registry           | Partial     |
 | Shared components (`components/`)    | Partial     |
 | Shortcut help overlay                | Planned     |
 | Accessibility audit                  | Planned     |
