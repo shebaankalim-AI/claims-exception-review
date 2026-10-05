@@ -1,12 +1,14 @@
+import type { ReactNode } from 'react'
 import { KeyHint } from './KeyHint'
 import { SHORTCUTS } from './shortcutDefinitions'
 
 type AiPanelProps = {
   open: boolean
   onToggle: () => void
+  children?: ReactNode
 }
 
-export function AiPanel({ open, onToggle }: AiPanelProps) {
+export function AiPanel({ open, onToggle, children }: AiPanelProps) {
   const toggleLabel = open ? 'Collapse AI panel' : 'Expand AI panel'
 
   return (
@@ -35,9 +37,13 @@ export function AiPanel({ open, onToggle }: AiPanelProps) {
           {open && <KeyHint>{SHORTCUTS.toggleAiPanel.key}</KeyHint>}
         </button>
       </div>
-      <div id="ai-panel-body" hidden={!open} className="p-3 text-slate-600">
-        Placeholder for the AI panel. What the agent did, why, and what it read
-        will appear here.
+      <div id="ai-panel-body" hidden={!open} className="overflow-auto p-3">
+        {children ?? (
+          <p className="text-slate-600">
+            Placeholder for the AI panel. What the agent did, why, and what it
+            read will appear here.
+          </p>
+        )}
       </div>
     </aside>
   )

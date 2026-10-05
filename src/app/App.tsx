@@ -1,28 +1,33 @@
 import { useState } from 'react'
-import { toClaimId } from '@/domain'
-import { QueueScreen } from '@/features/queue'
+import type { ClaimId } from '@/domain'
+import { QueueDigest, QueueScreen, useQueue } from '@/features/queue'
 import { ReviewScreen } from '@/features/review'
 import { AppProviders } from './AppProviders'
 import type { Screen } from './screen'
 import { AppShell } from './shell/AppShell'
-
-// An id from the mock fixtures. Only used to prove that screen switching works.
-const SAMPLE_CLAIM_ID = toClaimId('CLM-24-0417')
 
 const QUEUE: Screen = { name: 'queue' }
 
 function Workspace() {
   const [screen, setScreen] = useState<Screen>(QUEUE)
   const goToQueue = () => setScreen(QUEUE)
+  const openClaim = (claimId: ClaimId) => setScreen({ name: 'review', claimId })
+
+  // The queue is loaded here, once per visit, and handed to both the screen and
+  // the agent digest. Features can't import app/, so the app does the sharing.
+  const queue = useQueue(screen.name === 'queue')
 
   return (
-    <AppShell onGoToQueue={goToQueue}>
+    <AppShell
+      onGoToQueue={goToQueue}
+      panel={
+        screen.name === 'queue' ? (
+          <QueueDigest queue={queue} onOpenClaim={openClaim} />
+        ) : undefined
+      }
+    >
       {screen.name === 'queue' ? (
-        <QueueScreen
-          onOpenSampleClaim={() =>
-            setScreen({ name: 'review', claimId: SAMPLE_CLAIM_ID })
-          }
-        />
+        <QueueScreen queue={queue} onOpenClaim={openClaim} />
       ) : (
         <ReviewScreen claimId={screen.claimId} onBack={goToQueue} />
       )}

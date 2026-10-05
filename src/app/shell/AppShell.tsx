@@ -8,10 +8,12 @@ import { SideNav } from './SideNav'
 
 type AppShellProps = {
   onGoToQueue: () => void
+  /** What the AI panel shows. Without it, the panel keeps its placeholder. */
+  panel?: ReactNode
   children: ReactNode
 }
 
-export function AppShell({ onGoToQueue, children }: AppShellProps) {
+export function AppShell({ onGoToQueue, panel, children }: AppShellProps) {
   const [navCollapsed, setNavCollapsed] = useState(false)
   const [aiPanelOpen, setAiPanelOpen] = useState(true)
   const toggleNav = () => setNavCollapsed((collapsed) => !collapsed)
@@ -42,7 +44,9 @@ export function AppShell({ onGoToQueue, children }: AppShellProps) {
       >
         {children}
       </main>
-      <AiPanel open={aiPanelOpen} onToggle={toggleAiPanel} />
+      <AiPanel open={aiPanelOpen} onToggle={toggleAiPanel}>
+        {panel}
+      </AiPanel>
     </div>
   )
 }
