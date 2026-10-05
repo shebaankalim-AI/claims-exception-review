@@ -37,7 +37,7 @@ src/
 
 ## Author
 
-TODO
+Built by Shebaan Kalim — https://shebaan-portfolio.netlify.app/
 
 ## Assumptions
 
