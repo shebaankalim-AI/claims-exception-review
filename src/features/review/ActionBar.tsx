@@ -70,7 +70,7 @@ function Message({
     <p
       id={id}
       role={role}
-      className={`flex min-w-0 flex-1 items-center gap-2 rounded-md border px-3 py-2 text-sm text-ink ${MESSAGE_CLASS[tone].banner}`}
+      className={`flex min-w-0 flex-1 items-center gap-2 rounded-md border px-3 py-2 text-sm text-ink tabular-nums ${MESSAGE_CLASS[tone].banner}`}
     >
       <span className={`shrink-0 ${MESSAGE_CLASS[tone].icon}`}>
         <Icon name={icon} size="lg" />

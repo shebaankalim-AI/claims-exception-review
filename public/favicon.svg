@@ -1,1 +1,12 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><rect x="2.75" y="2.75" width="12.5" height="12.5" rx="3" fill="none" stroke="#64748b" stroke-width="1.5"/><rect x="9" y="9" width="13" height="13" rx="3" fill="#2563eb"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+  <style>
+    .back { fill: none; stroke: #6b675e; stroke-width: 1.5; }
+    .front { fill: #3442b8; }
+    @media (prefers-color-scheme: dark) {
+      .back { stroke: #d6d2c9; }
+      .front { fill: #8f9bf0; }
+    }
+  </style>
+  <rect class="back" x="2.75" y="2.75" width="12.5" height="12.5" rx="3"/>
+  <rect class="front" x="9" y="9" width="13" height="13" rx="3"/>
+</svg>
