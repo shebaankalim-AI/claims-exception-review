@@ -9,3 +9,4 @@ Format: **Status**, **Context**, **Decision**, **Consequences**. Statuses are `P
 | [0001](0001-structure-and-data-boundary.md)              | Feature-first structure with a domain/data boundary | Accepted |
 | [0002](0002-review-states-not-confidence-percentages.md) | Review states, not confidence percentages           | Accepted |
 | [0003](0003-dense-operator-interface.md)                 | Dense operator-tool interface                       | Proposed |
+| [0004](0004-state-based-screen-switching.md)             | State-based screen switching, no router             | Accepted |
