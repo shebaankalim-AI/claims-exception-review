@@ -54,6 +54,7 @@ The central idea of the design is that a claim, and each field on it, is always 
 **Field:** `verified`, `needs_review`, `missing` or `edited`, plus who resolved it (`agent` or `examiner`).
 
 **Rules, enforced in `domain/`:**
+
 - A claim cannot be approved while any field is `needs_review` or `missing`. The examiner must confirm or edit each one.
 - `filed` is the only state that means the system of record changed. The UI always shows the difference between "approved" and "filed".
 - Every transition appends an entry to the claim's activity log.
@@ -130,15 +131,15 @@ A `track(event, props)` function in `lib/` with a no-op implementation behind it
 
 ## Status
 
-| Area                                   | Status      |
-| -------------------------------------- | ----------- |
-| Vite, React, TypeScript, Tailwind      | Implemented |
-| Lint, format, typecheck, test, build   | Implemented |
-| CI on pull requests                    | Implemented |
-| `app/` and `domain/` folders           | Implemented |
-| Dependency rules enforced by ESLint    | Implemented |
-| Claim state machine                    | Implemented |
-| Repository interface and mock data     | Implemented |
-| Design tokens and components           | Planned     |
-| Keyboard registry and accessibility    | Planned     |
-| Analytics seam                         | Planned     |
+| Area                                 | Status      |
+| ------------------------------------ | ----------- |
+| Vite, React, TypeScript, Tailwind    | Implemented |
+| Lint, format, typecheck, test, build | Implemented |
+| CI on pull requests                  | Implemented |
+| `app/` and `domain/` folders         | Implemented |
+| Dependency rules enforced by ESLint  | Implemented |
+| Claim state machine                  | Implemented |
+| Repository interface and mock data   | Implemented |
+| Design tokens and components         | Planned     |
+| Keyboard registry and accessibility  | Planned     |
+| Analytics seam                       | Planned     |
