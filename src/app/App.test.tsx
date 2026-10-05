@@ -55,12 +55,20 @@ describe('side navigation', () => {
       const nav = screen.getByRole('navigation', { name: 'Main' })
       const item = within(nav).getByRole('button', { name: new RegExp(name) })
 
-      expect(item).toBeDisabled()
+      // aria-disabled, not the disabled attribute, so the item stays
+      // focusable and can explain itself in a tooltip when collapsed.
+      expect(item).toHaveAttribute('aria-disabled', 'true')
       expect(within(item).getByText('Later')).toBeInTheDocument()
       expect(item).not.toHaveAttribute('aria-current')
 
+      // From the review screen, so a wrongly working item would visibly move us.
+      await user.click(
+        screen.getByRole('button', { name: 'Open sample claim' }),
+      )
       await user.click(item)
-      expect(queueHeading()).toBeInTheDocument()
+      item.focus()
+      await user.keyboard('{Enter}')
+      expect(reviewHeading()).toBeInTheDocument()
     },
   )
 })
