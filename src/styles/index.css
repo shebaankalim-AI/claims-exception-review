@@ -66,9 +66,17 @@
   --spacing-header: 48px;
   --spacing-nav: 240px;
   --spacing-nav-collapsed: 56px;
-  --spacing-panel: 320px;
+  --spacing-panel: 360px;
   --spacing-panel-collapsed: 40px;
   --spacing-app-min: 1280px;
+  /* Fixed columns, so tables and lists line up row to row. */
+  --spacing-col-claim: 128px;
+  --spacing-col-line: 176px;
+  --spacing-col-needed: 160px;
+  --spacing-col-age: 96px;
+  --spacing-col-label: 160px;
+  --spacing-col-state: 136px;
+  --spacing-col-source: 152px;
   --spacing-icon: 16px;
   --spacing-icon-lg: 20px;
   --spacing-logo: 24px;
