@@ -1,16 +1,22 @@
 import {
+  ArrowFatLineUp,
   ArrowsDownUp,
+  ArrowUUpLeft,
   ChartBar,
   CheckCircle,
   CircleDashed,
+  FileArrowUp,
   Files,
   GearSix,
+  Info,
   Lightning,
   List,
   PencilSimple,
   Question,
+  SealCheck,
   WarningCircle,
   WarningDiamond,
+  WarningOctagon,
 } from '@phosphor-icons/react'
 import type { Icon as PhosphorIcon } from '@phosphor-icons/react'
 
@@ -30,6 +36,15 @@ const ICONS = {
   stateNeedsReview: WarningDiamond,
   stateMissing: CircleDashed,
   stateEdited: PencilSimple,
+  // Where a whole claim is. Also always shown with a word.
+  stateApproved: SealCheck,
+  stateFiled: FileArrowUp,
+  stateSentBack: ArrowUUpLeft,
+  stateEscalated: ArrowFatLineUp,
+  // Messages: an icon plus words, never colour alone.
+  info: Info,
+  success: CheckCircle,
+  error: WarningOctagon,
 } as const satisfies Record<string, PhosphorIcon>
 
 export type IconName = keyof typeof ICONS
