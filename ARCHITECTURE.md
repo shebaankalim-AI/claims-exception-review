@@ -24,7 +24,7 @@ src/
 
 The split inside `src/` is by **feature first**, then by layer. A change request almost always names a screen ("the field list on review"), not a layer in isolation, so everything one piece of work touches lives in one folder.
 
-**Status:** Implemented. All eight folders exist. `app/` holds the providers, the screen switching and the app shell in `app/shell/` (side nav, header, AI panel). `domain/` holds the types, the review reducer and the repository interface, and `data/mock/` holds the mock repository and fixtures. `lib/` holds the repository hook and the shortcut registry. `features/` has `queue/` and `review/`, each a labelled placeholder screen. `components/` is still empty, `styles/` holds the design tokens in `index.css`, and `test/` holds the test setup.
+**Status:** Implemented. All eight folders exist. `app/` holds the providers, the screen switching and the app shell in `app/shell/` (collapsible side nav, header, AI panel). `domain/` holds the types, the review reducer and the repository interface, and `data/mock/` holds the mock repository and fixtures. `lib/` holds the repository hook and the shortcut registry. `features/` has `queue/` and `review/`, each a labelled placeholder screen. `components/` holds only the `Icon` wrapper, `styles/` holds the design tokens in `index.css`, and `test/` holds the test setup.
 
 ## 3. Dependency rules
 
@@ -96,13 +96,13 @@ Visual decisions are tokens in the `@theme` block of `src/styles/index.css` (Tai
 
 Shared primitives go in `components/` once they are used by two features, not before.
 
-**Status:** Tokens: Implemented. The `@theme` block holds the neutral ramp, the accent, the four review-state colours with soft backgrounds, the type scale, the 4px grid, row height, radii, the focus ring and the layout widths. It resets the default colour, text and radius namespaces so only token values exist. Light mode only. Components: partly. The shell pieces (side nav, header, AI panel) live in `app/shell/` and use tokens only, but the shared primitives in `components/` are Planned, and the state badge that pairs each review state with an icon and a label is not built yet.
+**Status:** Tokens: Implemented. The `@theme` block holds the neutral ramp, the accent, the four review-state colours with soft backgrounds, the type scale, the 4px grid, row height, radii, icon sizes, the nav animation duration, the focus ring and the layout widths. It resets the default colour, text and radius namespaces so only token values exist. Light mode only. Components: partly. The shell pieces (side nav, header, AI panel) live in `app/shell/` and use tokens only, and `components/` has the `Icon` wrapper, the only file allowed to import the icon package (decision 0005; a lint rule enforces it). The other shared primitives are Planned, and the state badge that pairs each review state with an icon and a label is not built yet.
 
 ## 8. Keyboard and accessibility
 
 Examiners work in this screen for hours, so frequent actions need to be fast without a mouse. Shortcuts go through a single registry in `lib/` so they are listed in one help overlay and can't collide. State is never colour alone: every state has an icon and a text label.
 
-**Status:** The shortcut registry is Implemented in `lib/shortcuts.ts`, with one document-level listener in `ShortcutProvider`. It ignores keys typed into text fields, modified keys and key repeat, and rejects two shortcuts on one key. Three shortcuts are registered (toggle the AI panel, go to the queue, focus search). The shell has landmarks, a skip link and visible focus rings. The help overlay that lists shortcuts, and the accessibility audit (contrast, screen reader pass), are Planned.
+**Status:** The shortcut registry is Implemented in `lib/shortcuts.ts`, with one document-level listener in `ShortcutProvider`. It ignores keys typed into text fields, modified keys and key repeat, and rejects two shortcuts on one key. Four shortcuts are registered (collapse the side nav, toggle the AI panel, go to the queue, focus search). The shell has landmarks, a skip link and visible focus rings. The help overlay that lists shortcuts, and the accessibility audit (contrast, screen reader pass), are Planned.
 
 ## 9. Testing
 
@@ -143,7 +143,7 @@ A `track(event, props)` function in `lib/` with a no-op implementation behind it
 | Design tokens                        | Implemented |
 | App shell and screen switching       | Implemented |
 | Keyboard shortcut registry           | Implemented |
-| Shared components (`components/`)    | Planned     |
+| Shared components (`components/`)    | Partial     |
 | Shortcut help overlay                | Planned     |
 | Accessibility audit                  | Planned     |
 | Queue and review screens             | Planned     |
