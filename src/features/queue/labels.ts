@@ -1,20 +1,8 @@
 import type { ExceptionReason, LineOfBusiness } from '@/domain'
 
-// Display words live here, not in domain: the domain says what a reason is,
-// the screen says how to phrase it.
-export const REASON_LABELS: Record<ExceptionReason, string> = {
-  class_code_unclear: 'Class code unclear',
-  policy_tier_ambiguous: 'Policy tier unclear',
-  document_missing: 'Document missing',
-  non_english_form: 'Non-English form',
-  possible_duplicate: 'Possible duplicate',
-}
+import { LINE_LABELS, REASON_LABELS } from '@/lib/labels'
 
-export const LINE_LABELS: Record<LineOfBusiness, string> = {
-  workers_comp: "Workers' comp",
-  occupational_accident: 'Occupational accident',
-  employers_liability: "Employers' liability",
-}
+export { LINE_LABELS, REASON_LABELS }
 
 export const REASONS = Object.keys(REASON_LABELS) as ExceptionReason[]
 export const LINES = Object.keys(LINE_LABELS) as LineOfBusiness[]

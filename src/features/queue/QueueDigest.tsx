@@ -109,9 +109,9 @@ export function QueueDigest({ queue, onOpenClaim }: QueueDigestProps) {
 
       <Section title="Today so far">
         <p>
-          {pipeline.receivedToday} claims received. The agent filed{' '}
-          {pipeline.filedAutomatically} on its own and is working on{' '}
-          {pipeline.agentWorking}.{' '}
+          {pipeline.filedAutomatically + pipeline.agentWorking + needYou} claims
+          received. The agent filed {pipeline.filedAutomatically} on its own and
+          is working on {pipeline.agentWorking}.{' '}
           {needYou === 0
             ? 'None need you.'
             : `${needYou} ${needYou === 1 ? 'needs' : 'need'} you.`}

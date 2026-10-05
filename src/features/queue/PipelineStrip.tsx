@@ -29,9 +29,13 @@ function Cell({
 }
 
 export function PipelineStrip({ pipeline, needsReview }: PipelineStripProps) {
+  // Everything received is filed, with the agent, or waiting for an examiner,
+  // so the first number is worked out from the other three and always adds up.
+  const received =
+    pipeline.filedAutomatically + pipeline.agentWorking + needsReview
   return (
     <dl className="grid grid-cols-4 divide-x divide-slate-200 rounded-md border border-slate-200 bg-surface">
-      <Cell label="Received today" value={pipeline.receivedToday} />
+      <Cell label="Received today" value={received} />
       <Cell label="Agent working" value={pipeline.agentWorking} />
       <Cell label="Filed automatically" value={pipeline.filedAutomatically} />
       <Cell label="Needs review" value={needsReview}>

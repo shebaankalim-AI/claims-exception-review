@@ -1,12 +1,12 @@
 import { useRef } from 'react'
 import { Icon } from '@/components/Icon'
 import { useShortcut } from '@/lib/shortcutContext'
+import { CURRENT_USER } from '../currentUser'
 import { KeyHint } from './KeyHint'
 import { SHORTCUTS } from './shortcutDefinitions'
 import { Tooltip } from './Tooltip'
 
-// A fictional user, for the placeholder avatar.
-const USER = { name: 'Casey Lindqvist', initials: 'CL', role: 'Examiner' }
+const USER = CURRENT_USER
 
 export function Header() {
   const searchRef = useRef<HTMLInputElement>(null)
