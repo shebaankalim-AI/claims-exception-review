@@ -1,6 +1,8 @@
-# Claims Exception Review (concept)
+# Assay (concept)
 
 An independent concept prototype for an exception-review screen in a claims-automation tool, built from public information. It uses mock data only and has no backend.
+
+The name Assay and its logo are placeholders.
 
 ## Getting started
 
