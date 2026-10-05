@@ -1,178 +1,9 @@
 import { toClaimId } from '@/domain'
 import type { Claim } from '@/domain'
+import { classCodeClaim } from './classCodeClaim'
 
 // Everything in this file is invented. Names, employers, policy and claim
 // numbers are fictional and do not refer to real people or organizations.
-
-const classCodeClaim: Claim = {
-  id: toClaimId('CLM-24-0417'),
-  employer: 'Harbor & Pine Logistics',
-  lineOfBusiness: 'workers_comp',
-  exceptionReasons: ['class_code_unclear', 'document_missing'],
-  agentNote: 'Two class codes plausible; no medical report yet',
-  receivedAt: '2025-02-27T05:12:00.000Z',
-  flaggedAt: '2025-02-27T05:15:00.000Z',
-  assignee: 'Priya Natarajan',
-  state: 'needs_review',
-  documents: [
-    {
-      id: 'CLM-24-0417-froi',
-      kind: 'froi',
-      title: 'First report of injury',
-      language: 'en',
-      pages: [
-        [
-          'FIRST REPORT OF INJURY',
-          'Employer: Harbor & Pine Logistics',
-          'Employee: Devon Achterberg',
-          'Date of injury: 2025-02-26',
-          'Job title: Dispatch clerk / yard assistant',
-          'Description: Employee slipped on wet loading dock steps while carrying paperwork to a truck driver and twisted left ankle.',
-          'Policy: POL-77-30412',
-          'Reported by: Imogen Fairweather, HR coordinator',
-        ].join('\n'),
-        [
-          'EMPLOYER STATEMENT',
-          'Employee works mostly at a desk in the dispatch office but spends part of each shift on the dock and yard.',
-          'Supervisor: Calloway Reyes',
-        ].join('\n'),
-      ],
-    },
-    {
-      id: 'CLM-24-0417-email',
-      kind: 'email',
-      title: 'Email thread: dock injury follow-up',
-      language: 'en',
-      pages: [
-        [
-          'From: Imogen Fairweather',
-          'To: Claims intake',
-          "Subject: Devon's ankle injury",
-          '',
-          'Devon is mostly in the dispatch office, but he helps load paperwork and tags on the dock a couple of hours a day. Payroll lists him under the warehouse team.',
-          '',
-          '---',
-          'From: Claims intake',
-          'To: Imogen Fairweather',
-          "Subject: RE: Devon's ankle injury",
-          '',
-          "Thanks. Can you send the doctor's note when you have it?",
-          '',
-          '---',
-          'From: Imogen Fairweather',
-          "Subject: RE: RE: Devon's ankle injury",
-          '',
-          'He was seen at an urgent care on Feb 26 but we do not have the paperwork yet.',
-        ].join('\n'),
-      ],
-    },
-  ],
-  fields: [
-    {
-      key: 'claimant_name',
-      label: 'Claimant',
-      value: 'Devon Achterberg',
-      status: 'verified',
-      resolvedBy: 'agent',
-      sources: [
-        {
-          documentId: 'CLM-24-0417-froi',
-          page: 1,
-          excerpt: 'Employee: Devon Achterberg',
-        },
-      ],
-    },
-    {
-      key: 'date_of_injury',
-      label: 'Date of injury',
-      value: '2025-02-26',
-      status: 'verified',
-      resolvedBy: 'agent',
-      sources: [
-        {
-          documentId: 'CLM-24-0417-froi',
-          page: 1,
-          excerpt: 'Date of injury: 2025-02-26',
-        },
-      ],
-    },
-    {
-      key: 'injury_description',
-      label: 'Injury description',
-      value: 'Slipped on wet dock steps and twisted left ankle',
-      status: 'verified',
-      resolvedBy: 'agent',
-      sources: [
-        {
-          documentId: 'CLM-24-0417-froi',
-          page: 1,
-          excerpt:
-            'Employee slipped on wet loading dock steps while carrying paperwork to a truck driver and twisted left ankle.',
-        },
-      ],
-    },
-    {
-      key: 'class_code',
-      label: 'Class code',
-      value: 'A-102 (office)',
-      status: 'needs_review',
-      reason: 'Two class codes plausible: A-102 (office) and B-340 (warehouse)',
-      resolvedBy: 'agent',
-      sources: [
-        {
-          documentId: 'CLM-24-0417-froi',
-          page: 2,
-          excerpt:
-            'Employee works mostly at a desk in the dispatch office but spends part of each shift on the dock and yard.',
-        },
-        {
-          documentId: 'CLM-24-0417-email',
-          page: 1,
-          excerpt: 'Payroll lists him under the warehouse team.',
-        },
-      ],
-    },
-    {
-      key: 'treating_physician',
-      label: 'Treating physician',
-      value: null,
-      status: 'missing',
-      reason: 'No medical report received yet',
-      resolvedBy: 'agent',
-      sources: [
-        {
-          documentId: 'CLM-24-0417-email',
-          page: 1,
-          excerpt: 'we do not have the paperwork yet',
-        },
-      ],
-    },
-  ],
-  activity: [
-    {
-      at: '2025-02-27T05:14:00.000Z',
-      actor: 'agent',
-      action: 'Read 2 documents',
-    },
-    {
-      at: '2025-02-27T05:15:00.000Z',
-      actor: 'agent',
-      action: 'Extracted 5 fields',
-    },
-    {
-      at: '2025-02-27T05:15:00.000Z',
-      actor: 'agent',
-      action: 'Flagged Class code',
-      detail: 'Two class codes plausible: A-102 (office) and B-340 (warehouse)',
-    },
-    {
-      at: '2025-02-27T05:15:00.000Z',
-      actor: 'agent',
-      action: 'Flagged Treating physician',
-      detail: 'No medical report received yet',
-    },
-  ],
-}
 
 const duplicateClaim: Claim = {
   id: toClaimId('CLM-24-0422'),
@@ -227,6 +58,7 @@ const duplicateClaim: Claim = {
     {
       key: 'claimant_name',
       label: 'Claimant',
+      stage: 'intake',
       value: 'Rosalind Okonkwo-Bell',
       status: 'verified',
       resolvedBy: 'agent',
@@ -241,6 +73,7 @@ const duplicateClaim: Claim = {
     {
       key: 'date_of_injury',
       label: 'Date of injury',
+      stage: 'intake',
       value: '2025-02-03',
       status: 'needs_review',
       reason:
@@ -257,6 +90,7 @@ const duplicateClaim: Claim = {
     {
       key: 'injury_description',
       label: 'Injury description',
+      stage: 'intake',
       value: 'Burn to right forearm from an oven rack',
       status: 'verified',
       resolvedBy: 'agent',
@@ -272,6 +106,7 @@ const duplicateClaim: Claim = {
     {
       key: 'policy_tier',
       label: 'Policy tier',
+      stage: 'coverage',
       value: 'Standard',
       status: 'needs_review',
       reason:
@@ -293,6 +128,7 @@ const duplicateClaim: Claim = {
     {
       key: 'related_claim',
       label: 'Possible duplicate of',
+      stage: 'liability',
       value: 'CLM-24-0388',
       status: 'needs_review',
       reason: 'Same claimant, a similar injury a few weeks earlier',
@@ -410,6 +246,7 @@ const nonEnglishClaim: Claim = {
     {
       key: 'claimant_name',
       label: 'Claimant',
+      stage: 'intake',
       value: 'Teodoro Valcárcel',
       status: 'verified',
       resolvedBy: 'agent',
@@ -429,6 +266,7 @@ const nonEnglishClaim: Claim = {
     {
       key: 'date_of_injury',
       label: 'Date of injury',
+      stage: 'intake',
       value: '2025-02-26',
       status: 'verified',
       resolvedBy: 'agent',
@@ -448,6 +286,7 @@ const nonEnglishClaim: Claim = {
     {
       key: 'injury_description',
       label: 'Injury description',
+      stage: 'intake',
       value: 'Cut left hand on a blade while cutting boxes',
       status: 'needs_review',
       reason:
@@ -476,6 +315,7 @@ const nonEnglishClaim: Claim = {
     {
       key: 'injury_detail',
       label: 'Injury detail',
+      stage: 'damages',
       value: 'Laceration, left palm, 3 cm, sutured',
       status: 'verified',
       resolvedBy: 'agent',
@@ -491,6 +331,7 @@ const nonEnglishClaim: Claim = {
     {
       key: 'work_status',
       label: 'Work status',
+      stage: 'damages',
       value: 'Light duty for 7 days',
       status: 'verified',
       resolvedBy: 'agent',

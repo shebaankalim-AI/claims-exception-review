@@ -1,5 +1,6 @@
 import {
   ClaimsRepositoryError,
+  toClaimId,
   matchesExceptionFilter,
   reviewReducer,
 } from '@/domain'
@@ -15,8 +16,15 @@ import type {
 import { detailedClaims } from './detailedClaims'
 import { lightClaims } from './lightClaims'
 import { MOCK_REFERENCE_TIME } from './referenceTime'
+import { completeStages } from './standardFields'
 
-export const mockClaims: readonly Claim[] = [...detailedClaims, ...lightClaims]
+export const mockClaims: readonly Claim[] = [
+  ...detailedClaims,
+  ...lightClaims,
+].map(completeStages)
+
+// The one claim whose first filing attempt fails, so the error state can be seen.
+const FAILS_FIRST_FILING = [toClaimId('CLM-24-0422')]
 
 // What the mock agent reports. "Received today" is not stored: it is worked out
 // from these and the queue (see getPipelineSummary), so the strip always adds up.
@@ -34,6 +42,8 @@ export type MockRepositoryOptions = {
   claims?: readonly Claim[]
   /** The two counts the mock agent reports. Received today is derived from them and the queue. */
   pipeline?: AgentCounts
+  /** Claims whose first filing attempt fails with `unavailable`, the way a down system of record would. */
+  failFirstFilingFor?: readonly ClaimId[]
   /** The repository's clock. Ages are measured against it. */
   now?: () => Date
 }
@@ -80,6 +90,7 @@ export function createMockClaimsRepository(
     delayMs = 0,
     claims = mockClaims,
     pipeline = MOCK_AGENT_COUNTS,
+    failFirstFilingFor = FAILS_FIRST_FILING,
     now = () => new Date(),
   } = options
 
@@ -89,6 +100,8 @@ export function createMockClaimsRepository(
   const store = new Map<ClaimId, Claim>(
     claims.map((c) => [c.id, rebase(c, shiftMs)]),
   )
+
+  const stillToFail = new Set<ClaimId>(failFirstFilingFor)
 
   const wait = () =>
     delayMs > 0
@@ -134,7 +147,19 @@ export function createMockClaimsRepository(
 
     async applyAction(id: ClaimId, action: ReviewAction) {
       await wait()
-      const result = reviewReducer(requireClaim(id), action, now())
+      const current = requireClaim(id)
+      // Only a filing that would otherwise succeed fails, once, and changes nothing.
+      if (
+        action.type === 'file' &&
+        current.state === 'approved' &&
+        stillToFail.delete(id)
+      ) {
+        throw new ClaimsRepositoryError(
+          'unavailable',
+          "The system of record didn't respond.",
+        )
+      }
+      const result = reviewReducer(current, action, now())
       if (!result.ok) {
         throw new ClaimsRepositoryError(result.error.code, result.error.message)
       }

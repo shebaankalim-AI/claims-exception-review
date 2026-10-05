@@ -1,4 +1,5 @@
 import { toClaimId } from '@/domain'
+import { stageForKey } from './standardFields'
 import type {
   Claim,
   ClaimDocument,
@@ -17,6 +18,8 @@ type FieldSpec = {
   value: string | null
   status: FieldStatus
   reason?: string
+  /** For a missing field: which document would normally contain it. */
+  expectedIn?: string
 }
 
 type LightClaimSpec = {
@@ -40,21 +43,21 @@ function buildClaim(spec: LightClaimSpec): Claim {
   const document: ClaimDocument = {
     id: documentId,
     kind: 'froi',
-    title: 'First report of injury',
+    title: 'First report form',
     language: spec.language ?? 'en',
     pages: [
-      ['FIRST REPORT OF INJURY', `Employer: ${spec.employer}`, ...lines].join(
-        '\n',
-      ),
+      ['FIRST REPORT FORM', `Employer: ${spec.employer}`, ...lines].join('\n'),
     ],
   }
 
   const fields: Field[] = spec.fields.map((f) => ({
     key: f.key,
     label: f.label,
+    stage: stageForKey(f.key),
     value: f.value,
     status: f.status,
     ...(f.reason ? { reason: f.reason } : {}),
+    ...(f.expectedIn ? { expectedIn: f.expectedIn } : {}),
     resolvedBy: 'agent',
     sources:
       f.value === null
@@ -132,6 +135,7 @@ export const lightClaims: Claim[] = [
         value: null,
         status: 'missing',
         reason: 'No medical report received yet',
+        expectedIn: 'a medical report from the treating clinic',
       },
     ],
   }),
@@ -225,6 +229,7 @@ export const lightClaims: Claim[] = [
         value: null,
         status: 'missing',
         reason: 'The client has not sent a statement',
+        expectedIn: 'a witness statement from the client site',
       },
     ],
   }),
@@ -307,6 +312,7 @@ export const lightClaims: Claim[] = [
         value: null,
         status: 'missing',
         reason: 'The harbour office report was referenced but not attached',
+        expectedIn: 'the harbour office incident report',
       },
     ],
   }),
