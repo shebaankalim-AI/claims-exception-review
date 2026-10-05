@@ -14,6 +14,9 @@ export type ExceptionReason =
   | 'non_english_form'
   | 'possible_duplicate'
 
+export type LineOfBusiness =
+  'workers_comp' | 'occupational_accident' | 'employers_liability'
+
 export type ClaimState =
   'needs_review' | 'approved' | 'filed' | 'sent_back' | 'escalated'
 
@@ -62,9 +65,15 @@ export type ActivityEntry = {
 export type Claim = {
   id: ClaimId
   employer: string
-  exceptionReasons: ExceptionReason[]
+  lineOfBusiness: LineOfBusiness
+  /** Why the agent stopped. The first reason is the primary one, shown in the queue. */
+  exceptionReasons: [ExceptionReason, ...ExceptionReason[]]
+  /** A short note in the agent's own words, e.g. "two codes plausible". Never names the claimant. */
+  agentNote: string
   /** ISO 8601 timestamp. */
   receivedAt: string
+  /** ISO 8601 timestamp: when the agent flagged the claim. The queue's age counts from here. */
+  flaggedAt: string
   assignee: string
   state: ClaimState
   fields: Field[]
@@ -72,10 +81,31 @@ export type Claim = {
   activity: ActivityEntry[]
 }
 
+/** The queue's view of a claim. It holds no claimant names and no field values. */
 export type ClaimSummary = Pick<
   Claim,
-  'id' | 'employer' | 'exceptionReasons' | 'receivedAt' | 'assignee' | 'state'
->
+  | 'id'
+  | 'employer'
+  | 'lineOfBusiness'
+  | 'exceptionReasons'
+  | 'agentNote'
+  | 'receivedAt'
+  | 'flaggedAt'
+  | 'assignee'
+  | 'state'
+> & {
+  /** Fields still marked needs_review. Derived from the claim's fields, never stored apart from them. */
+  toConfirmCount: number
+  /** Fields still marked missing. Derived the same way. */
+  missingCount: number
+}
+
+/** Counts the agent's pipeline reports. "Needs review" is deliberately absent: the queue is the source for it. */
+export type PipelineSummary = {
+  receivedToday: number
+  agentWorking: number
+  filedAutomatically: number
+}
 
 export type ReviewAction =
   | { type: 'confirmField'; fieldKey: string }

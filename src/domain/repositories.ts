@@ -5,11 +5,17 @@ import type {
   ClaimState,
   ClaimSummary,
   ExceptionReason,
+  LineOfBusiness,
+  PipelineSummary,
   ReviewAction,
 } from './types'
 
 export type ExceptionFilter = {
+  /** Matches the claim's primary reason, the one the queue shows. */
   reason?: ExceptionReason
+  lineOfBusiness?: LineOfBusiness
+  /** Only claims flagged at least this many minutes ago. */
+  minAgeMinutes?: number
   state?: ClaimState
   assignee?: string
 }
@@ -29,6 +35,7 @@ export class ClaimsRepositoryError extends Error {
 
 export interface ClaimsRepository {
   listExceptions(filter?: ExceptionFilter): Promise<ClaimSummary[]>
+  getPipelineSummary(): Promise<PipelineSummary>
   getClaim(id: ClaimId): Promise<Claim>
   /** Rejects with ClaimsRepositoryError if the action is illegal for the claim. */
   applyAction(id: ClaimId, action: ReviewAction): Promise<Claim>
