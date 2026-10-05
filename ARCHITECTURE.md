@@ -24,7 +24,7 @@ src/
 
 The split inside `src/` is by **feature first**, then by layer. A change request almost always names a screen ("the field list on review"), not a layer in isolation, so everything one piece of work touches lives in one folder.
 
-**Status:** Implemented. All eight folders exist. `app/` holds the providers, the screen switching and the app shell in `app/shell/` (collapsible side nav, header, AI panel). `domain/` holds the types, the review reducer and the repository interface, and `data/mock/` holds the mock repository and fixtures. `lib/` holds the repository hook and the shortcut registry. `features/` has `queue/` and `review/`, each a labelled placeholder screen. `components/` holds only the `Icon` wrapper, `styles/` holds the design tokens in `index.css`, and `test/` holds the test setup.
+**Status:** Implemented. All eight folders exist. `app/` holds the providers, the screen switching and the app shell in `app/shell/` (collapsible side nav, header, AI panel). `domain/` holds the types, the review reducer and the repository interface, and `data/mock/` holds the mock repository and fixtures. `lib/` holds the repository hook and the shortcut registry. `features/` has `queue/` and `review/`, each a labelled placeholder screen. `components/` holds the `Icon` wrapper and the logo (`Logo`, `LogoMark`), `styles/` holds the design tokens in `index.css`, and `test/` holds the test setup.
 
 ## 3. Dependency rules
 
@@ -96,7 +96,7 @@ Visual decisions are tokens in the `@theme` block of `src/styles/index.css` (Tai
 
 Shared primitives go in `components/` once they are used by two features, not before.
 
-**Status:** Tokens: Implemented. The `@theme` block holds the neutral ramp, the accent, the four review-state colours with soft backgrounds, the type scale, the 4px grid, row height, radii, icon sizes, the nav animation duration, the focus ring and the layout widths. It resets the default colour, text and radius namespaces so only token values exist. Light mode only. Components: partly. The shell pieces (side nav, header, AI panel) live in `app/shell/` and use tokens only, and `components/` has the `Icon` wrapper, the only file allowed to import the icon package (decision 0005; a lint rule enforces it). The other shared primitives are Planned, and the state badge that pairs each review state with an icon and a label is not built yet.
+**Status:** Tokens: Implemented. The `@theme` block holds the neutral ramp, the accent, the four review-state colours with soft backgrounds, the type scale, the 4px grid, row height, radii, icon and logo sizes, the logo letter-spacing, the nav animation duration, the focus ring and the layout widths. It resets the default colour, text and radius namespaces so only token values exist. Light mode only. Components: partly. The shell pieces (side nav, header, AI panel) live in `app/shell/` and use tokens only, and `components/` has the `Icon` wrapper and the logo. `Icon` is the only file allowed to import the icon package (decision 0005; a lint rule enforces it). The other shared primitives are Planned, and the state badge that pairs each review state with an icon and a label is not built yet.
 
 ## 8. Keyboard and accessibility
 
