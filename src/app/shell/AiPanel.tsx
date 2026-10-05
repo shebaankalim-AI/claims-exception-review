@@ -19,11 +19,13 @@ export function AiPanel({ open, onToggle, children }: AiPanelProps) {
       }`}
     >
       <div
-        className={`flex h-control items-center gap-2 border-b border-border px-2 ${
+        className={`flex h-control shrink-0 items-center gap-2 border-b border-border px-3 ${
           open ? 'justify-between' : 'justify-center'
         }`}
       >
-        {open && <h2 className="font-medium">AI panel</h2>}
+        {open && (
+          <h2 className="text-xs font-medium text-ink-muted">AI panel</h2>
+        )}
         <button
           type="button"
           onClick={onToggle}
@@ -31,7 +33,7 @@ export function AiPanel({ open, onToggle, children }: AiPanelProps) {
           aria-expanded={open}
           aria-controls="ai-panel-body"
           aria-keyshortcuts={SHORTCUTS.toggleAiPanel.key}
-          className="focus-ring flex h-6 items-center gap-1 rounded-sm px-1 hover:bg-surface-muted"
+          className="focus-ring flex h-6 items-center gap-1 rounded-sm px-1 text-ink-muted hover:bg-surface-muted hover:text-ink"
         >
           <span aria-hidden="true">{open ? '›' : '‹'}</span>
           {open && <KeyHint>{SHORTCUTS.toggleAiPanel.key}</KeyHint>}
@@ -40,7 +42,7 @@ export function AiPanel({ open, onToggle, children }: AiPanelProps) {
       <div
         id="ai-panel-body"
         hidden={!open}
-        className="min-h-0 flex-1 overflow-auto p-3"
+        className="min-h-0 flex-1 overflow-auto p-5"
       >
         {children ?? (
           <p className="text-ink-muted">

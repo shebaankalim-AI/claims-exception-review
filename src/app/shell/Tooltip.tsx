@@ -52,7 +52,7 @@ export function Tooltip({
         <span
           role="tooltip"
           id={id}
-          className={`pointer-events-none absolute z-10 rounded-sm bg-ink px-2 py-1 text-xs whitespace-nowrap text-surface ${PLACEMENT_CLASS[placement]}`}
+          className={`pointer-events-none absolute z-10 rounded-sm bg-ink px-2 py-1 text-xs font-medium whitespace-nowrap text-surface shadow-raised ${PLACEMENT_CLASS[placement]}`}
         >
           {text}
         </span>

@@ -13,7 +13,7 @@ export function Header() {
   useShortcut(SHORTCUTS.focusSearch, () => searchRef.current?.focus())
 
   return (
-    <header className="col-span-2 col-start-2 row-start-1 flex h-header items-center gap-4 border-b border-border bg-surface px-4">
+    <header className="col-span-2 col-start-2 row-start-1 flex h-header items-center gap-4 border-b border-border bg-page px-8">
       <div role="search" className="relative w-80">
         <input
           ref={searchRef}
@@ -21,9 +21,9 @@ export function Header() {
           aria-label="Search claims"
           aria-keyshortcuts={SHORTCUTS.focusSearch.key}
           placeholder="Search claims"
-          className="focus-ring h-control w-full rounded-md border border-border-strong bg-surface pr-8 pl-2 placeholder:text-ink-subtle"
+          className="focus-ring h-control w-full rounded-md border border-border bg-surface pr-10 pl-3 shadow-card placeholder:text-ink-subtle"
         />
-        <span className="pointer-events-none absolute top-1/2 right-2 -translate-y-1/2">
+        <span className="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2">
           <KeyHint>{SHORTCUTS.focusSearch.key}</KeyHint>
         </span>
       </div>
@@ -37,7 +37,7 @@ export function Header() {
               aria-label="Settings"
               aria-describedby={describedBy}
               aria-disabled="true"
-              className="focus-ring flex size-8 cursor-not-allowed items-center justify-center rounded-md text-disabled"
+              className="focus-ring flex size-control cursor-not-allowed items-center justify-center rounded-md text-disabled"
             >
               <Icon name="settings" size="lg" />
             </button>
@@ -52,7 +52,7 @@ export function Header() {
               onFocus={trigger.onFocus}
               onBlur={trigger.onBlur}
               aria-label={`${USER.name}, ${USER.role}`}
-              className="focus-ring flex size-8 items-center justify-center rounded-full bg-border text-xs font-medium text-ink hover:bg-accent-border"
+              className="focus-ring flex size-control items-center justify-center rounded-full bg-accent-soft text-xs font-semibold text-accent hover:bg-accent-border"
             >
               <span aria-hidden="true">{USER.initials}</span>
             </button>

@@ -25,10 +25,10 @@ function NavSection({
     <div
       role="group"
       aria-label={label}
-      className={collapsed ? 'mt-2 border-t border-border pt-2' : 'mt-4'}
+      className={collapsed ? 'mt-3 border-t border-border pt-3' : 'mt-5'}
     >
       {!collapsed && (
-        <h2 className="px-2 pb-1 text-xs font-medium tracking-wide whitespace-nowrap text-ink-muted uppercase">
+        <h2 className="px-3 pb-2 text-xs font-medium whitespace-nowrap text-ink-muted">
           {label}
         </h2>
       )}
@@ -65,7 +65,7 @@ function CollapseButton({
           aria-label={label}
           aria-expanded={!collapsed}
           aria-keyshortcuts={SHORTCUTS.toggleNav.key}
-          className="focus-ring flex h-control w-8 items-center justify-center rounded-md text-ink hover:bg-surface-muted"
+          className="focus-ring flex size-control items-center justify-center rounded-md text-ink-muted hover:bg-sidebar-hover hover:text-ink"
         >
           <Icon name="menu" size="lg" />
         </button>
@@ -82,7 +82,7 @@ export function SideNav({
   return (
     <nav
       aria-label="Main"
-      className={`col-start-1 row-span-2 row-start-1 flex flex-col border-r border-border bg-surface transition-[width] duration-(--duration-nav) motion-reduce:transition-none ${
+      className={`col-start-1 row-span-2 row-start-1 flex flex-col border-r border-border bg-sidebar transition-[width] duration-(--duration-nav) motion-reduce:transition-none ${
         collapsed ? 'w-nav-collapsed' : 'w-nav'
       }`}
     >
@@ -94,14 +94,14 @@ export function SideNav({
       >
         {/* overflow-hidden clips the wordmark, rather than letting it spill
             over the page, while the width animates. */}
-        <div className="min-w-0 overflow-hidden px-2 text-ink">
+        <div className="min-w-0 overflow-hidden px-1 text-accent">
           {collapsed ? <LogoMark label="Assay" /> : <Logo />}
         </div>
         <CollapseButton collapsed={collapsed} onToggle={onToggleCollapsed} />
       </div>
 
       <div
-        className={`flex flex-1 flex-col px-2 pb-2 ${collapsed ? 'pt-11' : 'pt-0'}`}
+        className={`flex flex-1 flex-col px-2 pb-2 ${collapsed ? 'pt-12' : 'pt-0'}`}
       >
         <NavSection label="Work" collapsed={collapsed}>
           <NavItem
@@ -130,7 +130,7 @@ export function SideNav({
           <NavItem label="Reports" icon="reports" collapsed={collapsed} later />
         </NavSection>
 
-        <ul className="mt-auto pt-2">
+        <ul className="mt-auto pt-3">
           <NavItem
             label="Help and shortcuts"
             icon="help"

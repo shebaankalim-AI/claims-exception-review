@@ -49,17 +49,23 @@ export function NavItem({
             }
             aria-keyshortcuts={shortcutKey}
             onClick={later ? undefined : onClick}
-            className={`focus-ring flex h-control w-full items-center gap-2 overflow-hidden rounded-md px-2 whitespace-nowrap ${
+            className={`focus-ring flex h-control w-full items-center gap-3 overflow-hidden rounded-md px-3 whitespace-nowrap ${
               collapsed ? 'justify-center' : ''
             } ${
               later
                 ? 'cursor-not-allowed text-disabled'
                 : current
-                  ? 'bg-accent-soft font-medium text-ink'
-                  : 'text-ink hover:bg-surface-muted'
+                  ? 'bg-surface font-semibold text-ink shadow-card'
+                  : 'text-ink-muted hover:bg-sidebar-hover hover:text-ink'
             }`}
           >
-            <Icon name={icon} size="lg" weight={current ? 'fill' : 'regular'} />
+            <span className={current ? 'text-accent' : undefined}>
+              <Icon
+                name={icon}
+                size="lg"
+                weight={current ? 'fill' : 'regular'}
+              />
+            </span>
             {!collapsed && <span className="flex-1 text-left">{label}</span>}
           </button>
         )}

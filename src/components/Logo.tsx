@@ -14,7 +14,9 @@ export function Logo() {
       aria-label={PRODUCT_NAME}
       className="inline-flex items-center gap-2 whitespace-nowrap text-ink"
     >
-      <LogoMark />
+      <span className="text-accent">
+        <LogoMark />
+      </span>
       <span aria-hidden="true" className="text-xl font-semibold tracking-logo">
         assay
       </span>
