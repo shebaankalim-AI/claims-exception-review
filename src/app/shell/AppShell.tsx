@@ -14,9 +14,12 @@ type AppShellProps = {
 }
 
 export function AppShell({ screen, onGoToQueue, children }: AppShellProps) {
+  const [navCollapsed, setNavCollapsed] = useState(false)
   const [aiPanelOpen, setAiPanelOpen] = useState(true)
+  const toggleNav = () => setNavCollapsed((collapsed) => !collapsed)
   const toggleAiPanel = () => setAiPanelOpen((open) => !open)
 
+  useShortcut(SHORTCUTS.toggleNav, toggleNav)
   useShortcut(SHORTCUTS.toggleAiPanel, toggleAiPanel)
   useShortcut(SHORTCUTS.goToQueue, onGoToQueue)
 
@@ -29,7 +32,11 @@ export function AppShell({ screen, onGoToQueue, children }: AppShellProps) {
         Skip to main content
       </a>
       <Header screen={screen} onGoToQueue={onGoToQueue} />
-      <SideNav onGoToQueue={onGoToQueue} />
+      <SideNav
+        collapsed={navCollapsed}
+        onToggleCollapsed={toggleNav}
+        onGoToQueue={onGoToQueue}
+      />
       <main id="main-content" tabIndex={-1} className="min-w-0 overflow-auto">
         {children}
       </main>

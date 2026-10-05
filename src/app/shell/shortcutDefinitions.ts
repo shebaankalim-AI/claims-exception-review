@@ -2,6 +2,11 @@
 // browser or OS shortcuts (which use Ctrl, Cmd or Alt). Review actions will
 // need keys later, so these leave the common letters free.
 export const SHORTCUTS = {
+  toggleNav: {
+    id: 'toggle-nav',
+    key: '[',
+    description: 'Collapse or expand the side navigation',
+  },
   toggleAiPanel: {
     id: 'toggle-ai-panel',
     key: ']',
