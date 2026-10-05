@@ -22,6 +22,7 @@
   --text-lg--line-height: 1.4;
   --text-xl: 18px;
   --text-xl--line-height: 1.3;
+  --tracking-logo: -0.02em;
 
   /* Neutral ramp */
   --color-slate-50: #f8fafc;
@@ -69,6 +70,8 @@
   --spacing-app-min: 1280px;
   --spacing-icon: 16px;
   --spacing-icon-lg: 20px;
+  --spacing-logo: 24px;
+  --spacing-logo-lg: 32px;
 
   /* Motion: brief, and switched off for prefers-reduced-motion in components. */
   --duration-nav: 150ms;
