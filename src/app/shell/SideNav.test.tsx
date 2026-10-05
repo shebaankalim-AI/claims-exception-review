@@ -13,8 +13,14 @@ const collapseButton = () =>
 const expandButton = () =>
   screen.getByRole('button', { name: 'Expand navigation' })
 
+// "Later" lives in a hidden description and in tooltips, never as visible text.
+const visibleLaterText = () =>
+  screen
+    .queryAllByText('Later')
+    .filter((el) => el.checkVisibility?.() !== false && !el.hidden)
+
 describe('side navigation structure', () => {
-  it('groups items under Work and Insights, with the brand and user row', () => {
+  it('groups items under Work and Insights, with the brand and no user row', () => {
     renderApp()
     expect(
       within(nav()).getByRole('img', { name: 'Assay' }),
@@ -31,7 +37,8 @@ describe('side navigation structure', () => {
         within(nav()).getByRole('group', { name: 'Insights' }),
       ).getAllByRole('button'),
     ).toHaveLength(1)
-    expect(within(nav()).getByText('Casey Lindqvist')).toBeInTheDocument()
+    // The user lives in the header now.
+    expect(within(nav()).queryByText('Casey Lindqvist')).not.toBeInTheDocument()
   })
 
   it('keeps aria-current on the active item', () => {
@@ -81,7 +88,7 @@ describe('collapsing the side navigation', () => {
     expect(within(nav()).queryByText('Work')).not.toBeInTheDocument()
     expect(within(nav()).queryByText('Insights')).not.toBeInTheDocument()
     expect(within(nav()).queryByText('assay')).not.toBeInTheDocument()
-    expect(within(nav()).queryByText('Later')).not.toBeInTheDocument()
+    expect(visibleLaterText()).toEqual([])
 
     await user.click(expandButton())
     expect(collapseButton()).toHaveAttribute('aria-expanded', 'true')
@@ -117,12 +124,12 @@ describe('collapsing the side navigation', () => {
 
     within(nav()).getByRole('button', { name: 'Exceptions' }).focus()
     expect(
-      await screen.findByRole('tooltip', { name: 'Exceptions (Q)' }),
+      await screen.findByRole('tooltip', { name: 'Exceptions' }),
     ).toBeInTheDocument()
 
     await user.tab()
     expect(
-      screen.queryByRole('tooltip', { name: 'Exceptions (Q)' }),
+      screen.queryByRole('tooltip', { name: 'Exceptions' }),
     ).not.toBeInTheDocument()
   })
 
@@ -158,12 +165,10 @@ describe('collapsing the side navigation', () => {
     ).toBeInTheDocument()
   })
 
-  it('does not show tooltips on items while expanded, since the labels are visible', async () => {
+  it('does not show a tooltip on a working item while expanded, since its label is visible', async () => {
     const user = renderApp()
-    await user.hover(within(nav()).getByRole('button', { name: /^All claims/ }))
-    expect(
-      screen.queryByRole('tooltip', { name: /All claims|Exceptions/ }),
-    ).not.toBeInTheDocument()
+    await user.hover(within(nav()).getByRole('button', { name: 'Exceptions' }))
+    expect(screen.queryByRole('tooltip')).not.toBeInTheDocument()
   })
 
   it('does not activate a disabled item when collapsed', async () => {
@@ -194,5 +199,90 @@ describe('the [ shortcut', () => {
 
     expect(search).toHaveValue('[')
     expect(collapseButton()).toBeInTheDocument()
+  })
+})
+
+describe('items that are not built yet', () => {
+  const later = [
+    'All claims',
+    'Agent activity',
+    'Reports',
+    'Help and shortcuts',
+  ]
+
+  it.each(later)(
+    'shows no visible "Later" for %s, but describes it as Later to assistive tech',
+    (name) => {
+      renderApp()
+      const item = within(nav()).getByRole('button', { name })
+      expect(item).toHaveAttribute('aria-disabled', 'true')
+      expect(item).toHaveAccessibleDescription('Later')
+      expect(visibleLaterText()).toEqual([])
+    },
+  )
+
+  it.each(later)(
+    'shows a tooltip with Later for %s on keyboard focus and on hover, while expanded',
+    async (name) => {
+      const user = renderApp()
+      const item = within(nav()).getByRole('button', { name })
+
+      act(() => item.focus())
+      expect(
+        await screen.findByRole('tooltip', { name: `${name} (Later)` }),
+      ).toBeInTheDocument()
+      act(() => item.blur())
+      await user.hover(item)
+      expect(
+        await screen.findByRole('tooltip', { name: `${name} (Later)` }),
+      ).toBeInTheDocument()
+    },
+  )
+
+  it.each(later)(
+    'shows a tooltip with Later for %s on keyboard focus, and keeps the description, while collapsed',
+    async (name) => {
+      const user = renderApp()
+      await user.click(collapseButton())
+      const item = within(nav()).getByRole('button', { name })
+
+      act(() => item.focus())
+      expect(
+        await screen.findByRole('tooltip', { name: `${name} (Later)` }),
+      ).toBeInTheDocument()
+      expect(item).toHaveAccessibleDescription(/Later/)
+      expect(visibleLaterText()).toEqual([])
+    },
+  )
+
+  it.each(later)('cannot activate %s', async (name) => {
+    const user = renderApp()
+    await user.click(screen.getByRole('button', { name: 'Open sample claim' }))
+    const item = within(nav()).getByRole('button', { name })
+    await user.click(item)
+    act(() => item.focus())
+    await user.keyboard('{Enter}')
+    expect(
+      screen.getByRole('heading', { name: /Review CLM-24-0417/ }),
+    ).toBeInTheDocument()
+  })
+})
+
+describe('the Exceptions item', () => {
+  it('shows no Q hint and no count badge', () => {
+    renderApp()
+    const item = within(nav()).getByRole('button', { name: 'Exceptions' })
+    expect(within(item).queryByText('Q')).not.toBeInTheDocument()
+    expect(within(item).queryByText('–')).not.toBeInTheDocument()
+    expect(item).toHaveTextContent(/^Exceptions$/)
+  })
+
+  it('still goes to the queue with the q shortcut', async () => {
+    const user = renderApp()
+    await user.click(screen.getByRole('button', { name: 'Open sample claim' }))
+    await user.keyboard('q')
+    expect(
+      screen.getByRole('heading', { name: 'Exceptions' }),
+    ).toBeInTheDocument()
   })
 })

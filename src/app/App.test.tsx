@@ -42,54 +42,33 @@ describe('side navigation', () => {
       within(nav).getByRole('button', { name: /^Exceptions/ }),
     ).toHaveAttribute('aria-current', 'page')
   })
-
-  it.each([
-    ['All claims'],
-    ['Agent activity'],
-    ['Reports'],
-    ['Help and shortcuts'],
-  ])(
-    'shows %s as disabled, labelled Later, and it cannot be activated',
-    async (name) => {
-      const user = renderApp()
-      const nav = screen.getByRole('navigation', { name: 'Main' })
-      const item = within(nav).getByRole('button', { name: new RegExp(name) })
-
-      // aria-disabled, not the disabled attribute, so the item stays
-      // focusable and can explain itself in a tooltip when collapsed.
-      expect(item).toHaveAttribute('aria-disabled', 'true')
-      expect(within(item).getByText('Later')).toBeInTheDocument()
-      expect(item).not.toHaveAttribute('aria-current')
-
-      // From the review screen, so a wrongly working item would visibly move us.
-      await user.click(
-        screen.getByRole('button', { name: 'Open sample claim' }),
-      )
-      await user.click(item)
-      item.focus()
-      await user.keyboard('{Enter}')
-      expect(reviewHeading()).toBeInTheDocument()
-    },
-  )
 })
 
 describe('switching screens', () => {
-  it('opens the review placeholder from the queue, and the breadcrumb returns', async () => {
+  it('opens the review placeholder from the queue, and the back link returns', async () => {
     const user = renderApp()
     expect(queueHeading()).toBeInTheDocument()
 
     await user.click(screen.getByRole('button', { name: 'Open sample claim' }))
     expect(reviewHeading()).toBeInTheDocument()
-    const breadcrumb = screen.getByRole('navigation', { name: 'Breadcrumb' })
-    expect(within(breadcrumb).getByText('CLM-24-0417')).toHaveAttribute(
-      'aria-current',
-      'page',
-    )
 
     await user.click(
-      within(breadcrumb).getByRole('button', { name: 'Exceptions' }),
+      within(screen.getByRole('main')).getByRole('button', {
+        name: 'Exceptions',
+      }),
     )
     expect(queueHeading()).toBeInTheDocument()
+  })
+
+  it('has no breadcrumb', async () => {
+    const user = renderApp()
+    expect(
+      screen.queryByRole('navigation', { name: 'Breadcrumb' }),
+    ).not.toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: 'Open sample claim' }))
+    expect(
+      screen.queryByRole('navigation', { name: 'Breadcrumb' }),
+    ).not.toBeInTheDocument()
   })
 
   it('goes back to the queue with the shortcut', async () => {
