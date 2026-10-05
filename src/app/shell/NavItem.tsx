@@ -45,7 +45,7 @@ export function NavItem({
             aria-disabled={later || undefined}
             aria-keyshortcuts={shortcutKey}
             onClick={later ? undefined : onClick}
-            className={`focus-ring flex h-row w-full items-center gap-2 rounded-md px-2 ${
+            className={`focus-ring flex h-row w-full items-center gap-2 overflow-hidden rounded-md px-2 whitespace-nowrap ${
               collapsed ? 'justify-center' : ''
             } ${
               later

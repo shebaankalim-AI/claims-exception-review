@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import { Icon } from '@/components/Icon'
-import { LogoMark } from './LogoMark'
+import { Logo } from '@/components/Logo'
+import { LogoMark } from '@/components/LogoMark'
 import { NavItem } from './NavItem'
 import { SHORTCUTS } from './shortcutDefinitions'
 import { Tooltip } from './Tooltip'
@@ -30,7 +31,7 @@ function NavSection({
       className={collapsed ? 'mt-2 border-t border-slate-200 pt-2' : 'mt-4'}
     >
       {!collapsed && (
-        <h2 className="px-2 pb-1 text-xs font-medium tracking-wide text-slate-600 uppercase">
+        <h2 className="px-2 pb-1 text-xs whitespace-nowrap font-medium tracking-wide text-slate-600 uppercase">
           {label}
         </h2>
       )}
@@ -115,13 +116,10 @@ export function SideNav({
             : 'flex items-center justify-between gap-2'
         }
       >
-        <div className="flex items-center gap-2 px-2">
-          <LogoMark />
-          {!collapsed && (
-            <span className="text-lg font-semibold whitespace-nowrap">
-              Exception Review
-            </span>
-          )}
+        {/* overflow-hidden clips the wordmark, rather than letting it spill
+            over the page, while the width animates. */}
+        <div className="min-w-0 overflow-hidden px-2 text-slate-900">
+          {collapsed ? <LogoMark label="Assay" /> : <Logo />}
         </div>
         <CollapseButton collapsed={collapsed} onToggle={onToggleCollapsed} />
       </div>

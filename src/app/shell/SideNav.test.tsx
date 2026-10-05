@@ -16,7 +16,9 @@ const expandButton = () =>
 describe('side navigation structure', () => {
   it('groups items under Work and Insights, with the brand and user row', () => {
     renderApp()
-    expect(screen.getByText('Exception Review')).toBeInTheDocument()
+    expect(
+      within(nav()).getByRole('img', { name: 'Assay' }),
+    ).toBeInTheDocument()
     expect(within(nav()).getByText('Work')).toBeInTheDocument()
     expect(within(nav()).getByText('Insights')).toBeInTheDocument()
     expect(
@@ -40,6 +42,33 @@ describe('side navigation structure', () => {
   })
 })
 
+describe('the logo', () => {
+  // Only the logo may carry the name: the avatar is also an image, so filter by name.
+  const logos = () => within(nav()).getAllByRole('img', { name: 'Assay' })
+
+  it('is exposed once, by the name Assay, when expanded', () => {
+    renderApp()
+    expect(logos()).toHaveLength(1)
+    // The wordmark is real text, visible but not announced a second time.
+    expect(within(nav()).getByText('assay')).toHaveAttribute(
+      'aria-hidden',
+      'true',
+    )
+  })
+
+  it('is exposed once, by the name Assay, when collapsed, without the wordmark', async () => {
+    const user = renderApp()
+    await user.click(collapseButton())
+    expect(logos()).toHaveLength(1)
+    expect(within(nav()).queryByText('assay')).not.toBeInTheDocument()
+  })
+
+  it('does not repeat the old placeholder name anywhere in the page', () => {
+    renderApp()
+    expect(screen.queryByText(/Exception Review/)).not.toBeInTheDocument()
+  })
+})
+
 describe('collapsing the side navigation', () => {
   it('starts expanded, and the button toggles aria-expanded and the section labels', async () => {
     const user = renderApp()
@@ -51,9 +80,7 @@ describe('collapsing the side navigation', () => {
     expect(expandButton()).toHaveAttribute('aria-expanded', 'false')
     expect(within(nav()).queryByText('Work')).not.toBeInTheDocument()
     expect(within(nav()).queryByText('Insights')).not.toBeInTheDocument()
-    expect(
-      within(nav()).queryByText('Exception Review'),
-    ).not.toBeInTheDocument()
+    expect(within(nav()).queryByText('assay')).not.toBeInTheDocument()
     expect(within(nav()).queryByText('Later')).not.toBeInTheDocument()
 
     await user.click(expandButton())
