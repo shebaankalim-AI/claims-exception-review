@@ -24,6 +24,8 @@ type ActionBarProps = {
   nextClaimId: ClaimId | null
   onApprove: () => void
   onFile: () => void
+  onSendBack: () => void
+  onEscalate: () => void
   onBack: () => void
   onOpenClaim: (id: ClaimId) => void
 }
@@ -64,6 +66,8 @@ export function ActionBar({
   nextClaimId,
   onApprove,
   onFile,
+  onSendBack,
+  onEscalate,
   onBack,
   onOpenClaim,
 }: ActionBarProps) {
@@ -105,11 +109,10 @@ export function ActionBar({
         >
           Approve
         </button>
-        {/* The send back and escalate dialogs come later. */}
-        <button type="button" className={secondary}>
+        <button type="button" onClick={onSendBack} className={secondary}>
           Send back
         </button>
-        <button type="button" className={secondary}>
+        <button type="button" onClick={onEscalate} className={secondary}>
           Escalate
         </button>
       </>
@@ -156,20 +159,15 @@ export function ActionBar({
     )
     buttons = (
       <>
-        {nextClaimId && (
-          <button
-            type="button"
-            onClick={() => onOpenClaim(nextClaimId)}
-            className={primary}
-          >
-            Next claim: {nextClaimId}
-          </button>
-        )}
+        {/* With none left, "Next claim" goes to the queue, which then says it is all clear. */}
         <button
           type="button"
-          onClick={onBack}
-          className={nextClaimId ? secondary : primary}
+          onClick={() => (nextClaimId ? onOpenClaim(nextClaimId) : onBack())}
+          className={primary}
         >
+          {nextClaimId ? `Next claim: ${nextClaimId}` : 'Next claim'}
+        </button>
+        <button type="button" onClick={onBack} className={secondary}>
           Back to queue
         </button>
       </>
