@@ -1,11 +1,16 @@
 import {
+  ArrowsDownUp,
   ChartBar,
+  CheckCircle,
+  CircleDashed,
   Files,
   GearSix,
   Lightning,
   List,
+  PencilSimple,
   Question,
   WarningCircle,
+  WarningDiamond,
 } from '@phosphor-icons/react'
 import type { Icon as PhosphorIcon } from '@phosphor-icons/react'
 
@@ -19,6 +24,12 @@ const ICONS = {
   help: Question,
   menu: List,
   settings: GearSix,
+  sort: ArrowsDownUp,
+  // The four review states. Always shown with their text label, never alone.
+  stateVerified: CheckCircle,
+  stateNeedsReview: WarningDiamond,
+  stateMissing: CircleDashed,
+  stateEdited: PencilSimple,
 } as const satisfies Record<string, PhosphorIcon>
 
 export type IconName = keyof typeof ICONS
