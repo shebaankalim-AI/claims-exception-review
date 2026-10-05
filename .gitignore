@@ -1,0 +1,26 @@
+# dependencies
+node_modules/
+
+# build output
+dist/
+.vite/
+
+# env & local
+.env
+.env.*
+!.env.example
+.DS_Store
+*.log
+
+# editor
+.vscode/*
+!.vscode/extensions.json
+.idea/
+
+# test & coverage
+coverage/
+playwright-report/
+test-results/
+
+# netlify
+.netlify/
