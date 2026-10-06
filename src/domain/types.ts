@@ -38,7 +38,10 @@ export type Actor = 'agent' | 'examiner'
 export type SourceRef = {
   documentId: DocumentId
   page?: number
+  /** The passage the value was read from. */
   excerpt: string
+  /** The exact words inside the passage to mark. Without it, the value part is marked. */
+  highlight?: string
 }
 
 export type Field = {

@@ -156,9 +156,12 @@ export function SourcePanel({
         className="relative min-h-0 flex-1 overflow-auto px-5 py-4 text-base leading-relaxed"
       >
         <DocumentBody
+          // A new key replays the fade-in for each field and each source tab.
+          key={`${field.key}-${sourceIndex}`}
           document={document}
           text={withoutTitleLine(page, document.title)}
           excerpt={source.excerpt}
+          highlight={source.highlight}
         />
       </div>
     </section>

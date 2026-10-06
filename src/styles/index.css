@@ -66,6 +66,10 @@
   --size-panel-light: 220px;
   --color-focus-ring: var(--color-accent);
 
+  /* A highlighter pen on the words in a source document. Ink on it is 14:1. */
+  --color-highlight-bg: #ffe9a8;
+  --color-highlight-line: #e0b33a;
+
   /* Glow: blue, violet and cyan, for the assistant's active prompt bar. Decoration only. */
   --color-glow-1: #4f8cff;
   --color-glow-2: #8b5cf6;
@@ -95,6 +99,7 @@
   --radius-md: 8px;
   --radius-lg: 12px;
   --radius-track: 10px;
+  --radius-mark: 3px;
 
   /* Shadows */
   --shadow-card: 0 1px 2px rgb(18 24 38 / 0.04);
@@ -137,6 +142,7 @@
   /* Motion: brief, and switched off for prefers-reduced-motion in components. */
   --duration-nav: 150ms;
   --duration-hover: 120ms;
+  --duration-highlight: 400ms;
   --duration-glow-turn: 4s;
   --duration-glow-sweep: 1.2s;
   --glow-ring-width: 1.5px;
@@ -166,6 +172,22 @@
       var(--color-panel-bg-mid) 40%,
       var(--color-panel-bg-bottom) 100%
     );
+}
+
+/* The highlight fades in once the passage is in view. No loop, and none under reduced motion. */
+@keyframes highlight-in {
+  from {
+    background-color: transparent;
+    text-decoration-color: transparent;
+  }
+}
+
+@utility highlight-mark {
+  animation: highlight-in var(--duration-highlight) ease-out both;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
 }
 
 /* Every interactive element gets this; see "Keyboard and accessibility" in ARCHITECTURE.md. */

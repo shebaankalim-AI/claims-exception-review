@@ -208,6 +208,7 @@ export const classCodeClaim: Claim = {
           documentId: TRANSCRIPT,
           page: 1,
           excerpt: 'The warehouse team, class B-340.',
+          highlight: 'class B-340',
         },
       ],
     },
@@ -224,6 +225,7 @@ export const classCodeClaim: Claim = {
           documentId: TRANSCRIPT,
           page: 1,
           excerpt: 'Yes, on the loading dock during his shift.',
+          highlight: 'on the loading dock',
         },
       ],
     },
@@ -235,7 +237,12 @@ export const classCodeClaim: Claim = {
       status: 'verified',
       resolvedBy: 'agent',
       sources: [
-        { documentId: TRANSCRIPT, page: 1, excerpt: 'Yes, the same day.' },
+        {
+          documentId: TRANSCRIPT,
+          page: 1,
+          excerpt: 'Yes, the same day.',
+          highlight: 'the same day',
+        },
       ],
     },
     {
@@ -306,6 +313,7 @@ export const classCodeClaim: Claim = {
           documentId: TRANSCRIPT,
           page: 1,
           excerpt: 'No, nobody else was involved.',
+          highlight: 'nobody else was involved',
         },
       ],
     },

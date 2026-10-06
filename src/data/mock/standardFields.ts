@@ -106,6 +106,7 @@ export function completeStages(claim: Claim): Claim {
           documentId: transcript,
           page: 1,
           excerpt: `It is ${policyNumber}.`,
+          highlight: policyNumber,
         },
       ],
     },
@@ -121,6 +122,7 @@ export function completeStages(claim: Claim): Claim {
           documentId: transcript,
           page: 1,
           excerpt: 'Yes, during a normal shift.',
+          highlight: 'Yes',
         },
       ],
     },
@@ -132,7 +134,12 @@ export function completeStages(claim: Claim): Claim {
       status: 'verified',
       resolvedBy: 'agent',
       sources: [
-        { documentId: transcript, page: 1, excerpt: 'Yes, the same day.' },
+        {
+          documentId: transcript,
+          page: 1,
+          excerpt: 'Yes, the same day.',
+          highlight: 'the same day',
+        },
       ],
     },
     {
@@ -162,6 +169,7 @@ export function completeStages(claim: Claim): Claim {
           documentId: transcript,
           page: 1,
           excerpt: 'No, nobody else was involved.',
+          highlight: 'nobody else was involved',
         },
       ],
     },
