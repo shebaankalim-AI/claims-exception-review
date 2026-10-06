@@ -86,24 +86,26 @@ export function FieldCards({
       {fields.map((field) => {
         const selected = field.key === selectedKey
         const isEditing = editing?.key === field.key
+        // Only fields that need the examiner have actions, and only those get
+        // the divider: a confirmed field shows nothing below its source line.
+        const hasActions =
+          selected &&
+          canAct &&
+          (isEditing ||
+            field.status === 'needs_review' ||
+            field.status === 'missing')
         return (
           <li
             key={field.key}
             // The whole card selects for the mouse; the button below is the
             // keyboard path, so there is one tab stop per card.
             onClick={() => onSelect(field.key)}
-            className={`relative cursor-pointer rounded-lg border bg-surface p-4 shadow-card ${
+            className={`cursor-pointer rounded-lg border p-4 shadow-card transition-colors duration-(--duration-hover) motion-reduce:transition-none ${
               selected
-                ? 'border-border-strong'
-                : 'border-border hover:border-border-strong'
+                ? 'border-accent-border bg-surface'
+                : 'border-border bg-surface hover:border-border-strong hover:bg-surface-muted'
             }`}
           >
-            {selected && (
-              <span
-                aria-hidden="true"
-                className="absolute inset-y-3 left-0 w-0.75 rounded-r-sm bg-accent"
-              />
-            )}
             <button
               type="button"
               aria-pressed={selected}
@@ -123,7 +125,7 @@ export function FieldCards({
                   label={FIELD_STATUS_LABELS[field.status]}
                 />
               </span>
-              <span className="text-lg font-medium break-words text-ink">
+              <span className="text-base font-medium break-words text-ink">
                 {field.status === 'missing' ? (
                   <span className="text-ink-subtle">No value yet</span>
                 ) : (
@@ -147,7 +149,7 @@ export function FieldCards({
               />
             </button>
 
-            {selected && canAct && (
+            {hasActions && (
               // Clicks here act, they don't reselect.
               <div
                 className="mt-3 flex flex-wrap items-center gap-2 border-t border-border pt-3"

@@ -117,6 +117,7 @@
 
   /* Motion: brief, and switched off for prefers-reduced-motion in components. */
   --duration-nav: 150ms;
+  --duration-hover: 120ms;
 
   /* Focus ring: 2px accent, 2px away from the element. */
   --focus-ring-width: 2px;
