@@ -102,10 +102,18 @@
   --spacing-col-label: 160px;
   --spacing-col-state: 144px;
   --spacing-col-source: 160px;
+  /* The queue table scrolls sideways inside its card below this width. */
+  --spacing-queue-table: 840px;
+  /* Source panel heights: a fixed one when stacked, the visible area when beside the fields. */
+  --spacing-source: 420px;
+  --spacing-source-wide: calc(100dvh - var(--spacing-header) - 64px);
   --spacing-icon: 16px;
   --spacing-icon-lg: 20px;
   --spacing-logo: 24px;
   --spacing-logo-lg: 32px;
+
+  /* Container sizes: the review screen goes two-column above this content width. */
+  --container-review-wide: 900px;
 
   /* Motion: brief, and switched off for prefers-reduced-motion in components. */
   --duration-nav: 150ms;

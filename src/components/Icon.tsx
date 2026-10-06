@@ -8,6 +8,7 @@ import {
   CircleDashed,
   FileArrowUp,
   Files,
+  FileText,
   GearSix,
   HourglassMedium,
   Info,
@@ -16,8 +17,8 @@ import {
   PencilSimple,
   Question,
   SealCheck,
+  Warning,
   WarningCircle,
-  WarningDiamond,
   WarningOctagon,
 } from '@phosphor-icons/react'
 import type { Icon as PhosphorIcon } from '@phosphor-icons/react'
@@ -32,10 +33,11 @@ const ICONS = {
   help: Question,
   menu: List,
   settings: GearSix,
+  document: FileText,
   sort: ArrowsDownUp,
   // The four review states. Always shown with their text label, never alone.
   stateVerified: CheckCircle,
-  stateNeedsReview: WarningDiamond,
+  stateNeedsReview: Warning,
   stateMissing: CircleDashed,
   stateEdited: PencilSimple,
   // Where a whole claim is. Also always shown with a word.

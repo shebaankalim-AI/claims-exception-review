@@ -167,7 +167,7 @@ export function QueueScreen({
     <section
       aria-labelledby="queue-heading"
       aria-busy={state.status === 'loading'}
-      className="flex flex-col gap-4 p-8"
+      className="flex min-w-0 flex-col gap-4 p-8"
     >
       <div className="flex flex-col gap-1">
         <h1 id="queue-heading" className="text-2xl font-semibold">
