@@ -1,10 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
   <style>
-    .back { fill: none; stroke: #6b675e; stroke-width: 1.5; }
-    .front { fill: #3442b8; }
+    .back { fill: none; stroke: #566074; stroke-width: 1.5; }
+    .front { fill: #2563eb; }
     @media (prefers-color-scheme: dark) {
-      .back { stroke: #d6d2c9; }
-      .front { fill: #8f9bf0; }
+      .back { stroke: #c9d2e0; }
+      .front { fill: #8db0fa; }
     }
   </style>
   <rect class="back" x="2.75" y="2.75" width="12.5" height="12.5" rx="3"/>

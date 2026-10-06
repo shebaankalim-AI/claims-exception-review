@@ -32,28 +32,28 @@
   --tracking-logo: -0.02em;
   --leading-relaxed: 1.6;
 
-  /* Warm neutrals */
-  --color-page: #f7f6f3;
-  --color-sidebar: #f1efea;
-  --color-sidebar-hover: #e9e6df;
+  /* Cool slate neutrals */
+  --color-page: #f6f8fb;
+  --color-sidebar: #eef2f7;
+  --color-sidebar-hover: #e3e9f1;
   --color-surface: #ffffff;
-  --color-surface-muted: #faf9f7;
+  --color-surface-muted: #f9fafc;
   /* Hovered rows and cards: the sidebar tone, clearly different from white. */
-  --color-surface-hover: #f1efea;
-  --color-border: #e6e3dc;
-  --color-border-strong: #d6d2c9;
-  --color-ink: #1f1e1b;
-  --color-ink-muted: #6b675e;
-  /* Below 4.5:1 on white: only for hints, placeholders and disabled text. */
-  --color-ink-subtle: #8c877d;
+  --color-surface-hover: #edf1f7;
+  --color-border: #dfe5ee;
+  --color-border-strong: #c9d2e0;
+  --color-ink: #121826;
+  --color-ink-muted: #566074;
+  /* Hints, placeholders and disabled text: 4.5:1 or better on white, the page and the sidebar. */
+  --color-ink-subtle: #666f80;
   --color-disabled: var(--color-ink-subtle);
-  --color-backdrop: rgb(31 30 27 / 0.35);
+  --color-backdrop: rgb(18 24 38 / 0.35);
 
   /* Accent: buttons, links, selected items and focus. */
-  --color-accent: #3442b8;
-  --color-accent-hover: #2a369a;
-  --color-accent-soft: #eef0fb;
-  --color-accent-border: #d3d8f4;
+  --color-accent: #2563eb;
+  --color-accent-hover: #1d4fd0;
+  --color-accent-soft: #eaf1fe;
+  --color-accent-border: #a9c1f7;
   --color-on-accent: #ffffff;
   --color-focus-ring: var(--color-accent);
 
@@ -73,8 +73,8 @@
   --color-missing-soft: #fdecea;
   --color-missing-border: #f5c6c1;
   --color-edited: #57534e;
-  --color-edited-soft: #f1efea;
-  --color-edited-border: #ddd9d1;
+  --color-edited-soft: #eef2f7;
+  --color-edited-border: #d5dce8;
 
   /* Radii: badges and inputs, buttons, cards and dialogs. */
   --radius-sm: 6px;
@@ -82,8 +82,8 @@
   --radius-lg: 12px;
 
   /* Shadows */
-  --shadow-card: 0 1px 2px rgb(31 30 27 / 0.04);
-  --shadow-raised: 0 4px 16px rgb(31 30 27 / 0.08);
+  --shadow-card: 0 1px 2px rgb(18 24 38 / 0.04);
+  --shadow-raised: 0 4px 16px rgb(18 24 38 / 0.08);
   /* The selected card: a soft accent ring outside its accent border. */
   --shadow-selected: 0 0 0 3px var(--color-accent-soft);
 

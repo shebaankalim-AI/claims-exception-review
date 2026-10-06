@@ -28,7 +28,7 @@ export const input =
 export const textarea =
   'focus-ring rounded-sm border border-border-strong bg-surface px-3 py-2 text-ink placeholder:text-ink-subtle'
 
-/** White card: 12 radius, warm border, a whisper of shadow. */
+/** White card: 12 radius, a light border, a whisper of shadow. */
 export const card = 'rounded-lg border border-border bg-surface shadow-card'
 
 /** 12/500 muted, sentence case. */
