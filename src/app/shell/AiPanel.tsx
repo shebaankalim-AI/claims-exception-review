@@ -41,11 +41,11 @@ export function AiPanel({ open, onToggle, assistant }: AiPanelProps) {
   return (
     <aside
       aria-label="AI panel"
-      className={`relative col-start-3 row-start-2 flex flex-col overflow-hidden border-l border-border panel-surface text-sm leading-normal ${
+      className={`relative isolate col-start-3 row-start-2 flex flex-col overflow-hidden border-l border-border panel-surface text-sm leading-normal ${
         open ? 'w-panel' : 'w-panel-collapsed'
       }`}
     >
-      {open && <span key={sweeps} aria-hidden="true" className="glow-sweep" />}
+      {open && <span key={sweeps} aria-hidden="true" className="glow-trace" />}
       <div
         className={`flex h-12 shrink-0 items-center gap-2 px-3 ${
           open ? 'justify-between' : 'justify-center px-0'
