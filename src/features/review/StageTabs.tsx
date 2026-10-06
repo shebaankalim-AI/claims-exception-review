@@ -1,8 +1,41 @@
-import { Badge } from '@/components/Badge'
+import { Icon } from '@/components/Icon'
 import { STAGES } from '@/domain'
 import type { Claim, Stage } from '@/domain'
 import { stageSummary } from './claimRules'
-import { FIELD_STATUS_ICON, FIELD_STATUS_TONE, STAGE_LABELS } from './labels'
+import { FIELD_STATUS_ICON, STAGE_LABELS } from './labels'
+
+const PILL = {
+  missing: {
+    box: 'border-missing-border bg-missing-soft text-missing',
+    icon: FIELD_STATUS_ICON.missing,
+  },
+  'needs-review': {
+    box: 'border-needs-review-border bg-needs-review-soft text-needs-review',
+    icon: FIELD_STATUS_ICON.needs_review,
+  },
+} as const
+
+/** Icon plus a number. The words ("2 to confirm") are its accessible name. */
+function CountPill({
+  tone,
+  count,
+  label,
+}: {
+  tone: keyof typeof PILL
+  count: number
+  label: string
+}) {
+  return (
+    <span
+      role="img"
+      aria-label={label}
+      className={`inline-flex items-center gap-1 rounded-full border px-1.5 py-0.5 text-xs font-medium tabular-nums ${PILL[tone].box}`}
+    >
+      <Icon name={PILL[tone].icon} />
+      <span aria-hidden="true">{count}</span>
+    </span>
+  )
+}
 
 type StageTabsProps = {
   claim: Claim
@@ -30,23 +63,20 @@ export function StageTabs({ claim, active, onSelect }: StageTabsProps) {
                 }`}
               >
                 {STAGE_LABELS[stage]}
-                {toConfirm > 0 && (
-                  <span>
-                    <Badge
-                      icon={FIELD_STATUS_ICON.needs_review}
-                      tone={FIELD_STATUS_TONE.needs_review}
-                      label={`${toConfirm} to confirm`}
-                    />
-                  </span>
-                )}
+                {/* Missing first: it is the harder thing to resolve. */}
                 {missing > 0 && (
-                  <span>
-                    <Badge
-                      icon={FIELD_STATUS_ICON.missing}
-                      tone={FIELD_STATUS_TONE.missing}
-                      label={`${missing} missing`}
-                    />
-                  </span>
+                  <CountPill
+                    tone="missing"
+                    count={missing}
+                    label={`${missing} missing`}
+                  />
+                )}
+                {toConfirm > 0 && (
+                  <CountPill
+                    tone="needs-review"
+                    count={toConfirm}
+                    label={`${toConfirm} to confirm`}
+                  />
                 )}
               </button>
             </li>
