@@ -15,7 +15,7 @@ import type {
 } from '@/domain'
 import { ClaimsRepositoryContext } from '@/lib/claimsRepository'
 import { ClockContext } from '@/lib/clock'
-import { QueueDigest } from './QueueDigest'
+import { QueueSummary as QueueDigest } from './QueueSummary'
 import { QueueScreen } from './QueueScreen'
 import { useQueue } from './useQueue'
 
