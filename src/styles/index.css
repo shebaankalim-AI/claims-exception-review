@@ -57,6 +57,11 @@
   --color-on-accent: #ffffff;
   --color-focus-ring: var(--color-accent);
 
+  /* Glow: blue, violet and cyan, for the assistant's active prompt bar. Decoration only. */
+  --color-glow-1: #4f8cff;
+  --color-glow-2: #8b5cf6;
+  --color-glow-3: #22d3ee;
+
   /*
    * Review states: text, soft background and border. Colour is never the only
    * signal; each state also gets an icon and a word. Every text colour is at
@@ -122,6 +127,11 @@
   /* Motion: brief, and switched off for prefers-reduced-motion in components. */
   --duration-nav: 150ms;
   --duration-hover: 120ms;
+  --duration-glow-turn: 4s;
+  --duration-glow-sweep: 1.2s;
+  --glow-ring-width: 1.5px;
+  --glow-line: 2px;
+  --glow-blur: 12px;
 
   /* Focus ring: 2px accent, 2px away from the element. */
   --focus-ring-width: 2px;
@@ -133,6 +143,120 @@
   &:focus-visible {
     outline: var(--focus-ring-width) solid var(--color-focus-ring);
     outline-offset: var(--focus-ring-offset);
+  }
+}
+
+/* Registered so the gradient's angle can be animated. */
+@property --glow-angle {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+
+@keyframes glow-spin {
+  to {
+    --glow-angle: 360deg;
+  }
+}
+
+@keyframes glow-sweep {
+  from {
+    transform: translateX(-100%);
+    opacity: 1;
+  }
+  80% {
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+/*
+ * The prompt bar's active glow. The bar itself has no background: its white
+ * inner box sits above two gradient layers placed behind it, a ring just
+ * outside the box and a blurred halo. Both are behind the content, so the glow
+ * can never cover text or lower its contrast. Idle, both are invisible.
+ * With reduced motion the ring is the same gradient, standing still.
+ */
+@utility glow-bar {
+  position: relative;
+  isolation: isolate;
+  border-radius: var(--radius-lg);
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    pointer-events: none;
+    opacity: 0;
+    background: conic-gradient(
+      from var(--glow-angle),
+      var(--color-glow-1),
+      var(--color-glow-2),
+      var(--color-glow-3),
+      var(--color-glow-1)
+    );
+    transition: opacity var(--duration-hover);
+  }
+
+  &::before {
+    z-index: -1;
+    inset: calc(var(--glow-ring-width) * -1);
+    border-radius: calc(var(--radius-lg) + var(--glow-ring-width));
+  }
+
+  &::after {
+    z-index: -2;
+    inset: 0;
+    border-radius: inherit;
+    filter: blur(var(--glow-blur));
+  }
+
+  &[data-active='true'] {
+    &::before {
+      opacity: 1;
+      animation: glow-spin var(--duration-glow-turn) linear infinite;
+    }
+    &::after {
+      opacity: 0.3;
+      animation: glow-spin var(--duration-glow-turn) linear infinite;
+    }
+    /* The gradient ring replaces the idle border. */
+    & > :first-child {
+      border-color: transparent;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &::before,
+    &::after {
+      animation: none !important;
+    }
+  }
+}
+
+/* A line that sweeps once across the top of the panel when it opens. */
+@utility glow-sweep {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: var(--glow-line);
+  pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--color-glow-1),
+    var(--color-glow-2),
+    var(--color-glow-3),
+    transparent
+  );
+  animation: glow-sweep var(--duration-glow-sweep) ease-out forwards;
+
+  @media (prefers-reduced-motion: reduce) {
+    display: none;
   }
 }
 

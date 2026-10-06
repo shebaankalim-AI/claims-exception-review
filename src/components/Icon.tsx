@@ -1,5 +1,7 @@
 import {
   ArrowFatLineUp,
+  ArrowRight,
+  ArrowUp,
   ArrowsDownUp,
   ArrowUUpLeft,
   ChartBar,
@@ -17,6 +19,7 @@ import {
   PencilSimple,
   Question,
   SealCheck,
+  Sparkle,
   Warning,
   WarningCircle,
   WarningOctagon,
@@ -34,6 +37,10 @@ const ICONS = {
   menu: List,
   settings: GearSix,
   document: FileText,
+  // The assistant.
+  assistant: Sparkle,
+  send: ArrowUp,
+  next: ArrowRight,
   sort: ArrowsDownUp,
   // The four review states. Always shown with their text label, never alone.
   stateVerified: CheckCircle,
