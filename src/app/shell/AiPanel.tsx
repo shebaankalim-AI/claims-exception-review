@@ -69,7 +69,7 @@ export function AiPanel({ open, onToggle, assistant }: AiPanelProps) {
       <div
         id="ai-panel-body"
         hidden={!open}
-        className="flex min-h-0 flex-1 flex-col overflow-hidden"
+        className="flex min-h-0 flex-1 flex-col overflow-hidden focus:outline-none focus-visible:outline-none"
       >
         {/* A neutral track with a white pill on the active tab. */}
         <div className="shrink-0 px-3 pb-2.5">
@@ -98,7 +98,7 @@ export function AiPanel({ open, onToggle, assistant }: AiPanelProps) {
         </div>
 
         {/* The only scroll area in the panel. Bottom padding keeps the last card clear of the prompt bar. */}
-        <div className="min-h-0 flex-1 overflow-y-auto px-3 pb-6">
+        <div className="min-h-0 flex-1 overflow-y-auto px-3 pb-6 focus:outline-none focus-visible:outline-none">
           {tab === 'summary' ? (
             assistant.summary
           ) : (

@@ -40,8 +40,10 @@ export function AppShell({ onGoToQueue, assistant, children }: AppShellProps) {
       />
       <main
         id="main-content"
+        // tabIndex -1 only so the skip link can move focus here. The region is not
+        // a control, so it shows no ring when clicked or when it has focus.
         tabIndex={-1}
-        className="col-start-2 row-start-2 min-w-0 overflow-auto"
+        className="col-start-2 row-start-2 min-w-0 overflow-auto focus:outline-none focus-visible:outline-none"
       >
         {children}
       </main>

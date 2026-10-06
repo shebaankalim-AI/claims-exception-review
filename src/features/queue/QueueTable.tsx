@@ -48,7 +48,7 @@ export function QueueTable({ claims, now, onOpenClaim }: QueueTableProps) {
     // The card keeps its corners; the scroller inside it lets a narrow window
     // scroll the table sideways instead of squeezing columns into each other.
     <div className={`${card} overflow-hidden`}>
-      <div className="overflow-x-auto">
+      <div className="focus-ring overflow-x-auto">
         <table className="w-full min-w-queue-table table-fixed border-collapse">
           <caption className="sr-only">Exceptions, oldest first</caption>
           <thead className="border-b border-border bg-surface-muted">
