@@ -2,18 +2,19 @@ import { useState } from 'react'
 import type { ReactNode } from 'react'
 import { useShortcut } from '@/lib/shortcutContext'
 import { AiPanel } from './AiPanel'
+import type { AssistantConfig } from './assistant'
 import { Header } from './Header'
 import { SHORTCUTS } from './shortcutDefinitions'
 import { SideNav } from './SideNav'
 
 type AppShellProps = {
   onGoToQueue: () => void
-  /** What the AI panel shows. Without it, the panel keeps its placeholder. */
-  panel?: ReactNode
+  /** What the assistant panel shows for the screen that is open. */
+  assistant: AssistantConfig
   children: ReactNode
 }
 
-export function AppShell({ onGoToQueue, panel, children }: AppShellProps) {
+export function AppShell({ onGoToQueue, assistant, children }: AppShellProps) {
   const [navCollapsed, setNavCollapsed] = useState(false)
   const [aiPanelOpen, setAiPanelOpen] = useState(true)
   const toggleNav = () => setNavCollapsed((collapsed) => !collapsed)
@@ -44,9 +45,11 @@ export function AppShell({ onGoToQueue, panel, children }: AppShellProps) {
       >
         {children}
       </main>
-      <AiPanel open={aiPanelOpen} onToggle={toggleAiPanel}>
-        {panel}
-      </AiPanel>
+      <AiPanel
+        open={aiPanelOpen}
+        onToggle={toggleAiPanel}
+        assistant={assistant}
+      />
     </div>
   )
 }

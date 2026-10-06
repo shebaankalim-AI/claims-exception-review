@@ -2,14 +2,25 @@ import { useState } from 'react'
 import type { ClaimId } from '@/domain'
 import {
   oldestFirst,
-  QueueDigest,
+  QUEUE_CHIPS,
+  QUEUE_PLACEHOLDER,
   QueueScreen,
+  QueueSummary,
   useQueue,
+  useQueueReply,
 } from '@/features/queue'
-import { ReviewAssistant, ReviewScreen, useReview } from '@/features/review'
+import {
+  REVIEW_CHIPS,
+  REVIEW_PLACEHOLDER,
+  ReviewScreen,
+  ReviewSummary,
+  reviewReply,
+  useReview,
+} from '@/features/review'
 import { AppProviders } from './AppProviders'
 import { CURRENT_USER } from './currentUser'
 import type { Screen } from './screen'
+import type { AssistantConfig } from './shell/assistant'
 import { AppShell } from './shell/AppShell'
 
 const QUEUE: Screen = { name: 'queue' }
@@ -30,6 +41,26 @@ function Workspace() {
   const queue = useQueue(screen.name === 'queue')
   const review = useReview(screen.name === 'review' ? screen.claimId : null)
 
+  // What the assistant panel shows: a summary and canned replies for whichever
+  // screen is open, with its own chat thread (the queue's, or the claim's).
+  const queueReply = useQueueReply(queue)
+  const assistant: AssistantConfig =
+    screen.name === 'queue'
+      ? {
+          threadKey: 'queue',
+          summary: <QueueSummary queue={queue} onOpenClaim={openClaim} />,
+          placeholder: QUEUE_PLACEHOLDER,
+          chips: QUEUE_CHIPS,
+          reply: queueReply,
+        }
+      : {
+          threadKey: screen.claimId,
+          summary: <ReviewSummary review={review} />,
+          placeholder: REVIEW_PLACEHOLDER,
+          chips: REVIEW_CHIPS,
+          reply: (question) => reviewReply(review, question),
+        }
+
   // Claims finished with in this session (filed, sent back or escalated), so
   // "Next claim" doesn't offer them again. The queue list is the one from the
   // last visit to the queue.
@@ -43,16 +74,7 @@ function Workspace() {
       : null
 
   return (
-    <AppShell
-      onGoToQueue={goToQueue}
-      panel={
-        screen.name === 'queue' ? (
-          <QueueDigest queue={queue} onOpenClaim={openClaim} />
-        ) : (
-          <ReviewAssistant key={screen.claimId} review={review} />
-        )
-      }
-    >
+    <AppShell onGoToQueue={goToQueue} assistant={assistant}>
       {screen.name === 'queue' ? (
         <QueueScreen
           queue={queue}

@@ -1,31 +1,57 @@
-import type { ReactNode } from 'react'
+import { useState } from 'react'
+import { useChatThreads } from '@/lib/chat'
+import type { AssistantConfig } from './assistant'
+import { ChatTab } from './ChatTab'
 import { KeyHint } from './KeyHint'
+import { PromptBar } from './PromptBar'
 import { SHORTCUTS } from './shortcutDefinitions'
 
 type AiPanelProps = {
   open: boolean
   onToggle: () => void
-  children?: ReactNode
+  assistant: AssistantConfig
 }
 
-export function AiPanel({ open, onToggle, children }: AiPanelProps) {
+type Tab = 'summary' | 'chat'
+
+const NO_MESSAGES: never[] = []
+
+export function AiPanel({ open, onToggle, assistant }: AiPanelProps) {
   const toggleLabel = open ? 'Collapse AI panel' : 'Expand AI panel'
+  const [tab, setTab] = useState<Tab>('summary')
+  const { threads, typing, send } = useChatThreads()
+  const messages = threads[assistant.threadKey] ?? NO_MESSAGES
+  const isTyping = typing.has(assistant.threadKey)
+
+  // A line sweeps across the top each time the panel opens. A new key restarts
+  // it; the counter is adjusted during render, as the open state changes.
+  const [wasOpen, setWasOpen] = useState(open)
+  const [sweeps, setSweeps] = useState(0)
+  if (open !== wasOpen) {
+    setWasOpen(open)
+    if (open) setSweeps((n) => n + 1)
+  }
+
+  const sendMessage = (text: string) => {
+    // Asking from the summary shows the answer where it will appear.
+    setTab('chat')
+    send(assistant.threadKey, text, assistant.reply)
+  }
 
   return (
     <aside
       aria-label="AI panel"
-      className={`col-start-3 row-start-2 flex flex-col border-l border-border bg-surface ${
+      className={`relative col-start-3 row-start-2 flex flex-col overflow-hidden border-l border-border bg-sidebar ${
         open ? 'w-panel' : 'w-panel-collapsed'
       }`}
     >
+      {open && <span key={sweeps} aria-hidden="true" className="glow-sweep" />}
       <div
-        className={`flex h-control shrink-0 items-center gap-2 border-b border-border px-3 ${
-          open ? 'justify-between' : 'justify-center'
+        className={`flex h-12 shrink-0 items-center gap-2 px-4 ${
+          open ? 'justify-between' : 'justify-center px-0'
         }`}
       >
-        {open && (
-          <h2 className="text-xs font-medium text-ink-muted">AI panel</h2>
-        )}
+        {open && <h2 className="text-sm font-semibold">Assistant</h2>}
         <button
           type="button"
           onClick={onToggle}
@@ -33,23 +59,66 @@ export function AiPanel({ open, onToggle, children }: AiPanelProps) {
           aria-expanded={open}
           aria-controls="ai-panel-body"
           aria-keyshortcuts={SHORTCUTS.toggleAiPanel.key}
-          className="focus-ring flex h-6 items-center gap-1 rounded-sm px-1 text-ink-muted hover:bg-surface-muted hover:text-ink"
+          className="focus-ring flex h-6 items-center gap-1 rounded-sm px-1 text-ink-muted hover:bg-surface-hover hover:text-ink"
         >
           <span aria-hidden="true">{open ? '›' : '‹'}</span>
           {open && <KeyHint>{SHORTCUTS.toggleAiPanel.key}</KeyHint>}
         </button>
       </div>
+
       <div
         id="ai-panel-body"
         hidden={!open}
-        className="min-h-0 flex-1 overflow-auto p-5"
+        className="flex min-h-0 flex-1 flex-col"
       >
-        {children ?? (
-          <p className="text-ink-muted">
-            Placeholder for the AI panel. What the agent did, why, and what it
-            read will appear here.
-          </p>
-        )}
+        {/* A neutral track with a white pill on the active tab. */}
+        <div className="shrink-0 px-4 pb-3">
+          <div className="flex gap-1 rounded-md bg-surface-hover p-1">
+            {(['summary', 'chat'] as const).map((id) => (
+              <button
+                key={id}
+                type="button"
+                aria-pressed={tab === id}
+                onClick={() => setTab(id)}
+                className={`focus-ring flex h-8 flex-1 items-center justify-center gap-2 rounded-sm font-medium ${
+                  tab === id
+                    ? 'bg-surface text-ink shadow-card'
+                    : 'text-ink-muted hover:text-ink'
+                }`}
+              >
+                {id === 'summary' ? 'Summary' : 'Chat'}
+                {id === 'chat' && messages.length > 0 && (
+                  <span className="rounded-full bg-accent-soft px-1.5 text-xs text-accent tabular-nums">
+                    {messages.length}
+                  </span>
+                )}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* The active tab scrolls here; the prompt bar below never moves. */}
+        <div className="min-h-0 flex-1 overflow-auto px-4 pb-4">
+          {tab === 'summary' ? (
+            assistant.summary
+          ) : (
+            <ChatTab
+              messages={messages}
+              typing={isTyping}
+              chips={assistant.chips}
+              onSend={sendMessage}
+            />
+          )}
+        </div>
+
+        <div className="shrink-0 px-4 pt-1 pb-4">
+          <PromptBar
+            key={assistant.threadKey}
+            placeholder={assistant.placeholder}
+            typing={isTyping}
+            onSend={sendMessage}
+          />
+        </div>
       </div>
     </aside>
   )
