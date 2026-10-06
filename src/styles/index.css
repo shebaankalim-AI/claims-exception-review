@@ -59,9 +59,11 @@
   --color-on-accent: #ffffff;
 
   /* The assistant panel: a cool tint fading down, with a darker track for its tabs. */
-  --color-panel-bg: #edf2fa;
-  --color-panel-bg-end: #e6edf8;
-  --color-tab-track: #dde5f2;
+  --color-panel-bg-top: #dfe8fb;
+  --color-panel-bg-mid: #eaeffa;
+  --color-panel-bg-bottom: #f5f7fb;
+  --color-tab-track: #d2ddf5;
+  --size-panel-light: 220px;
   --color-focus-ring: var(--color-accent);
 
   /* Glow: blue, violet and cyan, for the assistant's active prompt bar. Decoration only. */
@@ -144,6 +146,26 @@
   /* Focus ring: 2px accent, 2px away from the element. */
   --focus-ring-width: 2px;
   --focus-ring-offset: 2px;
+}
+
+/*
+ * The assistant panel's surface: a soft blue fading to almost the page colour,
+ * with a very faint accent highlight in the top left corner so the top feels lit.
+ * Cards, bubbles and the prompt bar are white and sit on top of it.
+ */
+@utility panel-surface {
+  background-image:
+    radial-gradient(
+      circle var(--size-panel-light) at 0 0,
+      color-mix(in srgb, var(--color-accent) 8%, transparent),
+      transparent
+    ),
+    linear-gradient(
+      165deg,
+      var(--color-panel-bg-top) 0%,
+      var(--color-panel-bg-mid) 40%,
+      var(--color-panel-bg-bottom) 100%
+    );
 }
 
 /* Every interactive element gets this; see "Keyboard and accessibility" in ARCHITECTURE.md. */
