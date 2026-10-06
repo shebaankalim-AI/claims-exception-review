@@ -18,6 +18,10 @@ export const buttonSecondary =
   'enabled:hover:bg-surface-muted ' +
   disabled
 
+/** A smaller white button, 32 tall, for secondary actions inside cards. */
+export const buttonSecondarySmall =
+  'focus-ring inline-flex h-8 shrink-0 items-center justify-center gap-2 rounded-md border border-border-strong bg-surface px-3 text-sm font-medium whitespace-nowrap text-ink enabled:hover:bg-surface-hover'
+
 /** A text button that reads as a link. */
 export const linkButton =
   'focus-ring rounded-sm font-medium text-accent hover:text-accent-hover hover:underline'

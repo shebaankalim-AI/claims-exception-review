@@ -54,7 +54,14 @@
   --color-accent-hover: #1d4fd0;
   --color-accent-soft: #eaf1fe;
   --color-accent-border: #a9c1f7;
+  /* Accent at about 70% strength, for bars and other quiet marks. */
+  --color-accent-muted: #6692f1;
   --color-on-accent: #ffffff;
+
+  /* The assistant panel: a cool tint fading down, with a darker track for its tabs. */
+  --color-panel-bg: #edf2fa;
+  --color-panel-bg-end: #e6edf8;
+  --color-tab-track: #dde5f2;
   --color-focus-ring: var(--color-accent);
 
   /* Glow: blue, violet and cyan, for the assistant's active prompt bar. Decoration only. */
@@ -85,6 +92,7 @@
   --radius-sm: 6px;
   --radius-md: 8px;
   --radius-lg: 12px;
+  --radius-track: 10px;
 
   /* Shadows */
   --shadow-card: 0 1px 2px rgb(18 24 38 / 0.04);
