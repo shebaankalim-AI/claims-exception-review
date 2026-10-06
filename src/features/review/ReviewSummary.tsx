@@ -60,9 +60,9 @@ function Timeline({ claim }: { claim: Claim }) {
                 >
                   {formatClock(entry.at)}
                 </time>
-                <span className="font-medium">{entry.action}</span>
+                <span className="text-sm font-medium">{entry.action}</span>
                 <span
-                  className={`inline-flex items-center gap-1 text-sm ${outcome.tone}`}
+                  className={`inline-flex items-center gap-1 text-xs ${outcome.tone}`}
                 >
                   <Icon name={outcome.icon} />
                   {outcome.label}
@@ -150,7 +150,7 @@ function AboutField({
   return (
     <AssistantCard title="About this field" icon="info">
       {field && (
-        <p className="flex flex-wrap items-center gap-2 font-semibold">
+        <p className="flex flex-wrap items-center gap-2 text-sm font-semibold">
           {field.label}
           <Badge
             icon={FIELD_STATUS_ICON[field.status]}
@@ -173,7 +173,7 @@ export function ReviewSummary({ review }: { review: Review }) {
   const selected = claim.fields.find((f) => f.key === review.selectedKey)
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-2.5">
       <Timeline claim={claim} />
       <AboutField claim={claim} field={selected} />
     </div>

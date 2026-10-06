@@ -41,13 +41,13 @@ export function AiPanel({ open, onToggle, assistant }: AiPanelProps) {
   return (
     <aside
       aria-label="AI panel"
-      className={`relative col-start-3 row-start-2 flex flex-col overflow-hidden border-l border-border bg-sidebar ${
+      className={`relative col-start-3 row-start-2 flex flex-col overflow-hidden border-l border-border bg-linear-to-b from-panel-bg to-panel-bg-end text-sm leading-normal ${
         open ? 'w-panel' : 'w-panel-collapsed'
       }`}
     >
       {open && <span key={sweeps} aria-hidden="true" className="glow-sweep" />}
       <div
-        className={`flex h-12 shrink-0 items-center gap-2 px-4 ${
+        className={`flex h-12 shrink-0 items-center gap-2 bg-panel-bg px-3 ${
           open ? 'justify-between' : 'justify-center px-0'
         }`}
       >
@@ -69,21 +69,21 @@ export function AiPanel({ open, onToggle, assistant }: AiPanelProps) {
       <div
         id="ai-panel-body"
         hidden={!open}
-        className="flex min-h-0 flex-1 flex-col"
+        className="flex min-h-0 flex-1 flex-col overflow-hidden"
       >
         {/* A neutral track with a white pill on the active tab. */}
-        <div className="shrink-0 px-4 pb-3">
-          <div className="flex gap-1 rounded-md bg-surface-hover p-1">
+        <div className="shrink-0 px-3 pb-2.5">
+          <div className="flex gap-1 rounded-track bg-tab-track p-0.75">
             {(['summary', 'chat'] as const).map((id) => (
               <button
                 key={id}
                 type="button"
                 aria-pressed={tab === id}
                 onClick={() => setTab(id)}
-                className={`focus-ring flex h-8 flex-1 items-center justify-center gap-2 rounded-sm font-medium ${
+                className={`focus-ring flex h-8 flex-1 items-center justify-center gap-2 rounded-sm text-sm transition-colors duration-(--duration-hover) motion-reduce:transition-none ${
                   tab === id
-                    ? 'bg-surface text-ink shadow-card'
-                    : 'text-ink-muted hover:text-ink'
+                    ? 'bg-surface font-semibold text-ink shadow-card'
+                    : 'font-medium text-ink-muted hover:bg-surface/60'
                 }`}
               >
                 {id === 'summary' ? 'Summary' : 'Chat'}
@@ -97,8 +97,8 @@ export function AiPanel({ open, onToggle, assistant }: AiPanelProps) {
           </div>
         </div>
 
-        {/* The active tab scrolls here; the prompt bar below never moves. */}
-        <div className="min-h-0 flex-1 overflow-auto px-4 pb-4">
+        {/* The only scroll area in the panel. Bottom padding keeps the last card clear of the prompt bar. */}
+        <div className="min-h-0 flex-1 overflow-y-auto px-3 pb-6">
           {tab === 'summary' ? (
             assistant.summary
           ) : (
@@ -111,7 +111,7 @@ export function AiPanel({ open, onToggle, assistant }: AiPanelProps) {
           )}
         </div>
 
-        <div className="shrink-0 px-4 pt-1 pb-4">
+        <div className="shrink-0 px-3 pt-1 pb-3">
           <PromptBar
             key={assistant.threadKey}
             placeholder={assistant.placeholder}

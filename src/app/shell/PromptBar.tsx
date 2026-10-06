@@ -28,7 +28,7 @@ export function PromptBar({ placeholder, typing, onSend }: PromptBarProps) {
       }}
     >
       <div className="glow-bar" data-active={focused || typing}>
-        <div className="flex items-center gap-2 rounded-lg border border-border-strong bg-surface py-1.5 pr-1.5 pl-4 shadow-raised">
+        <div className="flex items-center gap-2 rounded-lg border border-border-strong bg-surface py-1 pr-1 pl-3 shadow-raised">
           <input
             type="text"
             aria-label={placeholder}
@@ -37,15 +37,15 @@ export function PromptBar({ placeholder, typing, onSend }: PromptBarProps) {
             onChange={(e) => setValue(e.target.value)}
             onFocus={() => setFocused(true)}
             onBlur={() => setFocused(false)}
-            className="h-control min-w-0 flex-1 bg-transparent text-base text-ink outline-none placeholder:text-ink-subtle"
+            className="h-8 min-w-0 flex-1 bg-transparent text-sm text-ink outline-none placeholder:text-ink-subtle"
           />
           <button
             type="submit"
             aria-label="Send"
             disabled={empty}
-            className="focus-ring flex size-control shrink-0 items-center justify-center rounded-full bg-accent text-on-accent enabled:hover:bg-accent-hover disabled:cursor-not-allowed disabled:bg-surface-hover disabled:text-disabled"
+            className="focus-ring flex size-7 shrink-0 items-center justify-center rounded-full bg-accent text-on-accent enabled:hover:bg-accent-hover disabled:cursor-not-allowed disabled:bg-surface-hover disabled:text-disabled"
           >
-            <Icon name="send" size="lg" />
+            <Icon name="send" />
           </button>
         </div>
       </div>

@@ -1,5 +1,5 @@
 import { AssistantCard } from '@/components/AssistantCard'
-import { buttonSecondary, linkButton } from '@/components/controls'
+import { buttonSecondarySmall, linkButton } from '@/components/controls'
 import type { ClaimId } from '@/domain'
 import { useNow } from '@/lib/clock'
 import { formatAge } from '@/lib/formatAge'
@@ -40,9 +40,9 @@ export function QueueSummary({ queue, onOpenClaim }: QueueSummaryProps) {
   const oldest = oldestClaim(claims)
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-2.5">
       <AssistantCard>
-        <p className="text-lg">
+        <p className="text-base">
           {received} claims received today. The agent filed{' '}
           {pipeline.filedAutomatically} on its own and is working on{' '}
           {pipeline.agentWorking}.{' '}
@@ -59,20 +59,20 @@ export function QueueSummary({ queue, onOpenClaim }: QueueSummaryProps) {
 
       {needYou > 0 && (
         <AssistantCard title="Why they stopped" icon="reports">
-          <ul className="flex flex-col gap-3">
+          <ul className="flex flex-col gap-2.5">
             {reasons.map(([reason, count]) => (
               <li key={reason} className="flex flex-col gap-1">
                 <span className="flex items-baseline justify-between gap-2">
                   <span>{REASON_LABELS[reason]}</span>
-                  <span className="font-semibold tabular-nums">{count}</span>
+                  <span className="font-medium tabular-nums">{count}</span>
                 </span>
                 {/* Scaled to the largest count; the number is the real value. */}
                 <span
                   aria-hidden="true"
-                  className="h-2 rounded-full bg-surface-hover"
+                  className="h-1.5 rounded-full bg-surface-hover"
                 >
                   <span
-                    className="block h-full rounded-full bg-accent"
+                    className="block h-full rounded-full bg-accent-muted"
                     style={{ width: `${(count / largest) * 100}%` }}
                   />
                 </span>
@@ -88,7 +88,7 @@ export function QueueSummary({ queue, onOpenClaim }: QueueSummaryProps) {
             <button
               type="button"
               onClick={() => onOpenClaim(oldest.id)}
-              className={`${linkButton} tabular-nums`}
+              className={`${linkButton} text-sm tabular-nums`}
             >
               {oldest.id}
             </button>
@@ -100,7 +100,7 @@ export function QueueSummary({ queue, onOpenClaim }: QueueSummaryProps) {
           <button
             type="button"
             onClick={() => onOpenClaim(oldest.id)}
-            className={`${buttonSecondary} self-start tabular-nums`}
+            className={`${buttonSecondarySmall} self-start tabular-nums`}
           >
             Open {oldest.id}
           </button>

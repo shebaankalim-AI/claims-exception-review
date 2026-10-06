@@ -38,7 +38,7 @@ export function ChatTab({ messages, typing, chips, onSend }: ChatTabProps) {
 
   if (messages.length === 0 && !typing) {
     return (
-      <div className="flex min-h-full flex-col items-center justify-center gap-3 py-6 text-center">
+      <div className="flex h-full flex-col items-center justify-center gap-3 text-center">
         <Avatar />
         <p className="max-w-56 text-ink">
           Ask a question and I will answer from what is on screen.
@@ -61,10 +61,12 @@ export function ChatTab({ messages, typing, chips, onSend }: ChatTabProps) {
   }
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-2.5">
       {/* Stays at the top of the thread while it scrolls. */}
-      <div className="sticky top-0 z-10 -mx-1 bg-sidebar px-1 py-1">
-        <DemoTag />
+      <div className="sticky top-0 z-10 flex justify-center">
+        <span className="rounded-full border border-border bg-surface px-3 py-1 shadow-card">
+          <DemoTag />
+        </span>
       </div>
       <ul aria-live="polite" className="flex flex-col gap-3">
         {messages.map((message) =>
