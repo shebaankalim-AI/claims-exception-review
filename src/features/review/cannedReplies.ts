@@ -22,7 +22,7 @@ export function cannedReply(question: string, claim: Claim): string {
   const q = question.toLowerCase()
   const field = (key: string) => claim.fields.find((f) => f.key === key)
 
-  if (has(q, ['wage', 'pay', 'salary'])) {
+  if (has(q, ['wage', 'pay', 'paid', 'salary'])) {
     return describeField(
       field('average_weekly_wage'),
       'No weekly wage is recorded for this claim.',

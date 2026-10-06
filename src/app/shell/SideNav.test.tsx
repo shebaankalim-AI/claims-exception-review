@@ -178,7 +178,7 @@ describe('collapsing the side navigation', () => {
     await user.click(collapseButton())
     await user.click(within(nav()).getByRole('button', { name: 'Reports' }))
     expect(
-      screen.getByRole('heading', { name: /Review CLM-24-0388/ }),
+      screen.getByRole('heading', { name: 'CLM-24-0388' }),
     ).toBeInTheDocument()
   })
 })
@@ -264,7 +264,7 @@ describe('items that are not built yet', () => {
     act(() => item.focus())
     await user.keyboard('{Enter}')
     expect(
-      screen.getByRole('heading', { name: /Review CLM-24-0388/ }),
+      screen.getByRole('heading', { name: 'CLM-24-0388' }),
     ).toBeInTheDocument()
   })
 })

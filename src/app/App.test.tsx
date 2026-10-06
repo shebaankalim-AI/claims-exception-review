@@ -9,8 +9,8 @@ function renderApp() {
 }
 
 const queueHeading = () => screen.getByRole('heading', { name: 'Exceptions' })
-const reviewHeading = () =>
-  screen.getByRole('heading', { name: /Review CLM-24-0388/ })
+// The review screen's title is the claim ID, shown while it loads and after.
+const reviewHeading = () => screen.getByRole('heading', { name: 'CLM-24-0388' })
 
 describe('app shell landmarks', () => {
   it('has a header, navigation, main area and AI panel, plus a skip link', () => {
@@ -46,12 +46,19 @@ describe('side navigation', () => {
 })
 
 describe('switching screens', () => {
-  it('opens the review placeholder from the queue, and the back link returns', async () => {
+  it('opens the claim from the queue, and the back link returns', async () => {
     const user = renderApp()
     expect(queueHeading()).toBeInTheDocument()
 
     await openOldestClaim(user)
     expect(reviewHeading()).toBeInTheDocument()
+    // Wait for the claim to load: the screen's contents are replaced when it
+    // does, and a click on the old back link would be lost.
+    await within(screen.getByRole('main')).findByRole(
+      'button',
+      { name: 'Approve' },
+      { timeout: 4000 },
+    )
 
     await user.click(
       within(screen.getByRole('main')).getByRole('button', {
@@ -82,52 +89,51 @@ describe('switching screens', () => {
   })
 })
 
-describe('AI panel', () => {
-  // The digest loads with the queue, so wait for it before judging visibility.
-  const digest = () => screen.findByText('Today so far', {}, { timeout: 3000 })
+describe('assistant panel', () => {
+  // The summary loads with the queue, so wait for it before judging visibility.
+  const summary = () =>
+    screen.findByText(/claims received today/, {}, { timeout: 3000 })
 
   it('collapses and expands from the button', async () => {
     const user = renderApp()
-    expect(await digest()).toBeVisible()
+    expect(await summary()).toBeVisible()
 
     await user.click(screen.getByRole('button', { name: 'Collapse AI panel' }))
-    expect(screen.getByText('Today so far')).not.toBeVisible()
+    expect(screen.getByText(/claims received today/)).not.toBeVisible()
 
     // The thin strip keeps the toggle.
     await user.click(screen.getByRole('button', { name: 'Expand AI panel' }))
-    expect(screen.getByText('Today so far')).toBeVisible()
+    expect(screen.getByText(/claims received today/)).toBeVisible()
   })
 
   it('collapses and expands from its shortcut', async () => {
     const user = renderApp()
-    await digest()
+    await summary()
     await user.keyboard(']')
-    expect(screen.getByText('Today so far')).not.toBeVisible()
+    expect(screen.getByText(/claims received today/)).not.toBeVisible()
     expect(
       screen.getByRole('button', { name: 'Expand AI panel' }),
     ).toHaveAttribute('aria-expanded', 'false')
 
     await user.keyboard(']')
-    expect(screen.getByText('Today so far')).toBeVisible()
+    expect(screen.getByText(/claims received today/)).toBeVisible()
   })
 
-  it('shows the digest on the queue and the placeholder while a claim is open', async () => {
+  it('summarises the queue on the queue and the open claim on a claim', async () => {
     const user = renderApp()
-    await digest()
-    expect(
-      screen.queryByText(/Placeholder for the AI panel/),
-    ).not.toBeInTheDocument()
+    await summary()
+    expect(screen.queryByText('What the agent did')).not.toBeInTheDocument()
 
     await openOldestClaim(user)
-    expect(screen.getByText(/Placeholder for the AI panel/)).toBeVisible()
-    expect(screen.queryByText('Today so far')).not.toBeInTheDocument()
+    expect(await screen.findByText('What the agent did')).toBeVisible()
+    expect(screen.queryByText(/claims received today/)).not.toBeInTheDocument()
 
     await user.click(
       within(screen.getByRole('main')).getByRole('button', {
         name: 'Exceptions',
       }),
     )
-    expect(await digest()).toBeVisible()
+    expect(await summary()).toBeVisible()
   })
 })
 

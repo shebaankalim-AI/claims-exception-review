@@ -54,7 +54,15 @@ describe('fixtures', () => {
       detailed.flatMap((c) => c.documents.map((d) => d.kind)),
     )
     expect([...kinds].sort()).toEqual(
-      ['email', 'fax', 'form', 'froi', 'medical_report'].sort(),
+      [
+        'email',
+        'fax',
+        'form',
+        'froi',
+        'medical_report',
+        'pay_stub',
+        'transcript',
+      ].sort(),
     )
   })
 
@@ -126,6 +134,30 @@ describe('listExceptions', () => {
   })
 })
 
+describe('the detailed claim', () => {
+  it('has 14 fields across all five stages: 11 verified, 3 for the examiner', async () => {
+    const claim = await repo().getClaim(DETAILED)
+    expect(claim.fields).toHaveLength(14)
+    expect(new Set(claim.fields.map((f) => f.stage)).size).toBe(5)
+    expect(claim.fields.filter((f) => f.status === 'verified')).toHaveLength(11)
+    expect(
+      claim.fields
+        .filter((f) => f.status !== 'verified')
+        .map((f) => [f.key, f.status]),
+    ).toEqual([
+      ['class_code', 'needs_review'],
+      ['average_weekly_wage', 'needs_review'],
+      ['medical_report', 'missing'],
+    ])
+  })
+
+  it('gives every claim fields in all five stages', () => {
+    for (const claim of mockClaims) {
+      expect(new Set(claim.fields.map((f) => f.stage)).size).toBe(5)
+    }
+  })
+})
+
 describe('queue summaries', () => {
   // Fixtures are as written when the repository's clock is the reference time.
   const atReference = () =>
@@ -144,15 +176,16 @@ describe('queue summaries', () => {
     }
   })
 
-  it('shows 1 to confirm and 1 missing for the detailed class-code claim', async () => {
+  it('shows 2 to confirm and 1 missing for the detailed claim', async () => {
     const summary = (await atReference().listExceptions()).find(
       (c) => c.id === DETAILED,
     )
     expect(summary).toMatchObject({
-      toConfirmCount: 1,
+      toConfirmCount: 2,
       missingCount: 1,
       lineOfBusiness: 'workers_comp',
-      agentNote: 'Two class codes plausible; no medical report yet',
+      agentNote:
+        'Class code and weekly wage need a check; no medical report yet',
     })
   })
 
@@ -163,7 +196,7 @@ describe('queue summaries', () => {
       fieldKey: 'class_code',
     })
     const summary = (await r.listExceptions()).find((c) => c.id === DETAILED)
-    expect(summary).toMatchObject({ toConfirmCount: 0, missingCount: 1 })
+    expect(summary).toMatchObject({ toConfirmCount: 1, missingCount: 1 })
   })
 
   it('never puts a claimant name in a summary', async () => {
@@ -325,7 +358,7 @@ describe('getPipelineSummary', () => {
 describe('getClaim', () => {
   it('returns the full claim', async () => {
     const claim = await repo().getClaim(DETAILED)
-    expect(claim.documents).toHaveLength(2)
+    expect(claim.documents).toHaveLength(4)
     expect(claim.fields.length).toBeGreaterThan(0)
   })
 
@@ -360,7 +393,7 @@ describe('applyAction', () => {
 
     const reread = await r.getClaim(DETAILED)
     expect(reread).toEqual(updated)
-    expect(reread.activity.at(-1)?.action).toBe('Confirmed Class code')
+    expect(reread.activity.at(-1)?.action).toBe('Confirmed Job class code')
     expect(reread.activity.at(-1)?.at).toBe(NOW.toISOString())
   })
 

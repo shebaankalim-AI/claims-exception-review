@@ -418,7 +418,7 @@ describe('errors and an empty queue', () => {
     ).toBeInTheDocument()
     expect(screen.queryByRole('table')).not.toBeInTheDocument()
     expect(
-      within(digest()).getByText(/digest is unavailable/),
+      within(digest()).getByText(/summary is unavailable/),
     ).toBeInTheDocument()
 
     await user.click(screen.getByRole('button', { name: 'Retry' }))
@@ -508,44 +508,26 @@ describe('the agent digest', () => {
     await within(main()).findByRole('table')
     expect(
       within(digest()).getByText(
-        /137 claims received\. The agent filed 127 on its own and is working on 6\. 4 need you\./,
+        /137 claims received today. The agent filed 127 on its own and is working on 6./,
       ),
     ).toBeInTheDocument()
-  })
-
-  it('shows what was just flagged, when it was within ten minutes', async () => {
-    setup()
-    await within(main()).findByRole('table')
-    const section = within(digest())
-      .getByRole('heading', { name: 'Just flagged' })
-      .closest('section')!
+    // The count of claims that need the examiner is picked out in bold.
     expect(
-      within(section).getByRole('button', { name: 'CLM-T-0004' }),
+      within(digest()).getByText('4', { selector: 'strong' }),
     ).toBeInTheDocument()
-    expect(section).toHaveTextContent('Possible duplicate')
-    expect(section).toHaveTextContent('4 min ago')
   })
 
-  it('leaves out Just flagged when nothing is recent', async () => {
-    setup(fakeRepository(CLAIMS.filter((c) => c.id !== 'CLM-T-0004')))
-    await within(main()).findByRole('table')
-    expect(
-      within(digest()).queryByRole('heading', { name: 'Just flagged' }),
-    ).not.toBeInTheDocument()
-  })
-
-  it('suggests starting with the oldest claim', async () => {
+  it('suggests the oldest claim next, and opens it', async () => {
     const onOpenClaim = vi.fn()
     const user = setup(fakeRepository(), onOpenClaim)
     await within(main()).findByRole('table')
     const section = within(digest())
-      .getByRole('heading', { name: 'Suggested order' })
+      .getByRole('heading', { name: 'Suggested next' })
       .closest('section')!
-    expect(section).toHaveTextContent('Start with CLM-T-0001')
-    expect(section).toHaveTextContent('3 d 00 h')
+    expect(section).toHaveTextContent('CLM-T-0001 waited longest, 3 d 00 h')
 
     await user.click(
-      within(section).getByRole('button', { name: 'CLM-T-0001' }),
+      within(section).getByRole('button', { name: 'Open CLM-T-0001' }),
     )
     expect(onOpenClaim).toHaveBeenCalledWith('CLM-T-0001')
   })
