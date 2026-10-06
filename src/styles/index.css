@@ -138,13 +138,7 @@
   --duration-nav: 150ms;
   --duration-hover: 120ms;
   --duration-glow-turn: 4s;
-  /* The panel-open trace: up the left edge, then along the top, as one motion. */
-  --duration-trace-up: 0.7s;
-  --duration-trace-across: 0.9s;
-  --duration-trace-overlap: 0.1s;
-  --size-trace-up: 140px;
-  --size-trace-across: 180px;
-  --glow-trace-blur: 6px;
+  --duration-glow-sweep: 1.2s;
   --glow-ring-width: 1.5px;
   --glow-line: 2px;
   --glow-blur: 12px;
@@ -195,23 +189,17 @@
   }
 }
 
-/* Each streak is a gradient background sliding along a full-length track, so
-   its path follows the panel's real size whatever that is. */
-@keyframes trace-up {
+@keyframes glow-sweep {
   from {
-    background-position: 0 calc(100% + var(--size-trace-up));
+    transform: translateX(-100%);
+    opacity: 1;
+  }
+  80% {
+    opacity: 1;
   }
   to {
-    background-position: 0 calc(0% - var(--size-trace-up));
-  }
-}
-
-@keyframes trace-across {
-  from {
-    background-position: calc(0% - var(--size-trace-across)) 0;
-  }
-  to {
-    background-position: calc(100% + var(--size-trace-across)) 0;
+    transform: translateX(100%);
+    opacity: 0;
   }
 }
 
@@ -279,61 +267,23 @@
   }
 }
 
-/*
- * The panel-open trace: a gradient streak runs up the left edge, turns the
- * corner and runs along the top edge until it leaves at the top right. The
- * second streak starts just before the first reaches the corner, so the turn
- * looks continuous. It sits behind the panel's content (the panel isolates its
- * stacking order), is only a few pixels thick, and never takes the pointer.
- */
-@utility glow-trace {
+/* A line that sweeps once across the top of the panel when it opens. */
+@utility glow-sweep {
   position: absolute;
-  inset: 0;
-  z-index: -1;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: var(--glow-line);
   pointer-events: none;
-
-  &::before,
-  &::after {
-    content: '';
-    position: absolute;
-    background-repeat: no-repeat;
-    filter: drop-shadow(
-      0 0 var(--glow-trace-blur)
-        color-mix(in srgb, var(--color-glow-2) 40%, transparent)
-    );
-    animation-fill-mode: both;
-  }
-
-  /* Up the left edge: faint tail at the bottom, bright head at the top. */
-  &::before {
-    inset: 0 auto 0 0;
-    width: var(--glow-line);
-    background-size: 100% var(--size-trace-up);
-    background-image: linear-gradient(
-      to top,
-      transparent,
-      var(--color-glow-1),
-      var(--color-glow-2),
-      var(--color-glow-3)
-    );
-    animation: trace-up var(--duration-trace-up) ease-in-out;
-  }
-
-  /* Along the top edge: head on the right. */
-  &::after {
-    inset: 0 0 auto 0;
-    height: var(--glow-line);
-    background-size: var(--size-trace-across) 100%;
-    background-image: linear-gradient(
-      to right,
-      transparent,
-      var(--color-glow-1),
-      var(--color-glow-2),
-      var(--color-glow-3)
-    );
-    animation: trace-across var(--duration-trace-across) ease-in-out
-      calc(var(--duration-trace-up) - var(--duration-trace-overlap));
-  }
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--color-glow-1),
+    var(--color-glow-2),
+    var(--color-glow-3),
+    transparent
+  );
+  animation: glow-sweep var(--duration-glow-sweep) ease-out forwards;
 
   @media (prefers-reduced-motion: reduce) {
     display: none;
