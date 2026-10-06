@@ -231,12 +231,13 @@ export function ReviewHeader({
           </p>
         </div>
 
-        <div className="flex flex-col items-end gap-1">
-          <div className="flex flex-wrap justify-end gap-2">{buttons}</div>
+        <div className="flex flex-wrap justify-end gap-2">
+          {buttons}
+          {/* Why Approve is disabled, for screen readers only: it takes no space. */}
           {hint && (
-            <p id={hintId} className="text-sm text-ink-muted">
+            <span id={hintId} className="sr-only">
               {hint}
-            </p>
+            </span>
           )}
         </div>
       </header>

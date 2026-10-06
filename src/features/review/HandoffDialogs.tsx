@@ -79,12 +79,12 @@ function SendBackForm({
           className={`${field} text-base font-normal`}
         />
       </label>
-      <div className="flex items-center justify-end gap-2 pt-2">
-        {/* A disabled button still says why. */}
+      <div className="flex justify-end gap-2 pt-2">
+        {/* Why the button is disabled, for screen readers only: it takes no space. */}
         {reason === null && (
-          <p id="send-back-hint" className="mr-auto text-sm text-ink-muted">
-            Choose a reason first.
-          </p>
+          <span id="send-back-hint" className="sr-only">
+            Choose a reason first
+          </span>
         )}
         <button type="button" onClick={onCancel} className={secondary}>
           Cancel
@@ -164,11 +164,11 @@ function EscalateForm({
           className={`${field} text-base font-normal`}
         />
       </label>
-      <div className="flex items-center justify-end gap-2 pt-2">
+      <div className="flex justify-end gap-2 pt-2">
         {note.trim() === '' && (
-          <p id="escalate-hint" className="mr-auto text-sm text-ink-muted">
-            Add a note first.
-          </p>
+          <span id="escalate-hint" className="sr-only">
+            Add a note first
+          </span>
         )}
         <button type="button" onClick={onCancel} className={secondary}>
           Cancel
