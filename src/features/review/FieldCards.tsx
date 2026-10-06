@@ -100,10 +100,10 @@ export function FieldCards({
             // The whole card selects for the mouse; the button below is the
             // keyboard path, so there is one tab stop per card.
             onClick={() => onSelect(field.key)}
-            className={`cursor-pointer rounded-lg border p-4 shadow-card transition-colors duration-(--duration-hover) motion-reduce:transition-none ${
+            className={`cursor-pointer rounded-lg border p-4 transition-colors duration-(--duration-hover) motion-reduce:transition-none ${
               selected
-                ? 'border-accent-border bg-surface'
-                : 'border-border bg-surface hover:border-border-strong hover:bg-surface-muted'
+                ? 'border-accent bg-surface shadow-selected'
+                : 'border-border bg-surface shadow-card hover:border-border-strong hover:bg-surface-hover'
             }`}
           >
             <button

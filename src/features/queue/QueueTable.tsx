@@ -77,7 +77,7 @@ export function QueueTable({ claims, now, onOpenClaim }: QueueTableProps) {
               <tr
                 key={claim.id}
                 onClick={() => onOpenClaim(claim.id)}
-                className="h-12 cursor-pointer hover:bg-surface-muted"
+                className="h-12 cursor-pointer transition-colors duration-(--duration-hover) hover:bg-surface-hover motion-reduce:transition-none"
               >
                 <td className={cellClass}>
                   <button

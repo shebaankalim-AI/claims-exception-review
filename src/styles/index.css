@@ -38,6 +38,8 @@
   --color-sidebar-hover: #e9e6df;
   --color-surface: #ffffff;
   --color-surface-muted: #faf9f7;
+  /* Hovered rows and cards: the sidebar tone, clearly different from white. */
+  --color-surface-hover: #f1efea;
   --color-border: #e6e3dc;
   --color-border-strong: #d6d2c9;
   --color-ink: #1f1e1b;
@@ -82,6 +84,8 @@
   /* Shadows */
   --shadow-card: 0 1px 2px rgb(31 30 27 / 0.04);
   --shadow-raised: 0 4px 16px rgb(31 30 27 / 0.08);
+  /* The selected card: a soft accent ring outside its accent border. */
+  --shadow-selected: 0 0 0 3px var(--color-accent-soft);
 
   /* 4px grid: p-2 is 8px, p-5 is 20px, p-8 is 32px, and so on. */
   --spacing: 4px;
