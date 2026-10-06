@@ -15,5 +15,8 @@ export default defineConfig({
     globals: true,
     setupFiles: ['./src/test/setup.ts'],
     css: false,
+    // Whole-app tests wait on the mock repository's delay and render a lot, so on
+    // a busy machine the default 5 seconds is too tight.
+    testTimeout: 30_000,
   },
 })
