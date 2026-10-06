@@ -1,15 +1,14 @@
-import { buttonSecondary, linkButton } from '@/components/controls'
 import { useState } from 'react'
+import { buttonSecondary, linkButton } from '@/components/controls'
 import type { ClaimId } from '@/domain'
-import { ActionBar } from './ActionBar'
+import { useNow } from '@/lib/clock'
 import { fieldsInStage } from './claimRules'
-import { ClaimHeader } from './ClaimHeader'
-import { FieldList } from './FieldList'
+import { FieldCards } from './FieldCards'
 import { EscalateDialog, SendBackDialog } from './HandoffDialogs'
-import { SourceViewer } from './SourceViewer'
+import { ReviewHeader } from './ReviewHeader'
+import { SourcePanel } from './SourcePanel'
 import { StageTabs } from './StageTabs'
 import type { Review } from './useReview'
-import { useNow } from '@/lib/clock'
 
 type ReviewScreenProps = {
   claimId: ClaimId
@@ -26,18 +25,6 @@ type ReviewScreenProps = {
   onHandedOff: (id: ClaimId, message: string) => void
 }
 
-function BackLink({ onBack }: { onBack: () => void }) {
-  return (
-    <button
-      type="button"
-      onClick={onBack}
-      className={`${linkButton} self-start text-sm`}
-    >
-      <span aria-hidden="true">← </span>Exceptions
-    </button>
-  )
-}
-
 export function ReviewScreen({
   claimId,
   review,
@@ -50,6 +37,8 @@ export function ReviewScreen({
 }: ReviewScreenProps) {
   const now = useNow()
   const [dialog, setDialog] = useState<'sendBack' | 'escalate' | null>(null)
+  // Documents requested in this visit. Nothing is sent in the prototype.
+  const [requested, setRequested] = useState<ReadonlySet<string>>(new Set())
   const { load } = review
 
   if (load.status !== 'ready') {
@@ -58,7 +47,13 @@ export function ReviewScreen({
         aria-labelledby="review-heading"
         className="flex flex-col gap-4 p-8"
       >
-        <BackLink onBack={onBack} />
+        <button
+          type="button"
+          onClick={onBack}
+          className={`${linkButton} self-start text-sm`}
+        >
+          <span aria-hidden="true">← </span>Exceptions
+        </button>
         <h1 id="review-heading" className="text-2xl font-semibold tabular-nums">
           {claimId}
         </h1>
@@ -85,6 +80,8 @@ export function ReviewScreen({
   const { claim } = load
   const fields = fieldsInStage(claim, review.stage)
   const selected = claim.fields.find((f) => f.key === review.selectedKey)
+  const canAct = claim.state === 'needs_review' && !review.busy
+  const request = (key: string) => setRequested(new Set(requested).add(key))
 
   async function file() {
     if (await review.run({ type: 'file' })) onFiled(claimId)
@@ -102,46 +99,15 @@ export function ReviewScreen({
   }
 
   return (
-    // Fills the main area: the work scrolls and the action bar stays at the bottom.
-    <div className="flex h-full flex-col">
-      <section
-        aria-labelledby="review-heading"
-        className="flex flex-1 flex-col gap-4 overflow-auto p-8"
-      >
-        <BackLink onBack={onBack} />
-        <ClaimHeader claim={claim} now={now} />
-        <StageTabs
-          claim={claim}
-          active={review.stage}
-          onSelect={review.selectStage}
-        />
-        <div className="grid grid-cols-5 gap-4">
-          <div className="col-span-3">
-            <FieldList
-              claim={claim}
-              fields={fields}
-              selectedKey={review.selectedKey}
-              canAct={claim.state === 'needs_review' && !review.busy}
-              examinerName={examinerName}
-              onSelect={review.selectField}
-              onConfirm={(fieldKey) =>
-                void review.run({ type: 'confirmField', fieldKey })
-              }
-              onSave={(fieldKey, value) =>
-                void review.run({ type: 'editField', fieldKey, value })
-              }
-            />
-          </div>
-          <div className="col-span-2">
-            {/* Sticks to the top of the scrolling area while the field list moves. */}
-            <div className="sticky top-0">
-              <SourceViewer claim={claim} field={selected} />
-            </div>
-          </div>
-        </div>
-      </section>
-      <ActionBar
+    // @container: the layout follows the width this area actually has, which
+    // changes with the AI panel and the nav, not with the window.
+    <section
+      aria-labelledby="review-heading"
+      className="@container flex min-w-0 flex-col gap-5 p-8"
+    >
+      <ReviewHeader
         claim={claim}
+        now={now}
         busy={review.busy}
         filingFailed={review.filingFailed}
         errorMessage={review.errorMessage}
@@ -153,6 +119,41 @@ export function ReviewScreen({
         onBack={onBack}
         onOpenClaim={onOpenClaim}
       />
+      <StageTabs
+        claim={claim}
+        active={review.stage}
+        onSelect={review.selectStage}
+      />
+      {/* One column when narrow; fields and source side by side when wide. */}
+      <div className="grid grid-cols-1 items-start gap-4 @review-wide:grid-cols-[minmax(0,11fr)_minmax(0,9fr)]">
+        <FieldCards
+          claim={claim}
+          fields={fields}
+          selectedKey={review.selectedKey}
+          canAct={canAct}
+          examinerName={examinerName}
+          requested={requested}
+          onSelect={review.selectField}
+          onConfirm={(fieldKey) =>
+            void review.run({ type: 'confirmField', fieldKey })
+          }
+          onSave={(fieldKey, value) =>
+            void review.run({ type: 'editField', fieldKey, value })
+          }
+          onRequest={request}
+        />
+        {/* Sticky beside the fields, so the source stays in view while they scroll. */}
+        <div className="min-w-0 @review-wide:sticky @review-wide:top-0">
+          <SourcePanel
+            key={selected?.key ?? 'none'}
+            claim={claim}
+            field={selected}
+            canAct={canAct}
+            requested={requested}
+            onRequest={request}
+          />
+        </div>
+      </div>
       <SendBackDialog
         open={dialog === 'sendBack'}
         claimId={claimId}
@@ -175,6 +176,6 @@ export function ReviewScreen({
           )
         }
       />
-    </div>
+    </section>
   )
 }
