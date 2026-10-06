@@ -59,10 +59,10 @@
   --color-on-accent: #ffffff;
 
   /* The assistant panel: a cool tint fading down, with a darker track for its tabs. */
-  --color-panel-bg-top: #dfe8fb;
-  --color-panel-bg-mid: #eaeffa;
-  --color-panel-bg-bottom: #f5f7fb;
-  --color-tab-track: #d2ddf5;
+  --color-panel-bg-top: #e9effb;
+  --color-panel-bg-mid: #f0f4fb;
+  --color-panel-bg-bottom: #f7f9fc;
+  --color-tab-track: #dce5f6;
   --size-panel-light: 220px;
   --color-focus-ring: var(--color-accent);
 
@@ -157,7 +157,7 @@
   background-image:
     radial-gradient(
       circle var(--size-panel-light) at 0 0,
-      color-mix(in srgb, var(--color-accent) 8%, transparent),
+      color-mix(in srgb, var(--color-accent) 5%, transparent),
       transparent
     ),
     linear-gradient(
