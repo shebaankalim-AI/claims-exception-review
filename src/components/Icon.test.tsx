@@ -12,8 +12,8 @@ describe('Icon', () => {
   })
 
   it('is exposed with a name when given a label', () => {
-    render(<Icon name="help" label="Help" />)
-    expect(screen.getByRole('img', { name: 'Help' })).toBeInTheDocument()
+    render(<Icon name="info" label="Info" />)
+    expect(screen.getByRole('img', { name: 'Info' })).toBeInTheDocument()
   })
 
   it('takes its size from a token class', () => {

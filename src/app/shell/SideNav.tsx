@@ -129,15 +129,6 @@ export function SideNav({
         <NavSection label="Insights" collapsed={collapsed}>
           <NavItem label="Reports" icon="reports" collapsed={collapsed} later />
         </NavSection>
-
-        <ul className="mt-auto pt-3">
-          <NavItem
-            label="Help and shortcuts"
-            icon="help"
-            collapsed={collapsed}
-            later
-          />
-        </ul>
       </div>
     </nav>
   )
