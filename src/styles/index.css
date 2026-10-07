@@ -1,10 +1,327 @@
 @import 'tailwindcss';
+@import '@fontsource-variable/inter';
 
-/* Design tokens: extend this block as the visual language is defined. */
+/*
+ * Design tokens. This block is the only place raw colours, pixel sizes, shadows
+ * and font stacks are allowed; components use the utilities these generate.
+ * Resetting the default colour, text, radius and shadow namespaces means a
+ * stray `bg-red-500` or `text-3xl` simply doesn't exist, so it can't slip in.
+ * Light mode only for now. The direction is in docs/decisions/0003.
+ */
 @theme {
-  --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --color-*: initial;
+  --text-*: initial;
+  --radius-*: initial;
+  --shadow-*: initial;
+
+  /* Type: 12 / 13 / 14 (base) / 16 / 20 / 24, weights 400, 500 and 600. */
+  --font-sans:
+    'Inter Variable', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --text-xs: 12px;
+  --text-xs--line-height: 1.4;
+  --text-sm: 13px;
+  --text-sm--line-height: 1.45;
+  --text-base: 14px;
+  --text-base--line-height: 1.5;
+  --text-lg: 16px;
+  --text-lg--line-height: 1.45;
+  --text-xl: 20px;
+  --text-xl--line-height: 1.35;
+  --text-2xl: 24px;
+  --text-2xl--line-height: 1.3;
+  --tracking-logo: -0.02em;
+  --leading-relaxed: 1.6;
+
+  /* Cool slate neutrals */
+  --color-page: #f6f8fb;
+  --color-sidebar: #eef2f7;
+  --color-sidebar-hover: #e3e9f1;
+  --color-surface: #ffffff;
+  --color-surface-muted: #f9fafc;
+  /* Hovered rows and cards: the sidebar tone, clearly different from white. */
+  --color-surface-hover: #edf1f7;
+  --color-border: #dfe5ee;
+  --color-border-strong: #c9d2e0;
+  --color-ink: #121826;
+  --color-ink-muted: #566074;
+  /* Hints, placeholders and disabled text: 4.5:1 or better on white, the page and the sidebar. */
+  --color-ink-subtle: #666f80;
+  --color-disabled: var(--color-ink-subtle);
+  --color-backdrop: rgb(18 24 38 / 0.35);
+
+  /* Accent: buttons, links, selected items and focus. */
+  --color-accent: #2563eb;
+  --color-accent-hover: #1d4fd0;
+  --color-accent-soft: #eaf1fe;
+  --color-accent-border: #a9c1f7;
+  /* Accent at about 70% strength, for bars and other quiet marks. */
+  --color-accent-muted: #6692f1;
+  --color-on-accent: #ffffff;
+
+  /* The assistant panel: a cool tint fading down, with a darker track for its tabs. */
+  --color-panel-bg-top: #e9effb;
+  --color-panel-bg-mid: #f0f4fb;
+  --color-panel-bg-bottom: #f7f9fc;
+  --color-tab-track: #dce5f6;
+  --size-panel-light: 220px;
+  --color-focus-ring: var(--color-accent);
+
+  /* A highlighter pen on the words in a source document. Ink on it is 14:1. */
+  --color-highlight-bg: #ffe9a8;
+  --color-highlight-line: #e0b33a;
+
+  /* Glow: blue, violet and cyan, for the assistant's active prompt bar. Decoration only. */
+  --color-glow-1: #4f8cff;
+  --color-glow-2: #8b5cf6;
+  --color-glow-3: #22d3ee;
+
+  /*
+   * Review states: text, soft background and border. Colour is never the only
+   * signal; each state also gets an icon and a word. Every text colour is at
+   * least 4.8:1 on its soft background and on white (verified was darkened
+   * from #1e7a3c to reach it).
+   */
+  --color-verified: #1e793b;
+  --color-verified-soft: #e9f4ec;
+  --color-verified-border: #c6e3cf;
+  --color-needs-review: #8a5300;
+  --color-needs-review-soft: #fcf1dd;
+  --color-needs-review-border: #f0d9ae;
+  --color-missing: #b42318;
+  --color-missing-soft: #fdecea;
+  --color-missing-border: #f5c6c1;
+  --color-edited: #57534e;
+  --color-edited-soft: #eef2f7;
+  --color-edited-border: #d5dce8;
+
+  /* Radii: badges and inputs, buttons, cards and dialogs. */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-track: 10px;
+  --radius-mark: 3px;
+
+  /* Shadows */
+  --shadow-card: 0 1px 2px rgb(18 24 38 / 0.04);
+  --shadow-raised: 0 4px 16px rgb(18 24 38 / 0.08);
+  /* The selected card: a soft accent ring outside its accent border. */
+  --shadow-selected: 0 0 0 3px var(--color-accent-soft);
+
+  /* 4px grid: p-2 is 8px, p-5 is 20px, p-8 is 32px, and so on. */
+  --spacing: 4px;
+
+  /* Layout sizes (usable as w-nav, h-control, and so on) */
+  --spacing-control: 36px;
+  --spacing-header: 56px;
+  --spacing-nav: 240px;
+  --spacing-nav-collapsed: 56px;
+  --spacing-panel: 360px;
+  --spacing-panel-collapsed: 40px;
+  --spacing-app-min: 1280px;
+  /* Fixed columns, so tables and lists line up row to row. */
+  --spacing-col-claim: 128px;
+  --spacing-col-line: 176px;
+  --spacing-col-needed: 176px;
+  --spacing-col-age: 96px;
+  --spacing-col-label: 160px;
+  --spacing-col-state: 144px;
+  --spacing-col-source: 160px;
+  /* The queue table scrolls sideways inside its card below this width. */
+  --spacing-queue-table: 840px;
+  /* Source panel heights: a fixed one when stacked, the visible area when beside the fields. */
+  --spacing-source: 420px;
+  --spacing-source-wide: calc(100dvh - var(--spacing-header) - 64px);
+  --spacing-icon: 16px;
+  --spacing-icon-lg: 20px;
+  --spacing-logo: 24px;
+  --spacing-logo-lg: 32px;
+
+  /* Container sizes: the review screen goes two-column above this content width. */
+  --container-review-wide: 900px;
+
+  /* Motion: brief, and switched off for prefers-reduced-motion in components. */
+  --duration-nav: 150ms;
+  --duration-hover: 120ms;
+  --duration-highlight: 400ms;
+  --duration-glow-turn: 4s;
+  --duration-glow-sweep: 1.2s;
+  --glow-ring-width: 1.5px;
+  --glow-line: 2px;
+  --glow-blur: 12px;
+
+  /* Focus ring: 2px accent, 2px away from the element. */
+  --focus-ring-width: 2px;
+  --focus-ring-offset: 2px;
+}
+
+/*
+ * The assistant panel's surface: a soft blue fading to almost the page colour,
+ * with a very faint accent highlight in the top left corner so the top feels lit.
+ * Cards, bubbles and the prompt bar are white and sit on top of it.
+ */
+@utility panel-surface {
+  background-image:
+    radial-gradient(
+      circle var(--size-panel-light) at 0 0,
+      color-mix(in srgb, var(--color-accent) 5%, transparent),
+      transparent
+    ),
+    linear-gradient(
+      165deg,
+      var(--color-panel-bg-top) 0%,
+      var(--color-panel-bg-mid) 40%,
+      var(--color-panel-bg-bottom) 100%
+    );
+}
+
+/* The highlight fades in once the passage is in view. No loop, and none under reduced motion. */
+@keyframes highlight-in {
+  from {
+    background-color: transparent;
+    text-decoration-color: transparent;
+  }
+}
+
+@utility highlight-mark {
+  animation: highlight-in var(--duration-highlight) ease-out both;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}
+
+/* Every interactive element gets this; see "Keyboard and accessibility" in ARCHITECTURE.md. */
+@utility focus-ring {
+  &:focus-visible {
+    outline: var(--focus-ring-width) solid var(--color-focus-ring);
+    outline-offset: var(--focus-ring-offset);
+  }
+}
+
+/* Registered so the gradient's angle can be animated. */
+@property --glow-angle {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+
+@keyframes glow-spin {
+  to {
+    --glow-angle: 360deg;
+  }
+}
+
+@keyframes glow-sweep {
+  from {
+    transform: translateX(-100%);
+    opacity: 1;
+  }
+  80% {
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+/*
+ * The prompt bar's active glow. The bar itself has no background: its white
+ * inner box sits above two gradient layers placed behind it, a ring just
+ * outside the box and a blurred halo. Both are behind the content, so the glow
+ * can never cover text or lower its contrast. Idle, both are invisible.
+ * With reduced motion the ring is the same gradient, standing still.
+ */
+@utility glow-bar {
+  position: relative;
+  isolation: isolate;
+  border-radius: var(--radius-lg);
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    pointer-events: none;
+    opacity: 0;
+    background: conic-gradient(
+      from var(--glow-angle),
+      var(--color-glow-1),
+      var(--color-glow-2),
+      var(--color-glow-3),
+      var(--color-glow-1)
+    );
+    transition: opacity var(--duration-hover);
+  }
+
+  &::before {
+    z-index: -1;
+    inset: calc(var(--glow-ring-width) * -1);
+    border-radius: calc(var(--radius-lg) + var(--glow-ring-width));
+  }
+
+  &::after {
+    z-index: -2;
+    inset: 0;
+    border-radius: inherit;
+    filter: blur(var(--glow-blur));
+  }
+
+  &[data-active='true'] {
+    &::before {
+      opacity: 1;
+      animation: glow-spin var(--duration-glow-turn) linear infinite;
+    }
+    &::after {
+      opacity: 0.3;
+      animation: glow-spin var(--duration-glow-turn) linear infinite;
+    }
+    /* The gradient ring replaces the idle border. */
+    & > :first-child {
+      border-color: transparent;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &::before,
+    &::after {
+      animation: none !important;
+    }
+  }
+}
+
+/* A line that sweeps once across the top of the panel when it opens. */
+@utility glow-sweep {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: var(--glow-line);
+  pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--color-glow-1),
+    var(--color-glow-2),
+    var(--color-glow-3),
+    transparent
+  );
+  animation: glow-sweep var(--duration-glow-sweep) ease-out forwards;
+
+  @media (prefers-reduced-motion: reduce) {
+    display: none;
+  }
+}
+
+html {
+  color-scheme: light;
 }
 
 body {
   margin: 0;
+  background-color: var(--color-page);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  line-height: var(--text-base--line-height);
+  -webkit-font-smoothing: antialiased;
 }

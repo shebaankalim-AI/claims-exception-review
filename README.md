@@ -1,6 +1,12 @@
-# Claims Exception Review (concept)
+# Assay (concept)
 
 An independent concept prototype for an exception-review screen in a claims-automation tool, built from public information. It uses mock data only and has no backend.
+
+The name Assay and its logo are placeholders.
+
+## About this project
+
+This is a concept prototype, built as practice to show how I design and build: from product thinking to a working interface. It is not a real product. It uses mock data only, has no backend, and is not affiliated with any company.
 
 ## Getting started
 
@@ -27,12 +33,14 @@ npm run dev
 
 ```
 src/
-  components/  shared UI building blocks
-  features/    one folder per feature
-  data/        mock data only
-  lib/         small utilities
-  styles/      design tokens and global CSS
-  test/        test setup
+  app/          providers, screen switching and the shell
+  domain/       types, the review rules and the repository interface
+  data/         mock repository and fictional fixtures
+  features/     the queue and the claim review
+  components/   shared UI building blocks
+  lib/          small utilities
+  styles/       design tokens and global CSS
+  test/         test setup and helpers
 ```
 
 ## Author

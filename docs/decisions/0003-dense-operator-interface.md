@@ -1,6 +1,6 @@
 # 0003: Dense operator-tool interface
 
-**Status:** Proposed (pending confirmation of the visual direction)
+**Status:** Accepted. Update: the interface ended up roomier than first proposed, with 14px base text and 48px table rows rather than 13px and 32px. The restrained palette, the single accent, explicit state and keyboard-first intent stand.
 
 ## Context
 

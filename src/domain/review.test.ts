@@ -27,6 +27,7 @@ function field(
   return {
     key,
     label: `Label ${key}`,
+    stage: 'intake',
     value,
     status,
     sources: [{ documentId: 'doc-1', excerpt: 'an excerpt' }],
@@ -38,8 +39,11 @@ function claim(state: ClaimState, fields: Field[]): Claim {
   return {
     id: toClaimId('CLM-TEST-0001'),
     employer: 'Test Employer',
+    lineOfBusiness: 'workers_comp',
     exceptionReasons: ['class_code_unclear'],
+    agentNote: 'two codes plausible',
     receivedAt: '2025-03-09T08:00:00.000Z',
+    flaggedAt: '2025-03-09T08:03:00.000Z',
     assignee: 'Test Examiner',
     state,
     fields,

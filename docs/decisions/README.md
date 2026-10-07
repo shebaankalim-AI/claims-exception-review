@@ -8,4 +8,9 @@ Format: **Status**, **Context**, **Decision**, **Consequences**. Statuses are `P
 | -------------------------------------------------------- | --------------------------------------------------- | -------- |
 | [0001](0001-structure-and-data-boundary.md)              | Feature-first structure with a domain/data boundary | Accepted |
 | [0002](0002-review-states-not-confidence-percentages.md) | Review states, not confidence percentages           | Accepted |
-| [0003](0003-dense-operator-interface.md)                 | Dense operator-tool interface                       | Proposed |
+| [0003](0003-dense-operator-interface.md)                 | Dense operator-tool interface                       | Accepted |
+| [0004](0004-state-based-screen-switching.md)             | State-based screen switching, no router             | Accepted |
+| [0005](0005-icon-set.md)                                 | Phosphor as the icon set                            | Accepted |
+| [0006](0006-queue-loaded-by-the-app.md)                  | The app loads the queue once and shares it          | Accepted |
+| [0007](0007-inter-font.md)                               | Inter as the interface font                         | Accepted |
+| [0008](0008-demo-replies-assistant.md)                   | A labelled demo assistant, not a live model         | Accepted |

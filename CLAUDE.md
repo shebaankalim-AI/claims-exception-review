@@ -18,7 +18,7 @@ npm run build        # typecheck and production build
 npm run format       # Prettier, writes files
 ```
 
-Before you say work is done, run `lint`, `typecheck`, `test` and `build`. Report the results as they are. If one fails, say which and why.
+While building, run `typecheck` and the tests for the files you changed. Before pushing a branch or opening a pull request, run all four: `lint`, `typecheck`, `test` and `build`. Report each result as it is, and if one fails, say which and why.
 
 ## Structure
 
@@ -31,6 +31,7 @@ Before you say work is done, run `lint`, `typecheck`, `test` and `build`. Report
 - State of a claim or field is never colour alone. Always icon plus text.
 - Show review states, not confidence percentages (see `docs/decisions/0002`).
 - Every frequent action has a keyboard path. Shortcuts go through the registry in `src/lib`, not ad-hoc `keydown` handlers.
+  - The registry exists with a few shortcuts. Fast paths for the queue and review actions are deferred. Until then, every control must still be reachable with Tab and Enter, using real buttons and links.
 - Mock data lives only in `src/data/mock/`. It must be fictional. No real people, companies, policy numbers or products.
 - Components: small and named for what they are. If a `build`-style render function grows past about 150 lines, split it.
 - Comments explain **why**, not what. If a choice is unusual, say what it protects against.

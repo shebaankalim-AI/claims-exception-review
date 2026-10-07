@@ -1,10 +1,12 @@
 import { toClaimId } from '@/domain'
+import { stageForKey } from './standardFields'
 import type {
   Claim,
   ClaimDocument,
   ExceptionReason,
   Field,
   FieldStatus,
+  LineOfBusiness,
 } from '@/domain'
 
 // Lighter fixtures: one document each, built so every source excerpt is a real
@@ -16,13 +18,18 @@ type FieldSpec = {
   value: string | null
   status: FieldStatus
   reason?: string
+  /** For a missing field: which document would normally contain it. */
+  expectedIn?: string
 }
 
 type LightClaimSpec = {
   id: string
   employer: string
-  exceptionReasons: ExceptionReason[]
+  lineOfBusiness?: LineOfBusiness
+  exceptionReasons: [ExceptionReason, ...ExceptionReason[]]
   receivedAt: string
+  /** Defaults to three minutes after receipt. */
+  flaggedAt?: string
   assignee: string
   language?: string
   fields: FieldSpec[]
@@ -36,21 +43,21 @@ function buildClaim(spec: LightClaimSpec): Claim {
   const document: ClaimDocument = {
     id: documentId,
     kind: 'froi',
-    title: 'First report of injury',
+    title: 'First report form',
     language: spec.language ?? 'en',
     pages: [
-      ['FIRST REPORT OF INJURY', `Employer: ${spec.employer}`, ...lines].join(
-        '\n',
-      ),
+      ['FIRST REPORT FORM', `Employer: ${spec.employer}`, ...lines].join('\n'),
     ],
   }
 
   const fields: Field[] = spec.fields.map((f) => ({
     key: f.key,
     label: f.label,
+    stage: stageForKey(f.key),
     value: f.value,
     status: f.status,
     ...(f.reason ? { reason: f.reason } : {}),
+    ...(f.expectedIn ? { expectedIn: f.expectedIn } : {}),
     resolvedBy: 'agent',
     sources:
       f.value === null
@@ -59,27 +66,44 @@ function buildClaim(spec: LightClaimSpec): Claim {
   }))
 
   const flagged = spec.fields.filter((f) => f.status !== 'verified')
+  const flaggedAt =
+    spec.flaggedAt ??
+    new Date(new Date(spec.receivedAt).getTime() + 3 * 60_000).toISOString()
   return {
     id: toClaimId(spec.id),
     employer: spec.employer,
+    lineOfBusiness: spec.lineOfBusiness ?? 'workers_comp',
     exceptionReasons: spec.exceptionReasons,
+    // The agent's own words: its reason for the first field it flagged.
+    agentNote: flagged[0]?.reason ?? '',
     receivedAt: spec.receivedAt,
+    flaggedAt,
     assignee: spec.assignee,
     state: 'needs_review',
     documents: [document],
     fields,
     activity: [
-      { at: spec.receivedAt, actor: 'agent', action: 'Read 1 document' },
+      {
+        at: spec.receivedAt,
+        actor: 'agent',
+        action: 'Read 1 document',
+        outcome: 'completed',
+      },
       {
         at: spec.receivedAt,
         actor: 'agent',
         action: `Extracted ${fields.length} fields`,
+        outcome: 'completed',
       },
       ...flagged.map((f) => ({
-        at: spec.receivedAt,
+        at: flaggedAt,
         actor: 'agent' as const,
         action: `Flagged ${f.label}`,
         detail: f.reason,
+        outcome:
+          f.status === 'missing'
+            ? ('waiting' as const)
+            : ('needs_review' as const),
       })),
     ],
   }
@@ -109,7 +133,7 @@ export const lightClaims: Claim[] = [
     id: 'CLM-24-0388',
     employer: 'Quillfeather Bakery Co.',
     exceptionReasons: ['document_missing'],
-    receivedAt: '2025-01-14T09:05:00.000Z',
+    receivedAt: '2025-02-26T18:52:00.000Z',
     assignee: 'Tomas Ekwueme',
     fields: [
       claimant('Rosalind Okonkwo-Bell'),
@@ -121,6 +145,7 @@ export const lightClaims: Claim[] = [
         value: null,
         status: 'missing',
         reason: 'No medical report received yet',
+        expectedIn: 'a medical report from the treating clinic',
       },
     ],
   }),
@@ -128,11 +153,11 @@ export const lightClaims: Claim[] = [
     id: 'CLM-24-0402',
     employer: 'Northgate Timber Works',
     exceptionReasons: ['class_code_unclear'],
-    receivedAt: '2025-02-06T13:30:00.000Z',
+    receivedAt: '2025-02-26T21:27:00.000Z',
     assignee: 'Priya Natarajan',
     fields: [
       claimant('Bertrand Oyelaran'),
-      injuryDate('2025-02-05'),
+      injuryDate('2025-02-25'),
       description('Splinter injury to right palm at the sawmill'),
       {
         key: 'class_code',
@@ -147,11 +172,11 @@ export const lightClaims: Claim[] = [
     id: 'CLM-24-0409',
     employer: 'Ashbourne Dental Group',
     exceptionReasons: ['policy_tier_ambiguous'],
-    receivedAt: '2025-02-10T08:50:00.000Z',
+    receivedAt: '2025-02-27T00:37:00.000Z',
     assignee: 'Dana Whitcombe',
     fields: [
       claimant('Philippa Strand'),
-      injuryDate('2025-02-09'),
+      injuryDate('2025-02-26'),
       description('Needle-stick injury while cleaning an instrument tray'),
       {
         key: 'policy_tier',
@@ -165,13 +190,14 @@ export const lightClaims: Claim[] = [
   }),
   buildClaim({
     id: 'CLM-24-0413',
+    lineOfBusiness: 'employers_liability',
     employer: 'Tidewater Metal Fabrication',
     exceptionReasons: ['possible_duplicate', 'class_code_unclear'],
-    receivedAt: '2025-02-12T11:15:00.000Z',
+    receivedAt: '2025-02-27T03:07:00.000Z',
     assignee: 'Priya Natarajan',
     fields: [
       claimant('Lazlo Mbeki-Ferreira'),
-      injuryDate('2025-02-11'),
+      injuryDate('2025-02-26'),
       description('Metal shard in left eye, flushed on site'),
       {
         key: 'class_code',
@@ -191,13 +217,14 @@ export const lightClaims: Claim[] = [
   }),
   buildClaim({
     id: 'CLM-24-0425',
+    lineOfBusiness: 'occupational_accident',
     employer: 'Brightwell Staffing Partners',
     exceptionReasons: ['document_missing', 'policy_tier_ambiguous'],
-    receivedAt: '2025-02-25T15:40:00.000Z',
+    receivedAt: '2025-02-27T08:47:00.000Z',
     assignee: 'Tomas Ekwueme',
     fields: [
       claimant('Ottilie Vandermeer'),
-      injuryDate('2025-02-24'),
+      injuryDate('2025-02-26'),
       description('Back strain lifting boxes at a client site'),
       {
         key: 'policy_tier',
@@ -212,6 +239,7 @@ export const lightClaims: Claim[] = [
         value: null,
         status: 'missing',
         reason: 'The client has not sent a statement',
+        expectedIn: 'a witness statement from the client site',
       },
     ],
   }),
@@ -219,12 +247,12 @@ export const lightClaims: Claim[] = [
     id: 'CLM-24-0428',
     employer: 'Copperleaf Hospitality',
     exceptionReasons: ['non_english_form'],
-    receivedAt: '2025-02-26T09:25:00.000Z',
+    receivedAt: '2025-02-27T12:11:00.000Z',
     assignee: 'Dana Whitcombe',
     language: 'fr',
     fields: [
       claimant('Mathilde Ouedraogo'),
-      injuryDate('2025-02-25'),
+      injuryDate('2025-02-26'),
       {
         key: 'injury_description',
         label: 'Description',
@@ -238,13 +266,14 @@ export const lightClaims: Claim[] = [
   }),
   buildClaim({
     id: 'CLM-24-0436',
+    lineOfBusiness: 'occupational_accident',
     employer: 'Juniper Ridge Construction',
     exceptionReasons: ['class_code_unclear'],
-    receivedAt: '2025-03-03T07:55:00.000Z',
+    receivedAt: '2025-02-27T13:22:00.000Z',
     assignee: 'Priya Natarajan',
     fields: [
       claimant('Cormac Idowu-Lindqvist'),
-      injuryDate('2025-03-02'),
+      injuryDate('2025-02-26'),
       description('Fell from a low scaffold while measuring'),
       {
         key: 'class_code',
@@ -259,11 +288,11 @@ export const lightClaims: Claim[] = [
     id: 'CLM-24-0440',
     employer: 'Oldmill Textile Works',
     exceptionReasons: ['possible_duplicate'],
-    receivedAt: '2025-03-04T10:10:00.000Z',
+    receivedAt: '2025-02-27T14:17:00.000Z',
     assignee: 'Tomas Ekwueme',
     fields: [
       claimant('Winifred Achebe-Rask'),
-      injuryDate('2025-03-03'),
+      injuryDate('2025-02-26'),
       description('Finger caught in loom'),
       {
         key: 'related_claim',
@@ -279,11 +308,13 @@ export const lightClaims: Claim[] = [
     id: 'CLM-24-0444',
     employer: 'Saltmarsh Marine Services',
     exceptionReasons: ['document_missing'],
-    receivedAt: '2025-03-05T14:00:00.000Z',
+    receivedAt: '2025-02-27T14:50:00.000Z',
+    // The newest claim: flagged four minutes before the fixtures' reference time.
+    flaggedAt: '2025-02-27T14:56:00.000Z',
     assignee: 'Dana Whitcombe',
     fields: [
       claimant('Evander Pretorius-Nkemelu'),
-      injuryDate('2025-03-04'),
+      injuryDate('2025-02-26'),
       description('Rope burn to both palms while mooring a vessel'),
       {
         key: 'incident_report',
@@ -291,6 +322,7 @@ export const lightClaims: Claim[] = [
         value: null,
         status: 'missing',
         reason: 'The harbour office report was referenced but not attached',
+        expectedIn: 'the harbour office incident report',
       },
     ],
   }),
