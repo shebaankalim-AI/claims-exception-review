@@ -96,17 +96,14 @@ describe('collapsing the side navigation', () => {
     expect(within(nav()).getByText('Work')).toBeInTheDocument()
   })
 
-  it.each([
-    ['Exceptions'],
-    ['All claims'],
-    ['Agent activity'],
-    ['Reports'],
-    ['Help and shortcuts'],
-  ])('still gives %s an accessible name when collapsed', async (name) => {
-    const user = renderApp()
-    await user.click(collapseButton())
-    expect(within(nav()).getByRole('button', { name })).toBeInTheDocument()
-  })
+  it.each([['Exceptions'], ['All claims'], ['Agent activity'], ['Reports']])(
+    'still gives %s an accessible name when collapsed',
+    async (name) => {
+      const user = renderApp()
+      await user.click(collapseButton())
+      expect(within(nav()).getByRole('button', { name })).toBeInTheDocument()
+    },
+  )
 
   it('keeps aria-current on the active item when collapsed', async () => {
     const user = renderApp()
@@ -204,12 +201,7 @@ describe('the [ shortcut', () => {
 })
 
 describe('items that are not built yet', () => {
-  const later = [
-    'All claims',
-    'Agent activity',
-    'Reports',
-    'Help and shortcuts',
-  ]
+  const later = ['All claims', 'Agent activity', 'Reports']
 
   it.each(later)(
     'shows no visible "Later" for %s, but describes it as Later to assistive tech',
